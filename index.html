@@ -667,77 +667,77 @@
     <span id="visualAlertText">تم تحديث حالة الطلب!</span>
   </div>
 
-  <!-- الشريط العلوي (مع زر الوضع الداكن/النهاري وزر شرح الواجهة) -->
-  <div id="topAccessibilityBar" class="bg-slate-900 text-white py-3 px-4 shadow-md sticky top-0 z-40 border-b border-slate-700">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      <div class="flex flex-wrap items-center gap-2">
-        <span id="accBadgeTitle" class="secondary-ui bg-emerald-500 text-slate-950 font-extrabold px-3 py-1 rounded-full text-sm">شريط الوصول الشامل</span>
-        <button type="button" onclick="toggleSimpleMode()" id="simpleModeBtn" class="focus-ring bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-1.5 rounded-xl text-sm font-black transition shadow flex items-center gap-2">
+  <!-- 1. شريط يُسر فارمسي الموحد (الشعار + جميع أزرار الوصول الشامل + أزرار التنقل) -->
+  <nav id="topAccessibilityBar" class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-cyan-500/25 text-white shadow-lg">
+    <div class="max-w-[96rem] mx-auto px-3 sm:px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- الشعار الطبي المدمج (يمين) -->
+      <div class="flex items-center gap-2.5 shrink-0">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-teal-400 text-slate-950 flex items-center justify-center font-black text-xl shadow-md shadow-cyan-500/20">
+          +
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span id="heroMainTitle" class="text-lg sm:text-xl font-black tracking-tight text-white">يُسر فارمسي <span class="text-cyan-400 font-bold text-xs sm:text-sm" dir="ltr">| Yusr Pharmacy</span></span>
+          </div>
+          <span id="navClinicalTagline" class="text-[10px] text-cyan-300 font-bold block">الخدمة الصيدلانية الذكية للمركبات</span>
+        </div>
+      </div>
+
+      <!-- جميع أزرار الوصول الشامل مدمجة في المنتصف بنفس المعرفات الأصلية -->
+      <div class="flex flex-wrap items-center justify-center gap-1.5">
+        <span id="accBadgeTitle" class="hidden">شريط الوصول الشامل</span>
+
+        <button type="button" onclick="toggleSimpleMode()" id="simpleModeBtn" class="focus-ring bg-amber-400 hover:bg-amber-300 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black transition shadow flex items-center gap-1.5 cursor-pointer">
           <span id="simpleModeDot" class="w-2.5 h-2.5 rounded-full bg-slate-950"></span>
           <span id="simpleModeBtnText">زر التبسيط: إخفاء الأزرار الثانوية</span>
         </button>
-        <button type="button" onclick="openLanguageModal()" id="changeLangBtn" class="focus-ring bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-black transition">
+
+        <button type="button" onclick="openLanguageModal()" id="changeLangBtn" class="focus-ring bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer">
           تغيير اللغة (Language)
         </button>
-        <!-- زر إعادة فتح شرح الواجهة -->
+
         <button type="button" onclick="restartInterfaceTutorial()" id="reopenTutorialBtn" class="focus-ring bg-sky-500 hover:bg-sky-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-black transition flex items-center gap-1 cursor-pointer">
           <span>؟</span>
           <span id="reopenTutorialBtnText">شرح الواجهة</span>
         </button>
-      </div>
-      <div class="flex flex-wrap items-center gap-2">
-        <!-- زر الوضع الداكن / النهاري للعميل -->
+
         <button type="button" onclick="toggleDarkMode()" id="darkModeToggleBtn" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-xs font-black flex items-center gap-1.5 transition cursor-pointer">
           <span id="darkModeIcon">🌙</span>
           <span id="darkModeBtnText">الوضع الداكن</span>
         </button>
-        <button type="button" id="ttsToggleBtn" onclick="toggleTTS()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+
+        <button type="button" id="ttsToggleBtn" onclick="toggleTTS()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
           <span id="ttsStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-          <span id="ttsBtnText">القارئ الصوتي: مفعّل</span>
+          <span id="ttsBtnText">القارئ الصوتي: مفعل</span>
         </button>
-        <button type="button" onclick="toggleHighContrast()" id="contrastBtn" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+
+        <button type="button" onclick="toggleHighContrast()" id="contrastBtn" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
           <span>تباين عالٍ</span>
         </button>
-        <button type="button" id="fontSizeCycleBtn" onclick="cycleFontSize()" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+
+        <button type="button" id="fontSizeCycleBtn" onclick="cycleFontSize()" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
           <span id="fontBtnLabel">حجم الخط:</span> <span id="fontScaleLabel">100%</span>
         </button>
-        <button type="button" id="visualFlashToggleBtn" onclick="toggleVisualFlashMode()" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+
+        <button type="button" id="visualFlashToggleBtn" onclick="toggleVisualFlashMode()" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
           <span id="flashBtnText">إشعارات ضوئية (للصم)</span>
         </button>
       </div>
-    </div>
-  </div>
 
-  <!-- 1. شريط التنقل الطبي العلوي العائم -->
-  <nav class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-cyan-500/25 text-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
-      
-      <!-- الشعار الطبي المدمج -->
-      <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-teal-400 text-slate-950 flex items-center justify-center font-black text-2xl shadow-md shadow-cyan-500/20">
-          +
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span id="heroMainTitle" class="text-xl sm:text-2xl font-black tracking-tight text-white">يُسر فارمسي <span class="text-cyan-400 font-bold text-sm sm:text-base" dir="ltr">| Yusr Pharmacy</span></span>
-          </div>
-          <span id="navClinicalTagline" class="text-[11px] text-cyan-300 font-bold block">الخدمة الصيدلانية الذكية للمركبات</span>
-        </div>
-      </div>
-
-      <!-- أزرار التنقل الرئيسية في الشريط العلوي -->
-      <div class="flex flex-wrap items-center gap-2 bg-slate-900 border border-slate-800 p-1.5 rounded-2xl">
-        <button type="button" onclick="switchMainView('customer')" id="tabCustomer" class="focus-ring py-2 px-4 rounded-xl font-extrabold text-xs sm:text-sm transition bg-cyan-500 text-slate-950 shadow flex items-center justify-center gap-2 cursor-pointer">
+      <!-- أزرار التنقل الرئيسية (يسار) -->
+      <div class="flex flex-wrap items-center gap-1.5 bg-slate-900 border border-slate-800 p-1.5 rounded-2xl shrink-0">
+        <button type="button" onclick="switchMainView('customer')" id="tabCustomer" class="focus-ring py-1.5 px-3.5 rounded-xl font-extrabold text-xs transition bg-cyan-500 text-slate-950 shadow flex items-center justify-center gap-1.5 cursor-pointer">
           <span id="tabCustomerText">واجهة الصيدلية (الطلب)</span>
         </button>
-        <button type="button" onclick="switchMainView('tracker')" id="tabTracker" class="hidden focus-ring py-2 px-4 rounded-xl font-extrabold text-xs sm:text-sm transition text-slate-200 hover:bg-slate-800 flex items-center justify-center gap-2 cursor-pointer">
+        <button type="button" onclick="switchMainView('tracker')" id="tabTracker" class="hidden focus-ring py-1.5 px-3.5 rounded-xl font-extrabold text-xs transition text-slate-200 hover:bg-slate-800 flex items-center justify-center gap-1.5 cursor-pointer">
           <span id="tabTrackerText">مسار المريض قيد التجهيز</span>
         </button>
-        <button type="button" onclick="switchMainView('myorders')" id="tabMyOrders" class="focus-ring py-2 px-4 rounded-xl font-extrabold text-xs sm:text-sm transition text-slate-200 hover:bg-slate-800 flex items-center justify-center gap-2 cursor-pointer">
+        <button type="button" onclick="switchMainView('myorders')" id="tabMyOrders" class="focus-ring py-1.5 px-3.5 rounded-xl font-extrabold text-xs transition text-slate-200 hover:bg-slate-800 flex items-center justify-center gap-1.5 cursor-pointer">
           <span id="tabMyOrdersText">وصفاتي وطلباتي</span>
           <span id="myOrdersCountBadge" class="bg-cyan-600 text-white text-xs font-black px-2 py-0.5 rounded-full">0</span>
         </button>
-        <button type="button" onclick="switchMainView('staff')" id="tabStaff" class="hidden focus-ring py-2 px-4 rounded-xl font-extrabold text-xs sm:text-sm transition text-slate-200 hover:bg-slate-800 flex items-center justify-center gap-2 cursor-pointer">
+        <button type="button" onclick="switchMainView('staff')" id="tabStaff" class="hidden focus-ring py-1.5 px-3.5 rounded-xl font-extrabold text-xs transition text-slate-200 hover:bg-slate-800 flex items-center justify-center gap-1.5 cursor-pointer">
           <span id="tabStaffText">شاشة الصيدلي (مستقلة)</span>
         </button>
       </div>
