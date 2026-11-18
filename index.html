@@ -708,38 +708,87 @@
     </div>
   </div>
 
-  <header class="bg-gradient-to-l from-emerald-800 via-teal-800 to-slate-900 text-white py-6 px-4 shadow-lg">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-      <div class="space-y-2 text-center md:text-right max-w-2xl">
-        <div class="secondary-ui inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 px-4 py-1.5 rounded-full text-emerald-200 text-sm font-bold">
-          <span id="heroBadge">مبادرة المسار الذكي الميسّر لذوي الإحتياجات الخاصة</span>
+  <!-- 1. شريط التنقل الطبي العلوي العائم -->
+  <nav class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-cyan-500/25 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- الشعار الطبي المدمج -->
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-teal-400 text-slate-950 flex items-center justify-center font-black text-2xl shadow-md shadow-cyan-500/20">
+          +
         </div>
-        <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
-          <span id="heroMainTitle">يُسْر درايف</span> | <span class="text-emerald-400">Yusr Drive</span>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl sm:text-2xl font-black tracking-tight text-white">يُسر فارمسي</span>
+            <span class="text-cyan-400 font-bold text-sm sm:text-base" dir="ltr">Yusr Pharmacy</span>
+          </div>
+          <span id="navClinicalTagline" class="text-[11px] text-cyan-300 font-bold block">الخدمة الصيدلانية الذكية للمركبات</span>
+        </div>
+      </div>
+
+      <!-- أزرار التنقل الرئيسية في الشريط العلوي -->
+      <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 p-1.5 rounded-2xl">
+        <button type="button" id="navCustomerBtn" onclick="switchMainView('customer')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs sm:text-sm transition shadow cursor-pointer">
+          واجهة الصيدلية (الطلب)
+        </button>
+        <button type="button" id="navMyOrdersBtn" onclick="switchMainView('myorders')" class="text-slate-200 hover:text-white hover:bg-slate-800 font-extrabold px-4 py-2 rounded-xl text-xs sm:text-sm transition flex items-center gap-2 cursor-pointer">
+          <span id="navMyOrdersLabel">وصفاتي وطلباتي</span>
+          <span id="myOrdersCountBadge" class="bg-cyan-600 text-white text-xs font-black px-2.5 py-0.5 rounded-full">0</span>
+        </button>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- 2. بطاقة الواجهة الطبية المقسمة (توزيع جديد كلياً عن المشروع السابق) -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-2">
+    <div class="bg-gradient-to-br from-slate-900 via-cyan-950 to-slate-900 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 text-white shadow-2xl grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      
+      <!-- العمود الأول (7 أعمدة): الرسالة الترحيبية والمبادرة -->
+      <div class="lg:col-span-7 space-y-3.5">
+        <div id="headerBadgeText" class="inline-flex items-center gap-2 bg-cyan-500/15 border border-cyan-400/40 text-cyan-200 px-4 py-1.5 rounded-full text-xs font-extrabold">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <span>مبادرة الصيدلية الذكية الميسّرة لذوي الاحتياجات الخاصة</span>
+        </div>
+
+        <h1 id="heroMainHeading" class="text-2xl sm:text-4xl font-black leading-snug text-white">
+          رعايتك الدوائية تصل إلى نافذة سيارتك بكل خصوصية وأمان
         </h1>
-        <p id="heroSubTitle" class="secondary-ui text-slate-200 text-base font-medium leading-relaxed">
-          اطلب من سيارتك باستقلالية تامة؛ بدون الحاجة للتحدث عبر المايكروفون التقليدي أو النزول من المركبة، مع تسليم مخصص لباب سيارتك.
+
+        <p id="headerBrandSubtitle" class="text-slate-300 text-xs sm:text-sm font-medium leading-relaxed">
+          اطلب أدويتك ومستلزماتك الطبية أو أرسل رقم وصفتك الإلكترونية من سيارتك مباشرة؛ دون الحاجة للنزول أو التحدث عبر الميكروفون، مع استشارة صيدلانية فورية بلغة اختيارك.
         </p>
       </div>
 
-      <!-- أزرار التنقل العلوية -->
-      <div class="bg-slate-900/80 p-2 rounded-2xl border border-slate-700 flex flex-wrap gap-2 w-full md:w-auto justify-center">
-        <button type="button" onclick="switchMainView('customer')" id="tabCustomer" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition bg-emerald-500 text-slate-950 shadow flex items-center gap-2">
-          <span>واجهة العميل (الطلب)</span>
-        </button>
-        <button type="button" onclick="switchMainView('tracker')" id="tabTracker" class="hidden focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800 flex items-center gap-2">
-          <span>مسار الدرايف ثرو المباشر</span>
-        </button>
-        <button type="button" onclick="switchMainView('myorders')" id="tabMyOrders" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800 flex items-center gap-2">
-          <span id="tabMyOrdersText">قائمة طلباتي</span>
-          <span id="myOrdersCountBadge" class="bg-emerald-500 text-slate-950 text-xs font-black px-2 py-0.5 rounded-full">0</span>
-        </button>
-        <button type="button" onclick="switchMainView('staff')" id="tabStaff" class="hidden focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800 flex items-center gap-2">
-          <span>شاشة الموظف (محاكاة)</span>
-        </button>
+      <!-- العمود الثاني (5 أعمدة): بطاقات المزايا الطبية السريعة (مكان جديد كلياً) -->
+      <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-3">
+        <div class="bg-slate-950/60 border border-cyan-500/25 rounded-2xl p-3.5 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-black shrink-0">Rx</div>
+          <div>
+            <div id="feat1Title" class="text-xs font-black text-white">صرف الوصفات والأدوية</div>
+            <div id="feat1Sub" class="text-[11px] text-slate-400">مراجعة صيدلانية دقيقة قبل التسليم</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-950/60 border border-cyan-500/25 rounded-2xl p-3.5 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center font-black shrink-0">5L</div>
+          <div>
+            <div id="feat2Title" class="text-xs font-black text-white">شرح الجرعات بـ 5 لغات</div>
+            <div id="feat2Sub" class="text-[11px] text-slate-400">ترجمة فورية وقراءة صوتية واضحة</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-950/60 border border-cyan-500/25 rounded-2xl p-3.5 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center font-black shrink-0">100%</div>
+          <div>
+            <div id="feat3Title" class="text-xs font-black text-white">تسليم ميسّر لباب المركبة</div>
+            <div id="feat3Sub" class="text-[11px] text-slate-400">دون الحاجة لمغادرة السيارة</div>
+          </div>
+        </div>
       </div>
+
     </div>
-  </header>
+  </section>
 
   <main class="max-w-7xl mx-auto w-full flex-1 p-4 sm:p-6 space-y-8">
     <!-- 1. واجهة العميل (الطلب) -->
