@@ -6154,16 +6154,19 @@
       }
       updateTrackerApprovalBanner();
     }, 100);
-  // ================= هوية وتصميم صيدلية يُسر فارمسي بجميع اللغات الـ 5 =================
+  // ================= هوية وتصميم صيدلية يُسر فارمسي بجميع اللغات الـ 5 + إصلاح إغلاق نافذة اللغة =================
     const pharmacyFullHeaderI18n = {
       ar: {
         pageTitle: 'يُسر فارمسي | Yusr Pharmacy — الصيدلية الذكية للمركبات',
+        mainTitle: 'يُسر فارمسي | Yusr Pharmacy',
         navTagline: 'الخدمة الصيدلانية الذكية للمركبات',
         badge: 'مبادرة الصيدلية الذكية الميسّرة لذوي الاحتياجات الخاصة',
         heroTitle: 'رعايتك الدوائية تصل إلى نافذة سيارتك بكل خصوصية وأمان',
         subtitle: 'اطلب أدويتك ومستلزماتك الطبية أو أرسل رقم وصفتك الإلكترونية من سيارتك مباشرة؛ دون الحاجة للنزول أو التحدث عبر الميكروفون، مع استشارة صيدلانية فورية بلغة اختيارك.',
         customerTab: 'واجهة الصيدلية (الطلب)',
+        trackerTab: 'مسار المريض قيد التجهيز',
         myOrdersTab: 'وصفاتي وطلباتي',
+        staffTab: 'شاشة الصيدلي (مستقلة)',
         f1Title: 'صرف الوصفات والأدوية',
         f1Sub: 'مراجعة صيدلانية دقيقة قبل التسليم',
         f2Title: 'شرح الجرعات بـ 5 لغات',
@@ -6173,12 +6176,15 @@
       },
       en: {
         pageTitle: 'Yusr Pharmacy | Smart Accessible Drive-Thru Pharmacy',
+        mainTitle: 'Yusr Pharmacy | يُسر فارمسي',
         navTagline: 'Smart Drive-Thru Pharmaceutical Care',
         badge: 'Smart Accessible Pharmacy Initiative for People with Special Needs',
         heroTitle: 'Your pharmaceutical care delivered straight to your car window with complete privacy & safety',
         subtitle: 'Order medications, medical supplies, or submit your e-prescription directly from your vehicle without exiting or using an intercom, with instant pharmacist consultation in your language.',
         customerTab: 'Pharmacy Storefront',
+        trackerTab: 'Active Patient Lane',
         myOrdersTab: 'My Prescriptions & Orders',
+        staffTab: 'Pharmacist Portal',
         f1Title: 'Prescription & OTC Dispensing',
         f1Sub: 'Verified by a licensed pharmacist',
         f2Title: 'Dosage Guide in 5 Languages',
@@ -6188,12 +6194,15 @@
       },
       tr: {
         pageTitle: 'Yusr Pharmacy | Akıllı Erişilebilir Arabaya Servis Eczane',
+        mainTitle: 'Yusr Pharmacy | يُسر فارمسي',
         navTagline: 'Akıllı Arabaya Servis Eczacılık Hizmeti',
         badge: 'Özel Gereksinimli Bireyler İçin Akıllı Erişilebilir Eczane Girişimi',
         heroTitle: 'İlaç ve sağlık bakımınız tam gizlilik ve güvenle aracınızın camına kadar ulaşır',
         subtitle: 'Araçtan inmeden veya interkom kullanmadan ilaçlarınızı, tıbbi malzemelerinizi sipariş edin ya da e-reçete numaranızı gönderin; kendi dilinizde anında eczacı danışmanlığı alın.',
         customerTab: 'Eczane Arayüzü',
+        trackerTab: 'Aktif Hasta Hattı',
         myOrdersTab: 'Reçetelerim ve Siparişlerim',
+        staffTab: 'Eczacı Ekranı',
         f1Title: 'Reçeteli ve Reçetesiz İlaç',
         f1Sub: 'Teslimat öncesi uzman eczacı kontrolü',
         f2Title: '5 Dilde Kullanım Talimatı',
@@ -6203,12 +6212,15 @@
       },
       ur: {
         pageTitle: 'یُسر فارمیسی | Yusr Pharmacy — اسمارٹ ڈرائیو تھرو فارمیسی',
+        mainTitle: 'یُسر فارمیسی | Yusr Pharmacy',
         navTagline: 'گاڑیوں کے لیے اسمارٹ فارمیسی سروس',
         badge: 'خصوصی ضروریات کے حامل افراد کے لیے اسمارٹ فارمیسی اقدام',
         heroTitle: 'آپ کی ادویات اور طبی نگہداشت مکمل رازداری اور حفاظت کے ساتھ آپ کی گاڑی کی کھڑکی تک',
         subtitle: 'گاڑی سے اترے یا مائیکروفون استعمال کیے بغیر اپنی ادویات، طبی سامان آرڈر کریں یا ای-نسخہ نمبر بھیجیں، اور اپنی زبان میں فوری فارماسسٹ مشورہ حاصل کریں۔',
         customerTab: 'فارمیسی پورٹل (آرڈر)',
+        trackerTab: 'مریض کی فعال لین',
         myOrdersTab: 'میرے نسخے اور آرڈرز',
+        staffTab: 'فارماسسٹ اسکرین',
         f1Title: 'نسخہ جات اور ادویات کی فراہمی',
         f1Sub: 'ترسیل سے قبل مستند فارماسسٹ کی جانچ',
         f2Title: '5 زبانوں میں خوراک کی رہنمائی',
@@ -6218,12 +6230,15 @@
       },
       zh: {
         pageTitle: 'Yusr Pharmacy | 智慧无障碍汽车穿梭药房',
+        mainTitle: 'Yusr Pharmacy | يُسر فارمسي',
         navTagline: '智慧汽车穿梭药学服务',
         badge: '专为残障及特殊需求人士打造的智慧无障碍药房倡议',
         heroTitle: '您的专属药学关怀，安全私密地直达您的车窗旁',
         subtitle: '无需下车或使用传统对讲机，直接在车内订购药品、医疗用品或提交电子处方号，并享受您母语的即时药师咨询服务。',
         customerTab: '药房服务界面',
+        trackerTab: '当前患者通道',
         myOrdersTab: '我的处方与订单',
+        staffTab: '药师工作台',
         f1Title: '处方药与非处方药调配',
         f1Sub: '执业药师严格审核后安全交付',
         f2Title: '5种语言用药指导',
@@ -6233,18 +6248,63 @@
       }
     };
 
+    // ضمان وجود أي معرّف قديم تطلبه دالة applyLanguage الأصلية لمنع توقف الكود أبداً
+    (function ensureLegacyHeaderIdsExist() {
+      const requiredIds = ['heroBadgeText', 'heroMainTitle', 'heroSubTitle', 'tabCustomerText', 'tabTrackerText', 'tabMyOrdersText', 'tabStaffText'];
+      let hiddenHolder = document.getElementById('legacySafeHolder');
+      if (!hiddenHolder) {
+        hiddenHolder = document.createElement('div');
+        hiddenHolder.id = 'legacySafeHolder';
+        hiddenHolder.className = 'hidden';
+        document.body.appendChild(hiddenHolder);
+      }
+      requiredIds.forEach(id => {
+        if (!document.getElementById(id)) {
+          const sp = document.createElement('span');
+          sp.id = id;
+          hiddenHolder.appendChild(sp);
+        }
+      });
+
+      // تحديث الشارة الخضراء داخل نافذة اختيار اللغة إلى يُسر فارمسي
+      const welcomeModalEl = document.getElementById('welcomeModal');
+      if (welcomeModalEl) {
+        welcomeModalEl.querySelectorAll('span, div').forEach(el => {
+          if (el.children.length === 0 && el.textContent.includes('Yusr Drive')) {
+            el.textContent = 'Yusr Pharmacy | يُسر فارمسي';
+          }
+        });
+      }
+    })();
+
     const _origApplyLangPharmFull = applyLanguage;
     applyLanguage = function(lang) {
-      _origApplyLangPharmFull(lang);
+      try {
+        _origApplyLangPharmFull(lang);
+      } catch (err) {
+        console.warn('Fallback language apply:', err);
+      }
+
       const H = pharmacyFullHeaderI18n[lang] || pharmacyFullHeaderI18n.ar;
       document.title = H.pageTitle;
 
-      const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      const setTxt = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+      };
+
+      setTxt('heroMainTitle', H.mainTitle);
       setTxt('navClinicalTagline', H.navTagline);
+      setTxt('heroBadgeText', H.badge);
       setTxt('heroMainHeading', H.heroTitle);
+      setTxt('heroSubTitle', H.subtitle);
       setTxt('headerBrandSubtitle', H.subtitle);
+      setTxt('tabCustomerText', H.customerTab);
       setTxt('navCustomerBtn', H.customerTab);
+      setTxt('tabTrackerText', H.trackerTab);
+      setTxt('tabMyOrdersText', H.myOrdersTab);
       setTxt('navMyOrdersLabel', H.myOrdersTab);
+      setTxt('tabStaffText', H.staffTab);
       setTxt('feat1Title', H.f1Title);
       setTxt('feat1Sub', H.f1Sub);
       setTxt('feat2Title', H.f2Title);
@@ -6256,6 +6316,24 @@
       if (badgeSpan) badgeSpan.textContent = H.badge;
     };
 
+    // ضمان إغلاق نافذة اختيار اللغة بسلاسة فورية عند اختيار أي لغة أو وضع الصم
+    const _origSelectWelcomeLang = window.selectWelcomeLanguage;
+    window.selectWelcomeLanguage = function(lang, isVisualDeaf) {
+      try {
+        if (typeof _origSelectWelcomeLang === 'function') {
+          _origSelectWelcomeLang(lang, isVisualDeaf);
+        } else {
+          applyLanguage(lang || 'ar');
+        }
+      } catch (e) {
+        applyLanguage(lang || 'ar');
+      }
+      const modal = document.getElementById('welcomeModal');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
+    };
+
     // تحديث شاشة البداية الافتتاحية لتعكس هوية صيدلية يُسر فارمسي
     (function updateSplashForPharmacy() {
       const splashBadge = document.querySelector('#introSplash .splash-item-1 span');
@@ -6264,15 +6342,18 @@
       const splashSub = document.getElementById('splashSubAr');
       if (splashSub) splashSub.textContent = 'رعايتك الدوائية من سيارتك بكل يُسر واستقلالية';
 
-      // تحديث نصوص الكتابة التدريجية حرفاً بحرف في شاشة البداية
-      const _origRevealAr = revealArabicGraduallyRTL;
-      revealArabicGraduallyRTL = function(id, txt, dur, cb) {
-        _origRevealAr(id, txt.replace('يُسْر درايف', 'يُسْر فارمسي'), dur, cb);
-      };
-      const _origRevealEn = revealEnglishCharsGraduallyLTR;
-      revealEnglishCharsGraduallyLTR = function(id, txt, stag, cb) {
-        _origRevealEn(id, txt.replace('Yusr Drive', 'Yusr Pharmacy'), stag, cb);
-      };
+      if (typeof revealArabicGraduallyRTL === 'function') {
+        const _origRevealAr = revealArabicGraduallyRTL;
+        revealArabicGraduallyRTL = function(id, txt, dur, cb) {
+          _origRevealAr(id, txt.replace('يُسْر درايف', 'يُسْر فارمسي'), dur, cb);
+        };
+      }
+      if (typeof revealEnglishCharsGraduallyLTR === 'function') {
+        const _origRevealEn = revealEnglishCharsGraduallyLTR;
+        revealEnglishCharsGraduallyLTR = function(id, txt, stag, cb) {
+          _origRevealEn(id, txt.replace('Yusr Drive', 'Yusr Pharmacy'), stag, cb);
+        };
+      }
     })();
 
     setTimeout(() => applyLanguage(currentLang || 'ar'), 60);
