@@ -6357,6 +6357,33 @@
     })();
 
     setTimeout(() => applyLanguage(currentLang || 'ar'), 60);
+  // ================= دمج أزرار شريط الوصول الشامل داخل سطر يُسر فارمسي الجديد =================
+    (function mergeTopAccessibilityBarIntoPharmacyNav() {
+      const simplifyBtn = document.getElementById('simplifyModeBtn');
+      const pharmNav = document.querySelector('nav');
+      if (!simplifyBtn || !pharmNav) return;
+
+      // الوصول إلى الشريط العلوي القديم وحاوية الأزرار بداخله
+      const oldTopBar = simplifyBtn.closest('div.bg-slate-900, div.bg-slate-950') || simplifyBtn.parentElement.parentElement;
+      const oldButtonsWrap = simplifyBtn.parentElement;
+      const navInner = pharmNav.firstElementChild;
+      if (!oldButtonsWrap || !navInner) return;
+
+      // إخفاء شارة "شريط الوصول الشامل" الخضراء القديمة لتوفير المساحة في السطر الموحد
+      const accessBadge = document.getElementById('accessBadgeText');
+      if (accessBadge) accessBadge.classList.add('hidden');
+
+      // تنسيق حاوية الأزرار لتظهر في منتصف سطر يُسر فارمسي بشكل متناسق وأنيق
+      oldButtonsWrap.className = 'flex flex-wrap items-center justify-center gap-1.5 flex-1 mx-2';
+
+      // إدراج جميع الأزرار في السطر الجديد بين شعار يُسر فارمسي وأزرار التنقل (واجهة الصيدلية / وصفاتي)
+      navInner.insertBefore(oldButtonsWrap, navInner.lastElementChild);
+
+      // إخفاء الشريط العلوي القديم الفارغ نهائياً
+      if (oldTopBar && oldTopBar !== pharmNav) {
+        oldTopBar.classList.add('hidden');
+      }
+    })();
   </script>
 </body>
 </html>
