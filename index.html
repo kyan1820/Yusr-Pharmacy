@@ -458,7 +458,13 @@
           </div>
         </div>
 
-        <div id="cartItemsContainer" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+        <div id="cartItemsContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+
+        <!-- مكان تسليم الطلب في السيارة داخل الفاتورة -->
+        <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2">
+          <div id="deliverySpotTitle" class="text-xs font-black text-cyan-300">مكان تسليم الطلب في السيارة:</div>
+          <div id="deliverySpotOptions" class="space-y-1.5"></div>
+        </div>
 
         <div class="secondary-element clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
           <div id="carInfoTitle" class="text-xs font-black text-cyan-300">بيانات المركبة لتسليم الدواء للنافذة</div>
@@ -501,6 +507,7 @@
     let fontScaleIndex = 0;
     const fontScales = [100, 110, 120, 135];
     let selectedAssistMode = 'mobility';
+    let selectedDeliverySpot = 'driver_window';
     let selectedCategory = 'rx';
     let expandedCategories = {};
     let lastAnimatedGroupKey = '';
@@ -517,7 +524,8 @@
         itemsSummary: 'بانادول إكسترا (24 قرص) × 1',
         total: 16.1,
         rx: 'RX-9042',
-        car: 'أ ب ج 1234'
+        car: 'أ ب ج 1234',
+        spot: 'تسليم عبر نافذة السائق بحامل ممتد'
       },
       {
         id: 'ORD-1038',
@@ -526,7 +534,8 @@
         itemsSummary: 'فيتامين سي 1000 ملجم + زنك فوار × 1',
         total: 48.3,
         rx: '',
-        car: 'سيدان أبيض'
+        car: 'سيدان أبيض',
+        spot: 'وضع الطلب على المقعد المجاور للسائق'
       },
       {
         id: 'ORD-1032',
@@ -535,10 +544,44 @@
         itemsSummary: 'قطرات ترطيب العين (الدموع الاصطناعية) × 1',
         total: 32.2,
         rx: '',
-        car: ''
+        car: '',
+        spot: 'وضع الطلب في الشنطة الخلفية للسيارة'
       }
     ];
     let splashDismissed = false;
+
+    const deliverySpotOptions = [
+      {
+        id: 'driver_window',
+        label: {
+          ar: 'تسليم عبر نافذة السائق بحامل ممتد',
+          en: 'Driver window delivery via extended tray',
+          tr: 'Uzatmalı tepsi ile sürücü camından teslim',
+          ur: 'ڈرائیور کی کھڑکی سے ایکسٹینڈڈ ٹرے کے ذریعے ترسیل',
+          zh: '通过延伸托盘在驾驶座车窗交付'
+        }
+      },
+      {
+        id: 'passenger_seat',
+        label: {
+          ar: 'وضع الطلب على المقعد المجاور للسائق',
+          en: 'Place order on the front passenger seat',
+          tr: 'Siparişi ön yolcu koltuğuna bırakma',
+          ur: 'آرڈر ڈرائیور کے ساتھ والی سیٹ پر رکھنا',
+          zh: '将订单放在副驾驶座椅上'
+        }
+      },
+      {
+        id: 'rear_trunk',
+        label: {
+          ar: 'وضع الطلب في الشنطة الخلفية للسيارة',
+          en: 'Place order in the rear car trunk',
+          tr: 'Siparişi aracın arka bagajına koyma',
+          ur: 'آرڈر گاڑی کی پچھلی ڈکی میں رکھنا',
+          zh: '将订单放入车辆后备箱'
+        }
+      }
+    ];
 
     const i18n = {
       ar: {
@@ -580,6 +623,7 @@
         bagTitle: 'الحقيبة الدوائية والفاتورة',
         bagSubtitle: 'تُصرف وتُسلّم مباشرة إلى نافذة مركبتك',
         emptyBag: 'الحقيبة الدوائية فارغة حالياً، اختر الأدوية أو أدخل رقم الوصفة.',
+        deliverySpotTitle: 'مكان تسليم الطلب في السيارة:',
         carInfoTitle: 'بيانات المركبة لتسليم الدواء للنافذة',
         platePh: 'رقم اللوحة (مثال: أ ب ج 1234)',
         colorPh: 'نوع ولون السيارة',
@@ -631,6 +675,7 @@
         bagTitle: 'Medical Bag & Invoice',
         bagSubtitle: 'Dispensed & delivered straight to your car window',
         emptyBag: 'Your medical bag is empty. Add items or enter an RX number.',
+        deliverySpotTitle: 'Where to deliver the order in the car:',
         carInfoTitle: 'Vehicle Info for Window Delivery',
         platePh: 'Plate Number (e.g. ABC 1234)',
         colorPh: 'Car Model & Color',
@@ -682,6 +727,7 @@
         bagTitle: 'İlaç Çantası ve Fatura',
         bagSubtitle: 'Doğrudan aracınızın camına teslim edilir',
         emptyBag: 'İlaç çantanız boş, ürün seçin veya reçete numarası girin.',
+        deliverySpotTitle: 'Araçta sipariş teslim yeri:',
         carInfoTitle: 'Teslimat İçin Araç Bilgileri',
         platePh: 'Plaka Numarası',
         colorPh: 'Araç Modeli ve Rengi',
@@ -733,6 +779,7 @@
         bagTitle: 'طبی بیگ اور بل',
         bagSubtitle: 'براہِ راست آپ کی گاڑی کی کھڑکی پر ترسیل',
         emptyBag: 'طبی بیگ خالی ہے، ادویات منتخب کریں یا نسخہ نمبر درج کریں۔',
+        deliverySpotTitle: 'گاڑی میں آرڈر پہنچانے کی جگہ:',
         carInfoTitle: 'ترسیل کے لیے گاڑی کی تفصیلات',
         platePh: 'نمبر پلیٹ درج کریں',
         colorPh: 'گاڑی کا ماڈل اور رنگ',
@@ -784,6 +831,7 @@
         bagTitle: '我的药袋与账单',
         bagSubtitle: '药师审核后直接送达您的车窗',
         emptyBag: '药袋目前为空，请添加药品或输入处方号。',
+        deliverySpotTitle: '车内订单交付位置：',
         carInfoTitle: '接药车辆信息',
         platePh: '车牌号码',
         colorPh: '车型与颜色',
@@ -1607,6 +1655,44 @@
       }, 60);
     }
 
+    function renderDeliverySpotOptions() {
+      const container = document.getElementById('deliverySpotOptions');
+      if (!container) return;
+
+      container.innerHTML = deliverySpotOptions.map(opt => {
+        const active = opt.id === selectedDeliverySpot;
+        const circleIcon = active ? '✓' : '○';
+        return `
+          <button
+            type="button"
+            onclick="selectDeliverySpot('${opt.id}')"
+            class="w-full text-start px-3 py-2.5 rounded-xl border text-xs font-extrabold transition flex items-center justify-between gap-2 cursor-pointer ${
+              active
+                ? 'bg-cyan-500/15 border-cyan-400 text-cyan-300 shadow-sm'
+                : 'bg-slate-900/90 border-slate-700 hover:border-cyan-500/40 text-slate-200'
+            }"
+          >
+            <span>${opt.label[currentLang] || opt.label.ar}</span>
+            <span class="w-5 h-5 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${
+              active ? 'bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-400 border border-slate-600'
+            }">${circleIcon}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectDeliverySpot(spotId) {
+      selectedDeliverySpot = spotId;
+      renderDeliverySpotOptions();
+      const found = deliverySpotOptions.find(o => o.id === spotId);
+      if (found) speakText(found.label[currentLang] || found.label.ar);
+    }
+
+    function getSelectedDeliverySpotText() {
+      const found = deliverySpotOptions.find(o => o.id === selectedDeliverySpot);
+      return found ? (found.label[currentLang] || found.label.ar) : '';
+    }
+
     function switchPageView(viewName) {
       activePageView = viewName === 'orders' ? 'orders' : 'shop';
       const shopEl = document.getElementById('shopView');
@@ -1725,6 +1811,7 @@
 
             <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
               <div class="flex flex-wrap items-center gap-2 text-slate-400">
+                ${ord.spot ? `<span class="bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 px-2.5 py-0.5 rounded-lg">📍 ${ord.spot}</span>` : ''}
                 ${ord.rx ? `<span class="bg-slate-800 text-cyan-300 px-2.5 py-0.5 rounded-lg">RX: ${ord.rx}</span>` : ''}
                 ${ord.car ? `<span class="bg-slate-800 text-slate-200 px-2.5 py-0.5 rounded-lg">🚗 ${ord.car}</span>` : ''}
               </div>
@@ -1896,6 +1983,7 @@
 
       document.getElementById('bagTitle').textContent = L.bagTitle;
       document.getElementById('bagSubtitle').textContent = L.bagSubtitle;
+      document.getElementById('deliverySpotTitle').textContent = L.deliverySpotTitle;
       document.getElementById('carInfoTitle').textContent = L.carInfoTitle;
       document.getElementById('carPlateInput').placeholder = L.platePh;
       document.getElementById('carColorInput').placeholder = L.colorPh;
@@ -1905,6 +1993,7 @@
       document.getElementById('btnSubmitOrder').textContent = L.btnSubmit;
 
       renderAssistModes();
+      renderDeliverySpotOptions();
       renderCategories();
       renderMedications();
       renderCart();
@@ -2383,6 +2472,7 @@
       const rxVal = document.getElementById('rxInput').value.trim();
       const plateVal = (document.getElementById('carPlateInput')?.value || '').trim();
       const colorVal = (document.getElementById('carColorInput')?.value || '').trim();
+      const spotText = getSelectedDeliverySpotText();
 
       if (cart.length === 0 && !rxVal) {
         showToast(L.emptyBag);
@@ -2412,7 +2502,8 @@
         itemsSummary: summaryParts.join(' • '),
         total,
         rx: rxVal,
-        car: [plateVal, colorVal].filter(Boolean).join(' - ')
+        car: [plateVal, colorVal].filter(Boolean).join(' - '),
+        spot: spotText
       };
 
       ordersHistory.unshift(newOrder);
