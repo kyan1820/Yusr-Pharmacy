@@ -480,6 +480,68 @@
           </div>
         </div>
 
+        <!-- خانة كود الخصم وعرض الكوبونات والعروض المتاحة فوق الفاتورة -->
+        <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
+          <label for="promoCodeInput" id="lblPromoTitle" class="block text-xs font-black text-cyan-300">كود الخصم (حروف إنجليزية كابيتل فقط):</label>
+          <div class="flex items-center gap-2">
+            <input
+              id="promoCodeInput"
+              type="text"
+              dir="ltr"
+              autocomplete="off"
+              spellcheck="false"
+              oninput="handlePromoInput(this.value)"
+              placeholder="ADEL / KAYAN"
+              class="clinical-input flex-1 bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs font-black tracking-widest uppercase outline-none"
+            />
+            <button
+              type="button"
+              onclick="applyPromoCode()"
+              id="btnApplyPromo"
+              class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-3.5 py-2 rounded-xl transition cursor-pointer shrink-0"
+            >
+              تطبيق
+            </button>
+          </div>
+          <div id="promoStatusMsg" class="text-[11px] font-bold hidden"></div>
+
+          <button
+            type="button"
+            onclick="toggleCouponsList()"
+            id="btnToggleCoupons"
+            class="w-full text-start px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-extrabold text-amber-300 flex items-center justify-between transition cursor-pointer"
+          >
+            <span>🎟️ <span id="lblAvailableCouponsBtn">عرض الكوبونات والعروض المتاحة</span></span>
+            <span id="couponsArrow" class="text-xs font-black">▾</span>
+          </button>
+
+          <div id="availableCouponsBox" class="hidden space-y-1.5 pt-1">
+            <button
+              type="button"
+              onclick="selectCouponCode('ADEL')"
+              class="w-full text-start px-3 py-2 rounded-xl bg-slate-900 hover:bg-cyan-500/15 border border-slate-700 hover:border-cyan-400 transition flex items-center justify-between gap-2 cursor-pointer"
+            >
+              <div>
+                <div class="text-xs font-black text-cyan-400" dir="ltr">ADEL</div>
+                <div id="descCouponAdel" class="text-[11px] text-slate-300 font-bold">خصم 50% على المجموع الفرعي</div>
+              </div>
+              <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-black px-2.5 py-0.5 rounded-full shrink-0">50%</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="selectCouponCode('KAYAN')"
+              class="w-full text-start px-3 py-2 rounded-xl bg-slate-900 hover:bg-cyan-500/15 border border-slate-700 hover:border-cyan-400 transition flex items-center justify-between gap-2 cursor-pointer"
+            >
+              <div>
+                <div class="text-xs font-black text-cyan-400" dir="ltr">KAYAN</div>
+                <div id="descCouponKayan" class="text-[11px] text-slate-300 font-bold">خصم 25% على المجموع الفرعي</div>
+              </div>
+              <span class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-black px-2.5 py-0.5 rounded-full shrink-0">25%</span>
+            </button>
+          </div>
+        </div>
+
         <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-1.5 text-xs font-bold">
           <div class="secondary-element flex justify-between">
             <span id="lblSubtotal" class="text-slate-400">المجموع الفرعي ( غير شامل الضريبه):</span>
@@ -519,6 +581,12 @@
     let selectedAssistMode = 'mobility';
     let selectedParkingSpot = 'yusr_1';
     let selectedDeliverySpot = 'driver_window';
+    let appliedPromoCode = '';
+    let isCouponsBoxOpen = false;
+    const promoDiscountsMap = {
+      ADEL: 0.5,
+      KAYAN: 0.25
+    };
     let selectedCategory = 'rx';
     let expandedCategories = {};
     let lastAnimatedGroupKey = '';
@@ -675,6 +743,13 @@
         carInfoTitle: 'بيانات المركبة لتسليم الدواء للنافذة',
         platePh: 'رقم اللوحة (مثال: أ ب ج 1234)',
         colorPh: 'نوع ولون السيارة',
+        lblPromoTitle: 'كود الخصم (حروف إنجليزية كابيتل فقط):',
+        btnApplyPromo: 'تطبيق',
+        lblAvailableCouponsBtn: 'عرض الكوبونات والعروض المتاحة',
+        descCouponAdel: 'خصم 50% على المجموع الفرعي',
+        descCouponKayan: 'خصم 25% على المجموع الفرعي',
+        promoAppliedMsg: 'تم تطبيق الكود بنجاح',
+        promoInvalidMsg: 'كود غير صحيح (الأكواد المتاحة: ADEL، KAYAN)',
         lblSubtotal: 'المجموع الفرعي ( غير شامل الضريبه):',
         lblDiscounts: 'إجمالي الخصومات:',
         lblVat: 'ضريبة القيمة المضافة (15%):',
@@ -729,6 +804,13 @@
         carInfoTitle: 'Vehicle Info for Window Delivery',
         platePh: 'Plate Number (e.g. ABC 1234)',
         colorPh: 'Car Model & Color',
+        lblPromoTitle: 'Promo Code (UPPERCASE English letters only):',
+        btnApplyPromo: 'Apply',
+        lblAvailableCouponsBtn: 'View Available Coupons & Offers',
+        descCouponAdel: '50% off subtotal',
+        descCouponKayan: '25% off subtotal',
+        promoAppliedMsg: 'Promo code applied successfully',
+        promoInvalidMsg: 'Invalid code (Available: ADEL, KAYAN)',
         lblSubtotal: 'Subtotal (Excl. VAT):',
         lblDiscounts: 'Total Discounts:',
         lblVat: 'VAT (15%):',
@@ -783,6 +865,13 @@
         carInfoTitle: 'Teslimat İçin Araç Bilgileri',
         platePh: 'Plaka Numarası',
         colorPh: 'Araç Modeli ve Rengi',
+        lblPromoTitle: 'İndirim Kodu (Sadece BÜYÜK İngilizce harf):',
+        btnApplyPromo: 'Uygula',
+        lblAvailableCouponsBtn: 'Mevcut Kupon ve Kampanyaları Gör',
+        descCouponAdel: 'Ara toplamda %50 indirim',
+        descCouponKayan: 'Ara toplamda %25 indirim',
+        promoAppliedMsg: 'Kupon başarıyla uygulandı',
+        promoInvalidMsg: 'Geçersiz kod (Geçerli: ADEL, KAYAN)',
         lblSubtotal: 'Ara Toplam (KDV Hariç):',
         lblDiscounts: 'Toplam İndirim:',
         lblVat: 'KDV (15%):',
@@ -837,6 +926,13 @@
         carInfoTitle: 'ترسیل کے لیے گاڑی کی تفصیلات',
         platePh: 'نمبر پلیٹ درج کریں',
         colorPh: 'گاڑی کا ماڈل اور رنگ',
+        lblPromoTitle: 'ڈسکاؤنٹ کوڈ (صرف بڑے انگریزی حروف):',
+        btnApplyPromo: 'لاگو کریں',
+        lblAvailableCouponsBtn: 'دستیاب کوپنز اور آفرز دیکھیں',
+        descCouponAdel: 'سب ٹوٹل پر 50% رعایت',
+        descCouponKayan: 'سب ٹوٹل پر 25% رعایت',
+        promoAppliedMsg: 'کوڈ کامیابی سے لاگو ہو گیا',
+        promoInvalidMsg: 'غلط کوڈ (دستیاب: ADEL، KAYAN)',
         lblSubtotal: 'ذیلی مجموعہ (بغیر ٹیکس):',
         lblDiscounts: 'کل رعایت:',
         lblVat: 'ٹیکس (15%):',
@@ -891,6 +987,13 @@
         carInfoTitle: '接药车辆信息',
         platePh: '车牌号码',
         colorPh: '车型与颜色',
+        lblPromoTitle: '优惠码（仅限大写英文字母）：',
+        btnApplyPromo: '使用',
+        lblAvailableCouponsBtn: '查看可用优惠券与活动',
+        descCouponAdel: '小计享 50% 折扣',
+        descCouponKayan: '小计享 25% 折扣',
+        promoAppliedMsg: '优惠码已成功应用',
+        promoInvalidMsg: '无效优惠码（可用：ADEL、KAYAN）',
         lblSubtotal: '小计（不含税）：',
         lblDiscounts: '优惠总额：',
         lblVat: '增值税 (15%)：',
@@ -1340,7 +1443,7 @@
           {
             id: 'ear_care',
             name: {
-              ar: 'بخاخات تنظيف الأذن وسدادات الأذن',
+              ar: 'بخاخات تنظيف الأذن وسدادات أذن',
               en: 'Ear Cleaning Sprays & Earplugs',
               tr: 'Kulak Temizleme Spreyleri ve Kulak Tıkaçları',
               ur: 'کان صاف کرنے والے اسپرے اور ایئر پلگ',
@@ -1712,6 +1815,78 @@
       }, 60);
     }
 
+    function handlePromoInput(rawVal) {
+      const inputEl = document.getElementById('promoCodeInput');
+      const cleanedUpper = String(rawVal || '').toUpperCase().replace(/[^A-Z]/g, '');
+      if (inputEl && inputEl.value !== cleanedUpper) {
+        inputEl.value = cleanedUpper;
+      }
+      if (!cleanedUpper) {
+        appliedPromoCode = '';
+        setPromoMessage('', '');
+        renderCart();
+        return;
+      }
+      if (promoDiscountsMap[cleanedUpper] !== undefined) {
+        appliedPromoCode = cleanedUpper;
+        const pct = Math.round(promoDiscountsMap[cleanedUpper] * 100);
+        setPromoMessage(`${i18n[currentLang].promoAppliedMsg} (${cleanedUpper} - ${pct}%)`, 'success');
+      } else {
+        appliedPromoCode = '';
+        setPromoMessage('', '');
+      }
+      renderCart();
+    }
+
+    function applyPromoCode() {
+      const inputEl = document.getElementById('promoCodeInput');
+      const code = (inputEl ? inputEl.value : '').toUpperCase().replace(/[^A-Z]/g, '');
+      if (inputEl) inputEl.value = code;
+
+      if (!code || promoDiscountsMap[code] === undefined) {
+        appliedPromoCode = '';
+        setPromoMessage(i18n[currentLang].promoInvalidMsg, 'error');
+        renderCart();
+        return;
+      }
+
+      appliedPromoCode = code;
+      const pct = Math.round(promoDiscountsMap[code] * 100);
+      const msg = `${i18n[currentLang].promoAppliedMsg} (${code} - ${pct}%)`;
+      setPromoMessage(msg, 'success');
+      renderCart();
+      speakText(msg);
+    }
+
+    function toggleCouponsList() {
+      isCouponsBoxOpen = !isCouponsBoxOpen;
+      const box = document.getElementById('availableCouponsBox');
+      const arrow = document.getElementById('couponsArrow');
+      if (box) box.classList.toggle('hidden', !isCouponsBoxOpen);
+      if (arrow) arrow.textContent = isCouponsBoxOpen ? '▴' : '▾';
+    }
+
+    function selectCouponCode(code) {
+      const upper = String(code || '').toUpperCase().replace(/[^A-Z]/g, '');
+      const inputEl = document.getElementById('promoCodeInput');
+      if (inputEl) inputEl.value = upper;
+      applyPromoCode();
+    }
+
+    function setPromoMessage(text, type) {
+      const msgEl = document.getElementById('promoStatusMsg');
+      if (!msgEl) return;
+      if (!text) {
+        msgEl.textContent = '';
+        msgEl.className = 'text-[11px] font-bold hidden';
+        return;
+      }
+      msgEl.textContent = text;
+      msgEl.className = type === 'success'
+        ? 'text-[11px] font-black text-emerald-400 block'
+        : 'text-[11px] font-black text-rose-400 block';
+    }
+
     function renderParkingSpotOptions() {
       const container = document.getElementById('parkingSpotOptions');
       if (!container) return;
@@ -1904,6 +2079,7 @@
               <div class="flex flex-wrap items-center gap-2 text-slate-400">
                 ${ord.parking ? `<span class="bg-amber-400/15 text-amber-300 border border-amber-400/30 px-2.5 py-0.5 rounded-lg">🅿️ ${ord.parking}</span>` : ''}
                 ${ord.spot ? `<span class="bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 px-2.5 py-0.5 rounded-lg">📍 ${ord.spot}</span>` : ''}
+                ${ord.promo ? `<span class="bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-lg">🏷️ ${ord.promo}</span>` : ''}
                 ${ord.rx ? `<span class="bg-slate-800 text-cyan-300 px-2.5 py-0.5 rounded-lg">RX: ${ord.rx}</span>` : ''}
                 ${ord.car ? `<span class="bg-slate-800 text-slate-200 px-2.5 py-0.5 rounded-lg">🚗 ${ord.car}</span>` : ''}
               </div>
@@ -2080,6 +2256,11 @@
       document.getElementById('carInfoTitle').textContent = L.carInfoTitle;
       document.getElementById('carPlateInput').placeholder = L.platePh;
       document.getElementById('carColorInput').placeholder = L.colorPh;
+      document.getElementById('lblPromoTitle').textContent = L.lblPromoTitle;
+      document.getElementById('btnApplyPromo').textContent = L.btnApplyPromo;
+      document.getElementById('lblAvailableCouponsBtn').textContent = L.lblAvailableCouponsBtn;
+      document.getElementById('descCouponAdel').textContent = L.descCouponAdel;
+      document.getElementById('descCouponKayan').textContent = L.descCouponKayan;
       document.getElementById('lblSubtotal').textContent = L.lblSubtotal;
       document.getElementById('lblDiscounts').textContent = L.lblDiscounts;
       document.getElementById('lblVat').textContent = L.lblVat;
@@ -2517,6 +2698,21 @@
       renderCart();
     }
 
+    function computeCartTotals() {
+      const subtotal = cart.reduce((sum, item) => {
+        const med = getBagItemData(item);
+        return sum + (med ? med.price * item.qty : 0);
+      }, 0);
+      const rate = appliedPromoCode && promoDiscountsMap[appliedPromoCode] !== undefined
+        ? promoDiscountsMap[appliedPromoCode]
+        : 0;
+      const discounts = subtotal * rate;
+      const discountedSubtotal = Math.max(0, subtotal - discounts);
+      const vat = discountedSubtotal * 0.15;
+      const total = discountedSubtotal + vat;
+      return { subtotal, discounts, vat, total };
+    }
+
     function renderCart() {
       const L = i18n[currentLang];
       const container = document.getElementById('cartItemsContainer');
@@ -2550,14 +2746,7 @@
         }).join('');
       }
 
-      const subtotal = cart.reduce((sum, item) => {
-        const med = getBagItemData(item);
-        return sum + (med ? med.price * item.qty : 0);
-      }, 0);
-      const discounts = 0;
-      const discountedSubtotal = Math.max(0, subtotal - discounts);
-      const vat = discountedSubtotal * 0.15;
-      const total = discountedSubtotal + vat;
+      const { subtotal, discounts, vat, total } = computeCartTotals();
 
       document.getElementById('valSubtotal').innerHTML = formatPrice(subtotal);
       document.getElementById('valDiscounts').innerHTML = formatPrice(discounts);
@@ -2579,11 +2768,7 @@
         return;
       }
 
-      const subtotal = cart.reduce((sum, item) => {
-        const med = getBagItemData(item);
-        return sum + (med ? med.price * item.qty : 0);
-      }, 0);
-      const total = subtotal * 1.15;
+      const { total } = computeCartTotals();
 
       const summaryParts = cart.map(item => {
         const med = getBagItemData(item);
@@ -2603,11 +2788,16 @@
         rx: rxVal,
         car: [plateVal, colorVal].filter(Boolean).join(' - '),
         parking: parkingText,
-        spot: spotText
+        spot: spotText,
+        promo: appliedPromoCode
       };
 
       ordersHistory.unshift(newOrder);
       cart = [];
+      appliedPromoCode = '';
+      const promoInput = document.getElementById('promoCodeInput');
+      if (promoInput) promoInput.value = '';
+      setPromoMessage('', '');
       activeOrderFilter = 'preparing';
       renderCart();
       renderOrdersView();
