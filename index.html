@@ -5,12 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>صيدلية يُسْر | Yusr Pharmacy</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
+    * {
+      font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+    }
     body {
-      font-family: 'Cairo', sans-serif;
+      font-family: 'Cairo', system-ui, -apple-system, sans-serif;
       transition: background-color 0.3s ease, color 0.3s ease;
     }
+
     /* حركات شاشة الترحيب الافتتاحية */
     .splash-badge-reveal {
       opacity: 0;
@@ -29,30 +35,40 @@
     @keyframes splashSimpleUp {
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* كشف عربي ناعم ومتماسك من اليمين إلى اليسار بدون تشويه أو تقطيع */
     .smooth-rtl-gradual-reveal {
       display: inline-block;
-      -webkit-mask-image: linear-gradient(to left, #000 0%, #000 42%, transparent 58%, transparent 100%);
-      mask-image: linear-gradient(to left, #000 0%, #000 42%, transparent 58%, transparent 100%);
-      -webkit-mask-size: 260% 100%;
-      mask-size: 260% 100%;
-      -webkit-mask-position: 0% 0%;
-      mask-position: 0% 0%;
-      animation: rtlMaskWipe 1.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+      clip-path: inset(0 0 0 100%);
+      opacity: 0.4;
+      animation: rtlClipReveal 1.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-    @keyframes rtlMaskWipe {
-      0% { -webkit-mask-position: 0% 0%; mask-position: 0% 0%; opacity: 0.3; }
-      100% { -webkit-mask-position: 100% 0%; mask-position: 100% 0%; opacity: 1; }
+    @keyframes rtlClipReveal {
+      0% {
+        clip-path: inset(0 0 0 100%);
+        opacity: 0.4;
+      }
+      20% {
+        opacity: 1;
+      }
+      100% {
+        clip-path: inset(0 0 0 0%);
+        opacity: 1;
+      }
     }
+
+    /* ظهور حروف الجملة الإنجليزية حرفاً بحرف */
     .smooth-ltr-char {
       display: inline-block;
       opacity: 0;
       transform: translateX(-6px);
-      filter: blur(4px);
+      filter: blur(3px);
       animation: ltrCharFade 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
     @keyframes ltrCharFade {
       to { opacity: 1; transform: translateX(0); filter: blur(0); }
     }
+
     @keyframes splashOriginalPulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
@@ -99,7 +115,7 @@
       <div class="splash-badge-reveal inline-flex items-center gap-2 bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 px-5 py-2 rounded-full text-sm font-black">
         <span>Yusr Pharmacy | صيدلية يُسْر</span>
       </div>
-      <h1 id="splashArHeading" dir="rtl" class="min-h-[3.4rem] text-3xl sm:text-5xl font-black text-white"></h1>
+      <h1 id="splashArHeading" dir="rtl" class="min-h-[3.6rem] text-3xl sm:text-5xl font-black text-white leading-tight"></h1>
       <p id="splashEnHeading" dir="ltr" class="min-h-[2.4rem] text-2xl sm:text-3xl font-extrabold text-cyan-300 tracking-wide"></p>
       <p id="splashSubAr" class="splash-sub-reveal text-base sm:text-lg font-bold text-teal-300">
         رعايتك الدوائية من نافذة سيارتك بكل يُسر وخصوصية
@@ -470,7 +486,7 @@
       {
         id: 'visual',
         icon: '🔊',
-        title: { ar: 'ضعف البصر / قراءة صوتية', en: 'Low Vision / Audio Guide', tr: 'Görme الدesteği / Sesli Rehber', ur: 'بصارت کی کمزوری / صوتی رہنمائی', zh: '视障辅助 / 语音播报指导' },
+        title: { ar: 'ضعف البصر / قراءة صوتية', en: 'Low Vision / Audio Guide', tr: 'Görme Desteği / Sesli Rehber', ur: 'بصارت کی کمزوری / صوتی رہنمائی', zh: '视障辅助 / 语音播报指导' },
         desc: { ar: 'نطق صوتي للجرعات وملصق بارز على العلبة', en: 'Spoken dosage & tactile box labels', tr: 'Sesli dozaj okuma ve kabartmalı etiket', ur: 'خوراک کی صوتی وضاحت اور نمایاں اسٹیکر', zh: '全程语音播报用法与大字标签' }
       },
       {
