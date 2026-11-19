@@ -420,7 +420,7 @@
     let fontScaleIndex = 0;
     const fontScales = [100, 110, 120, 135];
     let selectedAssistMode = 'mobility';
-    let selectedCategory = 'all';
+    let selectedCategory = 'rx';
     let expandedCategories = {};
     let lastAnimatedGroupKey = '';
     let lastClickedMainCat = '';
@@ -639,17 +639,6 @@
     ];
 
     const categories = [
-      {
-        id: 'all',
-        icon: '🏥',
-        name: {
-          ar: 'جميع الأقسام الطبية',
-          en: 'All Pharmacy Departments',
-          tr: 'Tüm Eczane Bölümleri',
-          ur: 'تمام فارمیسی کے شعبے',
-          zh: '全部药房科室'
-        }
-      },
       {
         id: 'rx',
         icon: '📋',
@@ -1019,7 +1008,7 @@
               ar: 'بدائل الوجبات، السناكات الصحية، ومنتجات المساعدة على إنقاص الوزن',
               en: 'Meal Replacements, Healthy Snacks & Weight Loss Aids',
               tr: 'Öğün Yerine Geçenler, Sağlıklı Atıştırmalıklar ve Kilo Yönetimi',
-              ur: 'کھانے کے متبادل، ہیلدی اسنیکس اور وزن کم کرنے کی مصنوعات',
+              ur: 'کھانے کے متبادل، صحت بخش اسنیکس اور وزن کم کرنے کی مصنوعات',
               zh: '代餐、健康零食与体重管理产品'
             }
           }
@@ -1540,7 +1529,7 @@
 
     function selectCategory(id) {
       selectedCategory = id;
-      if (id === 'all' || id === 'rx') {
+      if (id === 'rx') {
         expandedCategories = {};
         lastAnimatedGroupKey = '';
         lastClickedMainCat = id;
@@ -1619,7 +1608,7 @@
     }
 
     function getDescendantCategoryIds(catId) {
-      if (catId === 'all') return null;
+      if (!catId || catId === 'all') return null;
       const found = categories.find(c => c.id === catId);
       if (found && Array.isArray(found.children) && found.children.length > 0) {
         return [catId, ...found.children.map(ch => ch.id)];
