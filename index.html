@@ -82,7 +82,7 @@
       transition: opacity 0.75s ease;
     }
 
-    /* الوضع الفاتح والداكن */
+    /* الوضع الفاتح (النهاري) والداكن */
     body.light-mode {
       background-color: #f1f5f9;
       color: #0f172a;
@@ -107,7 +107,7 @@
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-cyan-500 selection:text-slate-950">
+<body class="light-mode bg-slate-950 text-slate-100 min-h-screen selection:bg-cyan-500 selection:text-slate-950">
 
   <!-- 1. شاشة الترحيب السينمائية -->
   <div id="introSplash" onclick="dismissSplash()" class="fixed inset-0 z-[80] bg-gradient-to-br from-slate-950 via-cyan-950 to-slate-900 flex items-center justify-center p-6 text-center cursor-pointer">
@@ -202,7 +202,7 @@
           <span id="btnFontText">الخط: 100%</span>
         </button>
         <button onclick="toggleTheme()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-          <span id="btnThemeText">☀️ الوضع النهاري</span>
+          <span id="btnThemeText">🌙 الوضع الداكن</span>
         </button>
       </div>
 
@@ -299,7 +299,7 @@
   <script>
     let currentLang = 'ar';
     let ttsEnabled = true;
-    let isLightMode = false;
+    let isLightMode = true;
     let fontScaleIndex = 0;
     const fontScales = [100, 110, 120];
     let selectedAssistMode = 'mobility';
@@ -613,6 +613,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.toggle('light-mode', isLightMode);
       applyLanguage('ar');
       setTimeout(() => {
         if (splashDismissed) return;
