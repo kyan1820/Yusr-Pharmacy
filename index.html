@@ -1532,10 +1532,6 @@
       const q = (document.getElementById('searchMedInput').value || '').trim().toLowerCase();
       const allowedCats = getDescendantCategoryIds(selectedCategory);
 
-      const q = (document.getElementById('searchMedInput').value || '').trim().toLowerCase();
-      const allowedCats = getDescendantCategoryIds(selectedCategory);
-
-      // خريطة لأسماء الأقسام الفرعية لعرضها كعناوين منظمة عند عرض أكثر من قسم
       const subCatTitles = {};
       categories.forEach(c => {
         if (Array.isArray(c.children)) {
@@ -1545,7 +1541,6 @@
         }
       });
 
-      // ترتيب المنتجات حسب ترتيب الأقسام الفرعية في المنيو
       const categoryOrder = [];
       categories.forEach(c => {
         categoryOrder.push(c.id);
@@ -1590,8 +1585,8 @@
             html += `
               <div class="pt-2 pb-1 flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
-                <h4 class="text-xs font-black text-cyan-600 dark:text-cyan-400">${groupTitle}</h4>
-                <div class="flex-1 h-px bg-slate-200 dark:bg-slate-800"></div>
+                <h4 class="text-xs font-black text-cyan-600">${groupTitle}</h4>
+                <div class="flex-1 h-px bg-slate-200"></div>
               </div>
             `;
           }
@@ -1601,13 +1596,13 @@
           <div class="clinical-card bg-slate-900 border border-slate-800 hover:border-cyan-500/40 rounded-3xl p-4 shadow-md transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="space-y-1.5 min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-2">
-                <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-600 dark:text-cyan-300 border border-cyan-500/30 shrink-0">${m.badge}</span>
+                <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-600 border border-cyan-500/30 shrink-0">${m.badge}</span>
                 <h3 class="text-sm font-black leading-snug">${m.name[currentLang]}</h3>
               </div>
               <p class="text-xs text-muted-clinical text-slate-400 font-semibold leading-relaxed">${L.dosageLbl} ${m.dosage[currentLang]}</p>
             </div>
             <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 sm:min-w-[125px]">
-              <span class="text-sm font-black text-cyan-600 dark:text-cyan-400">${m.price} ${L.currency}</span>
+              <span class="text-sm font-black text-cyan-600">${m.price} ${L.currency}</span>
               <button onclick="addToCart('${m.id}')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition cursor-pointer w-full sm:w-auto text-center">
                 ${L.addBtn}
               </button>
@@ -1618,6 +1613,7 @@
 
       container.innerHTML = html;
     }
+
     function addPrescriptionToBag(optionType) {
       const inputEl = document.getElementById('rxCustomEntryInput');
       const rxText = (inputEl ? inputEl.value : '').trim();
