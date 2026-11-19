@@ -304,6 +304,7 @@
     const fontScales = [100, 110, 120];
     let selectedAssistMode = 'mobility';
     let selectedCategory = 'all';
+    let expandedCategories = { otc: true };
     let cart = [];
     let splashDismissed = false;
 
@@ -498,18 +499,449 @@
     ];
 
     const categories = [
-      { id: 'all', icon: '🏥', name: { ar: 'جميع الأقسام الطبية', en: 'All Departments', tr: 'Tüm Bölümler', ur: 'تمام طبی شعبے', zh: '全部药房分类' } },
-      { id: 'pain', icon: '💊', name: { ar: 'المسكنات وخافضات الحرارة', en: 'Pain & Fever Relief', tr: 'Ağrı Kesici & Ateş Düşürücü', ur: 'درد اور بخار کی ادویات', zh: '止痛与退烧药' } },
-      { id: 'cold', icon: '🫁', name: { ar: 'أدوية الزكام والحساسية', en: 'Cold, Flu & Allergy', tr: 'Soğuk Algınlığı & Alerji', ur: 'زکام، کھانسی اور الرجی', zh: '感冒咳嗽与抗过敏' } },
-      { id: 'chronic', icon: '🩸', name: { ar: 'عناية السكري والضغط', en: 'Diabetes & Blood Pressure', tr: 'Diyabet & Tansiyon Bakımı', ur: 'شوگر اور بلڈ پریشر کی دیکھ بھال', zh: '糖尿病与血压护理' } },
-      { id: 'devices', icon: '🌡️', name: { ar: 'الأجهزة والمستلزمات الطبية', en: 'Medical Devices & First Aid', tr: 'Tıbbi Cihazlar & İlk Yardım', ur: 'طبی آلات اور فرسٹ ایڈ', zh: '家用医疗器械与急救' } },
-      { id: 'vitamins', icon: '🧬', name: { ar: 'الفيتامينات والمناعة', en: 'Vitamins & Immunity', tr: 'Vitaminler & Bağışıklık', ur: 'وٹامنز اور قوت مدافعت', zh: '维生素与免疫补充' } }
+      {
+        id: 'all',
+        icon: '🏥',
+        name: {
+          ar: 'جميع الأقسام الطبية',
+          en: 'All Pharmacy Departments',
+          tr: 'Tüm Eczane Bölümleri',
+          ur: 'تمام فارمیسی کے شعبے',
+          zh: '全部药房科室'
+        }
+      },
+      {
+        id: 'rx',
+        icon: '📋',
+        name: {
+          ar: 'الأدوية الموصوفة',
+          en: 'Prescription Medications',
+          tr: 'Reçeteli İlaçlar',
+          ur: 'نسخہ شدہ ادویات',
+          zh: '处方药'
+        }
+      },
+      {
+        id: 'otc',
+        icon: '💊',
+        name: {
+          ar: 'الأدوية غير الموصوفة',
+          en: 'Non-Prescription Medications (OTC)',
+          tr: 'Reçetesiz İlaçlar (OTC)',
+          ur: 'غیر نسخہ شدہ ادویات (OTC)',
+          zh: '非处方药 (OTC)'
+        },
+        children: [
+          {
+            id: 'otc_pain',
+            name: {
+              ar: 'مسكنات الألم وخافضات الحرارة',
+              en: 'Pain Relievers & Fever Reducers',
+              tr: 'Ağrı Kesiciler ve Ateş Düşürücüler',
+              ur: 'درد کش اور بخار کم کرنے والی ادویات',
+              zh: '止痛药与退烧药'
+            }
+          },
+          {
+            id: 'otc_cold',
+            name: {
+              ar: 'أدوية البرد والإنفلونزا والحساسية',
+              en: 'Cold, Flu & Allergy Medications',
+              tr: 'Soğuk Algınlığı, Grip ve Alerji İlaçları',
+              ur: 'نزلہ، زکام، فلو اور الرجی کی ادویات',
+              zh: '感冒、流感与抗过敏药物'
+            }
+          },
+          {
+            id: 'otc_gi',
+            name: {
+              ar: 'صحة الجهاز الهضمي',
+              en: 'Digestive Health',
+              tr: 'Sindirim Sistemi Sağlığı',
+              ur: 'نظامِ ہاضمہ کی صحت',
+              zh: '消化系统健康'
+            }
+          }
+        ]
+      },
+      {
+        id: 'vitamins',
+        icon: '🧬',
+        name: {
+          ar: 'الفيتامينات والمكملات الغذائية',
+          en: 'Vitamins & Dietary Supplements',
+          tr: 'Vitaminler ve Gıda Takviyeleri',
+          ur: 'وٹامنز اور غذائی سپلیمنٹس',
+          zh: '维生素与膳食补充剂'
+        },
+        children: [
+          {
+            id: 'vit_multi',
+            name: {
+              ar: 'الفيتامينات المتعددة',
+              en: 'Multivitamins',
+              tr: 'Multivitaminler',
+              ur: 'ملٹی وٹامنز',
+              zh: '复合维生素'
+            }
+          },
+          {
+            id: 'vit_single',
+            name: {
+              ar: 'المكملات الفردية',
+              en: 'Single Supplements',
+              tr: 'Tekli Takviyeler',
+              ur: 'انفرادی سپلیمنٹس',
+              zh: '单一营养补充剂'
+            }
+          },
+          {
+            id: 'vit_herbal',
+            name: {
+              ar: 'المكملات العشبية والطبيعية',
+              en: 'Herbal & Natural Supplements',
+              tr: 'Bitkisel ve Doğal Takviyeler',
+              ur: 'جڑی بوٹیوں اور قدرتی سپلیمنٹس',
+              zh: '草本与天然补充剂'
+            }
+          }
+        ]
+      },
+      {
+        id: 'skin',
+        icon: '🧴',
+        name: {
+          ar: 'العناية بالبشرة والجلد',
+          en: 'Skin & Dermatological Care',
+          tr: 'Cilt ve Dermatolojik Bakım',
+          ur: 'جلد اور رنگت کی دیکھ بھال',
+          zh: '皮肤与肌肤护理'
+        },
+        children: [
+          {
+            id: 'skin_face',
+            name: {
+              ar: 'العناية بالوجه',
+              en: 'Facial Care',
+              tr: 'Yüz Bakımı',
+              ur: 'چہرے کی دیکھ بھال',
+              zh: '面部护理'
+            }
+          },
+          {
+            id: 'skin_sun',
+            name: {
+              ar: 'الوقاية من الشمس',
+              en: 'Sun Protection',
+              tr: 'Güneşten Korunma',
+              ur: 'دھوپ سے بچاؤ',
+              zh: '防晒护理'
+            }
+          },
+          {
+            id: 'skin_body',
+            name: {
+              ar: 'العناية بالجسم',
+              en: 'Body Care',
+              tr: 'Vücut Bakımı',
+              ur: 'جسم کی دیکھ بھال',
+              zh: '身体护理'
+            }
+          }
+        ]
+      },
+      {
+        id: 'hair',
+        icon: '💆',
+        name: {
+          ar: 'العناية بالشعر',
+          en: 'Hair Care',
+          tr: 'Saç Bakımı',
+          ur: 'بالوں کی دیکھ بھال',
+          zh: '头发护理'
+        },
+        children: [
+          {
+            id: 'hair_shampoo',
+            name: {
+              ar: 'الشامبو والبلسم العلاجي',
+              en: 'Medicated Shampoo & Conditioner',
+              tr: 'Tedavi Edici Şampuan ve Saç Kremi',
+              ur: 'طبی شیمپو اور کنڈیشنر',
+              zh: '药用洗发水与护发素'
+            }
+          },
+          {
+            id: 'hair_loss',
+            name: {
+              ar: 'علاجات التساقط والتقوية',
+              en: 'Hair Loss & Strengthening Treatments',
+              tr: 'Dökülme Önleyici ve Güçlendirici Bakımlar',
+              ur: 'بال گرنے سے روکنے اور مضبوطی کے علاج',
+              zh: '防脱与强韧护理'
+            }
+          },
+          {
+            id: 'hair_dye',
+            name: {
+              ar: 'صبغات الشعر',
+              en: 'Hair Dyes',
+              tr: 'Saç Boyaları',
+              ur: 'بالوں کے رنگ',
+              zh: '染发产品'
+            }
+          }
+        ]
+      },
+      {
+        id: 'baby_mom',
+        icon: '🍼',
+        name: {
+          ar: 'العناية بالطفل والأم',
+          en: 'Baby & Mother Care',
+          tr: 'Bebek ve Anne Bakımı',
+          ur: 'بچے اور ماں کی دیکھ بھال',
+          zh: '母婴护理'
+        },
+        children: [
+          {
+            id: 'baby_milk',
+            name: {
+              ar: 'حليب الأطفال وأغذيتهم',
+              en: 'Infant Formula & Baby Food',
+              tr: 'Bebek Mamaları ve Ek Gıdalar',
+              ur: 'بچوں کا دودھ اور غذائیں',
+              zh: '婴儿奶粉与辅食'
+            }
+          },
+          {
+            id: 'baby_daily',
+            name: {
+              ar: 'مستلزمات العناية اليومية',
+              en: 'Daily Care Essentials',
+              tr: 'Günlük Bakım Ürünleri',
+              ur: 'روزمرہ نگہداشت کا سامان',
+              zh: '日常护理用品'
+            }
+          },
+          {
+            id: 'baby_feeding',
+            name: {
+              ar: 'أدوات الرضاعة',
+              en: 'Feeding Accessories',
+              tr: 'Beslenme ve Biberon Gereçleri',
+              ur: 'دودھ پلانے کے آلات',
+              zh: '喂养器具'
+            }
+          },
+          {
+            id: 'mom_care',
+            name: {
+              ar: 'مستلزمات الأمومة',
+              en: 'Maternity Essentials',
+              tr: 'Annelik Ürünleri',
+              ur: 'زچگی اور ماں کا سامان',
+              zh: '孕产妈妈用品'
+            }
+          }
+        ]
+      },
+      {
+        id: 'personal_care',
+        icon: '🧼',
+        name: {
+          ar: 'العناية الشخصية والنظافة اليومية',
+          en: 'Personal Care & Daily Hygiene',
+          tr: 'Kişisel Bakım ve Günlük Hijyen',
+          ur: 'ذاتی نگہداشت اور روزمرہ صفائی',
+          zh: '个人护理与日常卫生'
+        },
+        children: [
+          {
+            id: 'hygiene_oral',
+            name: {
+              ar: 'العناية بالفم والأسنان',
+              en: 'Oral & Dental Care',
+              tr: 'Ağız ve Diş Bakımı',
+              ur: 'منہ اور دانتوں کی دیکھ بھال',
+              zh: '口腔与牙齿护理'
+            }
+          },
+          {
+            id: 'hygiene_body',
+            name: {
+              ar: 'النظافة الشخصية',
+              en: 'Personal Hygiene',
+              tr: 'Kişisel Hijyen',
+              ur: 'ذاتی صفائی',
+              zh: '个人卫生清洁'
+            }
+          },
+          {
+            id: 'hygiene_men',
+            name: {
+              ar: 'العناية بالرجال',
+              en: "Men's Care",
+              tr: 'Erkek Bakımı',
+              ur: 'مردانہ نگہداشت',
+              zh: '男士护理'
+            }
+          }
+        ]
+      },
+      {
+        id: 'medical_devices',
+        icon: '🩺',
+        name: {
+          ar: 'الأجهزة الطبية والرقابة الصحية المنزلية',
+          en: 'Medical Devices & Home Health Monitoring',
+          tr: 'Tıbbi Cihazlar ve Evde Sağlık Takibi',
+          ur: 'طبی آلات اور گھریلو صحت کی نگرانی',
+          zh: '医疗器械与居家健康监测'
+        },
+        children: [
+          {
+            id: 'dev_bp',
+            name: {
+              ar: 'أجهزة قياس ضغط الدم',
+              en: 'Blood Pressure Monitors',
+              tr: 'Tansiyon Ölçüm Cihazları',
+              ur: 'بلڈ پریشر مانیٹرز',
+              zh: '血压监测仪'
+            }
+          },
+          {
+            id: 'dev_glucose',
+            name: {
+              ar: 'أجهزة قياس سكر الدم وشرائط الفحص',
+              en: 'Blood Glucose Meters & Test Strips',
+              tr: 'Şeker Ölçüm Cihazları ve Stripleri',
+              ur: 'بلڈ شوگر میٹرز اور ٹیسٹ اسٹرپس',
+              zh: '血糖仪与试纸'
+            }
+          },
+          {
+            id: 'dev_temp_scale',
+            name: {
+              ar: 'موازين الحرارة الرقمية وموازين الوزن',
+              en: 'Digital Thermometers & Scales',
+              tr: 'Dijital Termometreler ve Basküller',
+              ur: 'ڈیجیٹل تھرمامیٹرز اور وزن کی مشینیں',
+              zh: '电子体温计与体重秤'
+            }
+          },
+          {
+            id: 'dev_nebulizer',
+            name: {
+              ar: 'أجهزة الاستنشاق (Nebulizers) وكمامات الحماية',
+              en: 'Nebulizers & Protective Masks',
+              tr: 'Nebülizatörler ve Koruyucu Maskeler',
+              ur: 'نیبولائزر اور حفاظتی ماسک',
+              zh: '雾化器与防护口罩'
+            }
+          }
+        ]
+      },
+      {
+        id: 'sports_nutrition',
+        icon: '🏋️',
+        name: {
+          ar: 'التغذية الرياضية والرشاقة',
+          en: 'Sports Nutrition & Fitness',
+          tr: 'Sporcu Beslenmesi ve Form',
+          ur: 'ورزشی غذا اور فٹنس',
+          zh: '运动营养与塑形'
+        },
+        children: [
+          {
+            id: 'sport_protein',
+            name: {
+              ar: 'بروتينات التضخيم والتنشيف (Whey Protein)',
+              en: 'Bulking & Cutting Proteins (Whey Protein)',
+              tr: 'Hacim ve Definisyon Proteinleri (Whey Protein)',
+              ur: 'مسل بلڈنگ اور کٹنگ پروٹینز (Whey Protein)',
+              zh: '增肌与减脂蛋白粉 (Whey Protein)'
+            }
+          },
+          {
+            id: 'sport_amino',
+            name: {
+              ar: 'الأحماض الأمينية ومشروبات الطاقة',
+              en: 'Amino Acids & Energy Drinks',
+              tr: 'Amino Asitler ve Enerji İçecekleri',
+              ur: 'امائنو ایسڈز اور انرجی ڈرنکس',
+              zh: '氨基酸与能量饮品'
+            }
+          },
+          {
+            id: 'sport_weight',
+            name: {
+              ar: 'بدائل الوجبات، السناكات الصحية، ومنتجات المساعدة على إنقاص الوزن',
+              en: 'Meal Replacements, Healthy Snacks & Weight Loss Aids',
+              tr: 'Öğün Yerine Geçenler, Sağlıklı Atıştırmalıklar ve Kilo Yönetimi',
+              ur: 'کھانے کے متبادل، صحت بخش اسنیکس اور وزن کم کرنے کی مصنوعات',
+              zh: '代餐、健康零食与体重管理产品'
+            }
+          }
+        ]
+      },
+      {
+        id: 'eye_ear',
+        icon: '👁️',
+        name: {
+          ar: 'العناية بالعيون والأذنين',
+          en: 'Eye & Ear Care',
+          tr: 'Göz ve Kulak Bakımı',
+          ur: 'آنکھوں اور کانوں کی دیکھ بھال',
+          zh: '眼部与耳部护理'
+        },
+        children: [
+          {
+            id: 'eye_drops',
+            name: {
+              ar: 'قطرات ترطيب العين (الدموع الاصطناعية)',
+              en: 'Lubricating Eye Drops (Artificial Tears)',
+              tr: 'Nemlendirici Göz Damlaları (Yapay Gözyaşı)',
+              ur: 'آنکھوں کو تر رکھنے والے قطرے (مصنوعی آنسو)',
+              zh: '人工泪液润眼滴眼液'
+            }
+          },
+          {
+            id: 'eye_lens',
+            name: {
+              ar: 'محاليل العدسات اللاصقة وحافظاتها',
+              en: 'Contact Lens Solutions & Cases',
+              tr: 'Kontakt Lens Solüsyonları ve Kapları',
+              ur: 'کانٹیکٹ لینز کے محلول اور کیسز',
+              zh: '隐形眼镜护理液与镜盒'
+            }
+          },
+          {
+            id: 'ear_care',
+            name: {
+              ar: 'بخاخات تنظيف الأذن وسدادات الأذن',
+              en: 'Ear Cleaning Sprays & Earplugs',
+              tr: 'Kulak Temizleme Spreyleri ve Kulak Tıkaçları',
+              ur: 'کان صاف کرنے والے اسپرے اور ایئر پلگ',
+              zh: '耳道清洁喷雾与耳塞'
+            }
+          }
+        ]
+      }
     ];
 
     const medications = [
       {
+        id: 'med_rx1',
+        cat: 'rx',
+        price: 45,
+        badge: 'Rx',
+        name: { ar: 'علاج موصوف إلكترونياً — مراجعة الصيدلي', en: 'E-Prescription Dispensing — Pharmacist Review', tr: 'E-Reçete İlacı — Eczacı Onaylı', ur: 'ای-نسخہ دوا — فارماسسٹ تصدیق', zh: '电子处方调配 — 药师审核' },
+        dosage: { ar: 'يُصرف وفق الوصفة الطبية المعتمدة وشرح الصيدلي', en: 'Dispensed per approved prescription & pharmacist guidance', tr: 'Onaylı reçete ve eczacı açıklamasına göre verilir', ur: 'معتمد نسخہ اور فارماسسٹ کی ہدایت کے مطابق', zh: '按获批处方及药师说明调配使用' }
+      },
+      {
         id: 'med1',
-        cat: 'pain',
+        cat: 'otc_pain',
         price: 14,
         badge: 'OTC',
         name: { ar: 'بانادول إكسترا (24 قرص)', en: 'Panadol Extra (24 Tabs)', tr: 'Panadol Extra (24 Tablet)', ur: 'پیناڈول ایکسٹرا (24 گولیاں)', zh: '必理通强效止痛片 (24片)' },
@@ -517,15 +949,15 @@
       },
       {
         id: 'med2',
-        cat: 'pain',
+        cat: 'otc_pain',
         price: 19,
         badge: 'OTC',
         name: { ar: 'بروفين 400 ملجم مسكن ومضاد التهاب', en: 'Brufen 400mg Ibuprofen', tr: 'Brufen 400mg Ağrı Kesici', ur: 'بروفین 400 ملی گرام', zh: '布洛芬缓释片 400mg' },
-        dosage: { ar: 'قرص واحد بعد الوجبات عند اللزوم', en: '1 tablet after meals as needed', tr: 'Yemek후 ihtiyaç halinde 1 tablet', ur: 'کھانے کے بعد ضرورت کے مطابق ایک گولی', zh: '饭后按需服用1片' }
+        dosage: { ar: 'قرص واحد بعد الوجبات عند اللزوم', en: '1 tablet after meals as needed', tr: 'Yemek sonrası ihtiyaç halinde 1 tablet', ur: 'کھانے کے بعد ضرورت کے مطابق ایک گولی', zh: '饭后按需服用1片' }
       },
       {
         id: 'med3',
-        cat: 'cold',
+        cat: 'otc_cold',
         price: 26,
         badge: 'OTC',
         name: { ar: 'كلاريتين مضاد للحساسية (لا يسبب النعاس)', en: 'Claritin Allergy 10mg (Non-Drowsy)', tr: 'Claritin Alerji Tableti 10mg', ur: 'کلیریٹین الرجی ٹیبلٹ 10mg', zh: '开瑞坦氯雷他定抗过敏片 10mg' },
@@ -533,15 +965,15 @@
       },
       {
         id: 'med4',
-        cat: 'cold',
+        cat: 'otc_cold',
         price: 32,
         badge: 'OTC',
         name: { ar: 'بخاخ أوتريفين لتخفيف احتقان الأنف', en: 'Otrivin Nasal Decongestant Spray', tr: 'Otrivin Burun Spreyi', ur: 'اوٹریون ناک کا اسپرے', zh: '奥特斯鼻腔喷雾剂' },
-        dosage: { ar: 'بخة في كل فتحة أنف مرتين يومياً (لا يتجاوز 5 أيام)', en: '1 spray per nostril twice daily (max 5 days)', tr: 'Günde 2 kez her burun deliğine 1 پف', ur: 'دن میں دو بار ہر نتھنے میں ایک اسپرے', zh: '每日两次，每侧鼻孔1喷（不超过5天）' }
+        dosage: { ar: 'بخة في كل فتحة أنف مرتين يومياً (لا يتجاوز 5 أيام)', en: '1 spray per nostril twice daily (max 5 days)', tr: 'Günde 2 kez her burun deliğine 1 sıkım (en fazla 5 gün)', ur: 'دن میں دو بار ہر نتھنے میں ایک اسپرے', zh: '每日两次，每侧鼻孔1喷（不超过5天）' }
       },
       {
         id: 'med5',
-        cat: 'chronic',
+        cat: 'dev_glucose',
         price: 65,
         badge: 'Med Supply',
         name: { ar: 'شرائط قياس السكر أكيو-تشيك (50 شريط)', en: 'Accu-Chek Performa Test Strips (50)', tr: 'Accu-Chek Şeker Ölçüm Çubuğu (50)', ur: 'ایکیو چیک شوگر ٹیسٹ اسٹرپس (50)', zh: '罗氏活力型血糖试纸 (50片装)' },
@@ -549,7 +981,7 @@
       },
       {
         id: 'med6',
-        cat: 'devices',
+        cat: 'dev_bp',
         price: 145,
         badge: 'Device',
         name: { ar: 'جهاز أومرون الرقمي لقياس ضغط الدم من الذراع', en: 'Omron Digital Arm Blood Pressure Monitor', tr: 'Omron Dijital Koldan Tansiyon Aleti', ur: 'اومرون ڈیجیٹل بلڈ پریشر مانیٹر', zh: '欧姆龙上臂式电子血压计' },
@@ -557,7 +989,7 @@
       },
       {
         id: 'med7',
-        cat: 'devices',
+        cat: 'dev_nebulizer',
         price: 78,
         badge: 'First Aid',
         name: { ar: 'حقيبة الإسعافات الأولية المتكاملة للمركبة', en: 'Complete Vehicle First Aid Medical Kit', tr: 'Araç İçin Tam Teşekküllü İlk Yardım Çantası', ur: 'گاڑی کے لیے مکمل فرسٹ ایڈ باکس', zh: '车载无障碍综合急救医疗包' },
@@ -565,7 +997,7 @@
       },
       {
         id: 'med8',
-        cat: 'vitamins',
+        cat: 'vit_single',
         price: 42,
         badge: 'Supplement',
         name: { ar: 'فيتامين سي 1000 ملجم + زنك فوار للمناعة', en: 'Vitamin C 1000mg + Zinc Effervescent', tr: 'Vitamin C 1000mg + Çinko Efervesan', ur: 'وٹامن سی 1000mg + زنک فوار گولیاں', zh: '维生素C 1000mg + 锌泡腾片' },
@@ -737,30 +1169,74 @@
       if (modeObj) speakText(modeObj.title[currentLang]);
     }
 
+    function toggleCategoryGroup(catId) {
+      expandedCategories[catId] = !expandedCategories[catId];
+      selectedCategory = catId;
+      renderCategories();
+      renderMedications();
+    }
+
     function renderCategories() {
       const container = document.getElementById('categoryList');
       container.innerHTML = categories.map(c => {
-        const active = c.id === selectedCategory;
+        const hasChildren = Array.isArray(c.children) && c.children.length > 0;
+        const isExpanded = !!expandedCategories[c.id];
+        const isSelected = selectedCategory === c.id;
+        const hasSelectedChild = hasChildren && c.children.some(ch => ch.id === selectedCategory);
+
+        const mainBtnClass = (isSelected || hasSelectedChild)
+          ? 'bg-cyan-500 text-slate-950 font-black shadow'
+          : 'hover:bg-slate-800/70 text-slate-300';
+
+        const clickAction = hasChildren
+          ? `toggleCategoryGroup('${c.id}')`
+          : `selectCategory('${c.id}')`;
+
+        const childrenHtml = hasChildren && isExpanded ? `
+          <div class="mt-1 me-3 pe-2.5 border-s-2 border-cyan-500/40 space-y-1">
+            ${c.children.map(ch => {
+              const chActive = selectedCategory === ch.id;
+              return `
+                <button onclick="selectCategory('${ch.id}')" class="w-full text-start px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${chActive ? 'bg-teal-400 text-slate-950 font-black shadow-sm' : 'hover:bg-slate-800/60 text-slate-300'}">
+                  <span class="w-1.5 h-1.5 rounded-full ${chActive ? 'bg-slate-950' : 'bg-cyan-400'} shrink-0"></span>
+                  <span>${ch.name[currentLang]}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        ` : '';
+
         return `
-          <button onclick="selectCategory('${c.id}')" class="w-full text-start px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition flex items-center gap-2.5 cursor-pointer ${active ? 'bg-cyan-500 text-slate-950 font-black shadow' : 'hover:bg-slate-800/70 text-slate-300'}">
-            <span>${c.icon}</span>
-            <span>${c.name[currentLang]}</span>
-          </button>
+          <div>
+            <button onclick="${clickAction}" class="w-full text-start px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition flex items-center justify-between gap-2 cursor-pointer ${mainBtnClass}">
+              <span class="flex items-center gap-2">
+                <span>${c.icon}</span>
+                <span>${c.name[currentLang]}</span>
+              </span>
+              ${hasChildren ? `<span class="text-[11px] font-black">${isExpanded ? '▾' : '▸'}</span>` : ''}
+            </button>
+            ${childrenHtml}
+          </div>
         `;
       }).join('');
     }
 
-    function selectCategory(id) {
-      selectedCategory = id;
-      renderCategories();
-      renderMedications();
+    function getDescendantCategoryIds(catId) {
+      if (catId === 'all') return null;
+      const found = categories.find(c => c.id === catId);
+      if (found && Array.isArray(found.children) && found.children.length > 0) {
+        return [catId, ...found.children.map(ch => ch.id)];
+      }
+      return [catId];
     }
 
     function renderMedications() {
       const L = i18n[currentLang];
       const q = (document.getElementById('searchMedInput').value || '').trim().toLowerCase();
+      const allowedCats = getDescendantCategoryIds(selectedCategory);
+
       const list = medications.filter(m => {
-        const matchCat = selectedCategory === 'all' || m.cat === selectedCategory;
+        const matchCat = !allowedCats || allowedCats.includes(m.cat);
         const matchQ = !q || m.name[currentLang].toLowerCase().includes(q) || m.dosage[currentLang].toLowerCase().includes(q);
         return matchCat && matchQ;
       });
