@@ -482,8 +482,12 @@
 
         <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-1.5 text-xs font-bold">
           <div class="secondary-element flex justify-between">
-            <span id="lblSubtotal" class="text-slate-400">إجمالي الأدوية:</span>
+            <span id="lblSubtotal" class="text-slate-400">المجموع الفرعي ( غير شامل الضريبه):</span>
             <span id="valSubtotal">0.00 ر.س</span>
+          </div>
+          <div class="secondary-element flex justify-between">
+            <span id="lblDiscounts" class="text-slate-400">إجمالي الخصومات:</span>
+            <span id="valDiscounts">0.00 ر.س</span>
           </div>
           <div class="secondary-element flex justify-between">
             <span id="lblVat" class="text-slate-400">ضريبة القيمة المضافة (15%):</span>
@@ -671,7 +675,8 @@
         carInfoTitle: 'بيانات المركبة لتسليم الدواء للنافذة',
         platePh: 'رقم اللوحة (مثال: أ ب ج 1234)',
         colorPh: 'نوع ولون السيارة',
-        lblSubtotal: 'إجمالي الأدوية:',
+        lblSubtotal: 'المجموع الفرعي ( غير شامل الضريبه):',
+        lblDiscounts: 'إجمالي الخصومات:',
         lblVat: 'ضريبة القيمة المضافة (15%):',
         lblTotal: 'الإجمالي المستحق:',
         btnSubmit: 'إرسال الطلب للصيدلي وتجهيز المسار',
@@ -724,7 +729,8 @@
         carInfoTitle: 'Vehicle Info for Window Delivery',
         platePh: 'Plate Number (e.g. ABC 1234)',
         colorPh: 'Car Model & Color',
-        lblSubtotal: 'Subtotal:',
+        lblSubtotal: 'Subtotal (Excl. VAT):',
+        lblDiscounts: 'Total Discounts:',
         lblVat: 'VAT (15%):',
         lblTotal: 'Total Due:',
         btnSubmit: 'Send Order to Pharmacist',
@@ -777,7 +783,8 @@
         carInfoTitle: 'Teslimat İçin Araç Bilgileri',
         platePh: 'Plaka Numarası',
         colorPh: 'Araç Modeli ve Rengi',
-        lblSubtotal: 'Ara Toplam:',
+        lblSubtotal: 'Ara Toplam (KDV Hariç):',
+        lblDiscounts: 'Toplam İndirim:',
         lblVat: 'KDV (15%):',
         lblTotal: 'Toplam Tutar:',
         btnSubmit: 'Siparişi Eczacıya Gönder',
@@ -830,7 +837,8 @@
         carInfoTitle: 'ترسیل کے لیے گاڑی کی تفصیلات',
         platePh: 'نمبر پلیٹ درج کریں',
         colorPh: 'گاڑی کا ماڈل اور رنگ',
-        lblSubtotal: 'ادویات کی رقم:',
+        lblSubtotal: 'ذیلی مجموعہ (بغیر ٹیکس):',
+        lblDiscounts: 'کل رعایت:',
         lblVat: 'ٹیکس (15%):',
         lblTotal: 'کل واجب الادا:',
         btnSubmit: 'آرڈر فارماسسٹ کو بھیجیں',
@@ -883,7 +891,8 @@
         carInfoTitle: '接药车辆信息',
         platePh: '车牌号码',
         colorPh: '车型与颜色',
-        lblSubtotal: '药品小计：',
+        lblSubtotal: '小计（不含税）：',
+        lblDiscounts: '优惠总额：',
         lblVat: '增值税 (15%)：',
         lblTotal: '应付总额：',
         btnSubmit: '提交订单至药师工作台',
@@ -2072,6 +2081,7 @@
       document.getElementById('carPlateInput').placeholder = L.platePh;
       document.getElementById('carColorInput').placeholder = L.colorPh;
       document.getElementById('lblSubtotal').textContent = L.lblSubtotal;
+      document.getElementById('lblDiscounts').textContent = L.lblDiscounts;
       document.getElementById('lblVat').textContent = L.lblVat;
       document.getElementById('lblTotal').textContent = L.lblTotal;
       document.getElementById('btnSubmitOrder').textContent = L.btnSubmit;
@@ -2544,10 +2554,13 @@
         const med = getBagItemData(item);
         return sum + (med ? med.price * item.qty : 0);
       }, 0);
-      const vat = subtotal * 0.15;
-      const total = subtotal + vat;
+      const discounts = 0;
+      const discountedSubtotal = Math.max(0, subtotal - discounts);
+      const vat = discountedSubtotal * 0.15;
+      const total = discountedSubtotal + vat;
 
       document.getElementById('valSubtotal').innerHTML = formatPrice(subtotal);
+      document.getElementById('valDiscounts').innerHTML = formatPrice(discounts);
       document.getElementById('valVat').innerHTML = formatPrice(vat);
       document.getElementById('valTotal').innerHTML = formatPrice(total);
     }
