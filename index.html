@@ -303,7 +303,9 @@
     let fontScaleIndex = 0;
     const fontScales = [100, 110, 120];
     let selectedAssistMode = 'mobility';
-    let selectedCategory = 'all';
+    let selectedCategory = 'otc';
+let expandedCategories = { otc: true };
+let customRxCounter = 1;
     let expandedCategories = { otc: true };
     let cart = [];
     let splashDismissed = false;
@@ -1232,6 +1234,102 @@
 
     function renderMedications() {
       const L = i18n[currentLang];
+      const container = document.getElementById('medicationsGrid');
+
+      // إذا اختار العميل قسم "الأدوية الموصوفة" تظهر بطاقة إدخال الوصفة الطبية مع خيارين للإضافة للسلة
+      if (selectedCategory === 'rx') {
+        const rxTexts = {
+          ar: {
+            freeBadge: 'خدمة مجانية',
+            title: 'صرف وصفة طبية إلكترونية أو ورقية',
+            desc: 'اكتب رقم الوصفة الطبية أو أسماء الأدوية الموصوفة، ثم اختر طريقة الإضافة إلى الحقيبة الدوائية.',
+            inputPh: 'اكتب رقم الوصفة الطبية أو تفاصيل الوصفة هنا (مثال: RX-48210)...',
+            opt1: 'إضافة للسلة: صرف الوصفة (خيار 1)',
+            opt2: 'إضافة للسلة: صرف + شرح صيدلي (خيار 2)',
+            emptyAlert: 'يرجى كتابة رقم الوصفة الطبية أو تفاصيلها أولاً قبل الإضافة للسلة.'
+          },
+          en: {
+            freeBadge: 'Free Service',
+            title: 'Submit Prescription Medication',
+            desc: 'Enter your prescription number or prescribed medications, then choose an option to add to your bag.',
+            inputPh: 'Enter prescription number or details here (e.g., RX-48210)...',
+            opt1: 'Add to Bag: Standard Dispense (Option 1)',
+            opt2: 'Add to Bag: Dispense + Pharmacist Guide (Option 2)',
+            emptyAlert: 'Please enter the prescription number or details first.'
+          },
+          tr: {
+            freeBadge: 'Ücretsiz Hizmet',
+            title: 'Reçeteli İlaç Girişi',
+            desc: 'Reçete numaranızı veya ilaç detaylarını yazın ve çantaya ekleme seçeneğini belirleyin.',
+            inputPh: 'Reçete numarasını veya detaylarını buraya yazın (Örn: RX-48210)...',
+            opt1: 'Çantaya Ekle: Standart Teslim (Seçenek 1)',
+            opt2: 'Çantaya Ekle: Teslim + Eczacı Danışmanlığı (Seçenek 2)',
+            emptyAlert: 'Lütfen önce reçete numarasını veya detaylarını yazın.'
+          },
+          ur: {
+            freeBadge: 'مفت سروس',
+            title: 'نسخہ شدہ دوا کا اندراج',
+            desc: 'اپنا نسخہ نمبر یا ادویات کی تفصیل لکھیں اور بیگ میں شامل کرنے کا اختیار منتخب کریں۔',
+            inputPh: 'نسخہ نمبر یا تفصیل یہاں لکھیں (مثال: RX-48210)...',
+            opt1: 'بیگ میں شامل کریں: عام فراہمی (آپشن 1)',
+            opt2: 'بیگ میں شامل کریں: فراہمی + فارماسسٹ رہنمائی (آپشن 2)',
+            emptyAlert: 'براہ کرم پہلے نسخہ نمبر یا تفصیل لکھیں۔'
+          },
+          zh: {
+            freeBadge: '免费服务',
+            title: '填写处方药品信息',
+            desc: '请输入处方号或处方药品明细，然后选择一种方式加入药袋。',
+            inputPh: '在此输入处方号或处方详情（如：RX-48210）...',
+            opt1: '加入药袋：常规调配（选项 1）',
+            opt2: '加入药袋：调配 + 药师指导（选项 2）',
+            emptyAlert: '请先填写处方号或处方详情。'
+          }
+        };
+        const R = rxTexts[currentLang] || rxTexts.ar;
+        const currentInputVal = (document.getElementById('rxCustomEntryInput')?.value || '').trim();
+
+        container.innerHTML = `
+          <div class="clinical-card bg-slate-900 border border-emerald-500/40 rounded-3xl p-5 shadow-lg space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-base font-black">${R.title}</h3>
+              <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-black px-3 py-1 rounded-full">
+                ${R.freeBadge}
+              </span>
+            </div>
+
+            <p class="text-xs text-slate-400 font-semibold leading-relaxed">${R.desc}</p>
+
+            <div>
+              <input
+                id="rxCustomEntryInput"
+                type="text"
+                value="${currentInputVal.replace(/"/g, '"')}"
+                placeholder="${R.inputPh}"
+                class="clinical-input w-full bg-slate-950 border border-slate-700 focus:border-emerald-400 rounded-2xl px-4 py-3 text-xs sm:text-sm font-bold outline-none"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              <button
+                type="button"
+                onclick="addPrescriptionToBag('standard')"
+                class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-3 rounded-2xl transition shadow cursor-pointer text-center"
+              >
+                ${R.opt1}
+              </button>
+              <button
+                type="button"
+                onclick="addPrescriptionToBag('consult')"
+                class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-4 py-3 rounded-2xl transition shadow cursor-pointer text-center"
+              >
+                ${R.opt2}
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
       const q = (document.getElementById('searchMedInput').value || '').trim().toLowerCase();
       const allowedCats = getDescendantCategoryIds(selectedCategory);
 
@@ -1241,7 +1339,6 @@
         return matchCat && matchQ;
       });
 
-      const container = document.getElementById('medicationsGrid');
       container.innerHTML = list.map(m => `
         <div class="clinical-card bg-slate-900 border border-slate-800 hover:border-cyan-500/40 rounded-3xl p-4 shadow-md transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="space-y-1">
@@ -1261,10 +1358,79 @@
       `).join('');
     }
 
+    function addPrescriptionToBag(optionType) {
+      const inputEl = document.getElementById('rxCustomEntryInput');
+      const rxText = (inputEl ? inputEl.value : '').trim();
+
+      const alerts = {
+        ar: 'يرجى كتابة الوصفة الطبية أو رقمها أولاً قبل إضافتها إلى السلة.',
+        en: 'Please enter the prescription details or number before adding to the bag.',
+        tr: 'Lütfen sepete eklemeden önce reçete bilgilerini veya numarasını yazın.',
+        ur: 'بیگ میں شامل کرنے سے پہلے براہ کرم نسخہ نمبر یا تفصیل لکھیں۔',
+        zh: '请先填写处方号或处方详情再加入药袋。'
+      };
+
+      if (!rxText) {
+        const msg = alerts[currentLang] || alerts.ar;
+        showToast(msg);
+        speakText(msg);
+        if (inputEl) inputEl.focus();
+        return;
+      }
+
+      const modeLabels = {
+        standard: {
+          ar: 'صرف وصفة طبية',
+          en: 'Standard Prescription',
+          tr: 'Standart Reçete',
+          ur: 'عام نسخہ',
+          zh: '常规处方'
+        },
+        consult: {
+          ar: 'وصفة طبية + شرح صيدلي',
+          en: 'Prescription + Pharmacist Guide',
+          tr: 'Reçete + Eczacı Rehberi',
+          ur: 'نسخہ + فارماسسٹ رہنمائی',
+          zh: '处方 + 药师指导'
+        }
+      };
+
+      const optLabel = (modeLabels[optionType] && modeLabels[optionType][currentLang]) || modeLabels.standard.ar;
+      const itemId = `rx_item_${Date.now()}_${customRxCounter++}`;
+
+      cart.push({
+        id: itemId,
+        qty: 1,
+        customItem: {
+          id: itemId,
+          price: 0,
+          name: {
+            ar: `${optLabel}: ${rxText}`,
+            en: `${optLabel}: ${rxText}`,
+            tr: `${optLabel}: ${rxText}`,
+            ur: `${optLabel}: ${rxText}`,
+            zh: `${optLabel}: ${rxText}`
+          }
+        }
+      });
+
+      const rxMainInput = document.getElementById('rxInput');
+      if (rxMainInput) rxMainInput.value = rxText;
+
+      if (inputEl) inputEl.value = '';
+      renderCart();
+      speakText(optLabel);
+    }
+
+    function getBagItemData(item) {
+      if (item.customItem) return item.customItem;
+      return medications.find(m => m.id === item.id);
+    }
+
     function addToCart(medId) {
       const med = medications.find(m => m.id === medId);
       if (!med) return;
-      const existing = cart.find(item => item.id === medId);
+      const existing = cart.find(item => item.id === medId && !item.customItem);
       if (existing) {
         existing.qty += 1;
       } else {
@@ -1292,12 +1458,13 @@
         container.innerHTML = `<div class="text-xs text-slate-400 font-bold text-center py-6">${L.emptyBag}</div>`;
       } else {
         container.innerHTML = cart.map(item => {
-          const med = medications.find(m => m.id === item.id);
+          const med = getBagItemData(item);
+          if (!med) return '';
           return `
             <div class="clinical-subcard bg-slate-950 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2">
               <div>
                 <div class="text-xs font-black">${med.name[currentLang]}</div>
-                <div class="text-[11px] text-cyan-400 font-bold">${med.price * item.qty} ${L.currency}</div>
+                <div class="text-[11px] text-cyan-400 font-bold">${(med.price * item.qty).toFixed(2)} ${L.currency}</div>
               </div>
               <div class="flex items-center gap-1.5">
                 <button onclick="changeQty('${item.id}', -1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 font-black text-xs cursor-pointer">-</button>
@@ -1310,11 +1477,16 @@
       }
 
       const subtotal = cart.reduce((sum, item) => {
-        const med = medications.find(m => m.id === item.id);
+        const med = getBagItemData(item);
         return sum + (med ? med.price * item.qty : 0);
       }, 0);
       const vat = subtotal * 0.15;
       const total = subtotal + vat;
+
+      document.getElementById('valSubtotal').textContent = `${subtotal.toFixed(2)} ${L.currency}`;
+      document.getElementById('valVat').textContent = `${vat.toFixed(2)} ${L.currency}`;
+      document.getElementById('valTotal').textContent = `${total.toFixed(2)} ${L.currency}`;
+    }
 
       document.getElementById('valSubtotal').textContent = `${subtotal.toFixed(2)} ${L.currency}`;
       document.getElementById('valVat').textContent = `${vat.toFixed(2)} ${L.currency}`;
