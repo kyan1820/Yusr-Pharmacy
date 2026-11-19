@@ -103,6 +103,20 @@
       color: #0f172a;
     }
     body.light-mode .text-muted-clinical {
+      @keyframes subCatItemIn {
+      from {
+        opacity: 0;
+        transform: translateY(-7px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .subcat-smooth-row {
+      opacity: 0;
+      animation: subCatItemIn 0.26s ease forwards;
+    }
       @keyframes subCatStaggerIn {
       0% {
         opacity: 0;
@@ -1400,6 +1414,8 @@
 
     function renderCategories() {
       const container = document.getElementById('categoryList');
+      if (!container) return;
+
       container.innerHTML = categories.map(c => {
         const hasChildren = Array.isArray(c.children) && c.children.length > 0;
         const isExpanded = !!expandedCategories[c.id];
@@ -1414,32 +1430,20 @@
           ? `toggleCategoryGroup('${c.id}')`
           : `selectCategory('${c.id}')`;
 
-        const childrenHtml = hasChildren && isExpanded ? `
-          <div class="mt-1 me-3 pe-2.5 border-s-2 border-cyan-500/40 space-y-1">
-            ${c.children.map((ch, idx) => {
-              const chActive = selectedCategory === ch.id;
-              return `
-                <button onclick="selectCategory('${ch.id}')" style="animation-delay: ${idx * 65}ms;" class="subcat-stagger-item w-full text-start px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${chActive ? 'bg-teal-400 text-slate-950 font-black shadow-sm' : 'hover:bg-slate-800/60 text-slate-300'}">
-                  <span class="w-1.5 h-1.5 rounded-full ${chActive ? 'bg-slate-950' : 'bg-cyan-400'} shrink-0"></span>
-                  <span>${ch.name[currentLang]}</span>
-                </button>
-              `;
-            }).join('')}
-          </div>
-        ` : '';
+        const childrenHtml = (hasChildren && isExpanded)
+          ? `<div class="mt-1 me-3 pe-2.5 border-s-2 border-cyan-500/40 space-y-1">${
+              c.children.map((ch, i) => {
+                const chActive = selectedCategory === ch.id;
+                const activeCls = chActive
+                  ? 'bg-teal-400 text-slate-950 font-black shadow-sm'
+                  : 'hover:bg-slate-800/60 text-slate-300';
+                const dotCls = chActive ? 'bg-slate-950' : 'bg-cyan-400';
+                return `<button type="button" onclick="selectCategory('${ch.id}')" style="animation-delay:${i * 70}ms" class="subcat-smooth-row w-full text-start px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer"><span class="w-1.5 h-1.5 rounded-full ${dotCls} shrink-0"></span><span class="px-1.5 py-0.5 rounded-lg ${activeCls}">${ch.name[currentLang]}</span></button>`;
+              }).join('')
+            }</div>`
+          : '';
 
-        return `
-          <div>
-            <button onclick="${clickAction}" class="w-full text-start px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition flex items-center justify-between gap-2 cursor-pointer ${mainBtnClass}">
-              <span class="flex items-center gap-2">
-                <span>${c.icon}</span>
-                <span>${c.name[currentLang]}</span>
-              </span>
-              ${hasChildren ? `<span class="text-[11px] font-black">${isExpanded ? '▾' : '▸'}</span>` : ''}
-            </button>
-            ${childrenHtml}
-          </div>
-        `;
+        return `<div><button type="button" onclick="${clickAction}" class="w-full text-start px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition flex items-center justify-between gap-2 cursor-pointer ${mainBtnClass}"><span class="flex items-center gap-2"><span>${c.icon}</span><span>${c.name[currentLang]}</span></span>${hasChildren ? `<span class="text-[11px] font-black">${isExpanded ? '▾' : '▸'}</span>` : ''}</button>${childrenHtml}</div>`;
       }).join('');
     }
 
