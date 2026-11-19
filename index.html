@@ -38,6 +38,26 @@
       transform: translateX(0);
     }
 
+    /* فتح وإغلاق نافذة الفاتورة بعد تأكيد الطلب بسلاسة */
+    #invoiceModalBackdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #invoiceModalBackdrop.invoice-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #invoiceModalCard {
+      opacity: 0;
+      transform: translateY(18px) scale(0.97);
+      transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.34s ease;
+    }
+    #invoiceModalBackdrop.invoice-open #invoiceModalCard {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
     /* وضع التبسيط: إخفاء العناصر والأزرار الثانوية وإبقاء الأساسية */
     body.simple-mode .secondary-element {
       display: none !important;
@@ -563,12 +583,93 @@
       </div>
 
       <button onclick="submitPharmacyOrder()" id="btnSubmitOrder" class="w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black py-3.5 rounded-2xl text-sm shadow-lg shadow-cyan-500/20 transition cursor-pointer shrink-0">
-        إرسال الطلب للصيدلي وتجهيز المسار
+        تأكيد الطلب
       </button>
     </aside>
   </div>
 
-  <div id="toastBox" class="hidden fixed bottom-5 left-5 z-[60] bg-cyan-500 text-slate-950 font-black text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-2xl"></div>
+  <!-- 6. نافذة الفاتورة النهائية المنبثقة بعد تأكيد الطلب -->
+  <div id="invoiceModalBackdrop" onclick="closeInvoiceModal()" class="fixed inset-0 z-[75] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div id="invoiceModalCard" onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-2 border-cyan-500/40 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-3.5 my-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h2 id="invModalTitle" class="text-lg font-black text-cyan-400">فاتورة الطلب</h2>
+          <p id="invModalOrderMeta" class="text-[11px] text-slate-400 font-bold mt-0.5"></p>
+        </div>
+        <button onclick="closeInvoiceModal()" aria-label="إغلاق الفاتورة" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-black text-sm flex items-center justify-center transition cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <!-- 1. نمط الخدمة -->
+      <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2 text-xs">
+        <span id="invLblServiceMode" class="font-black text-cyan-300">نمط الخدمة:</span>
+        <span id="invValServiceMode" class="font-black"></span>
+      </div>
+
+      <!-- 2. رقم الموقف -->
+      <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2 text-xs">
+        <span id="invLblParking" class="font-black text-cyan-300">رقم الموقف:</span>
+        <span id="invValParking" class="font-black"></span>
+      </div>
+
+      <!-- 3. نوع المركبة وتحتها رقم اللوحة -->
+      <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3 space-y-1.5 text-xs">
+        <div class="flex items-center justify-between gap-2">
+          <span id="invLblCarType" class="font-black text-cyan-300">نوع المركبة:</span>
+          <span id="invValCarType" class="font-black"></span>
+        </div>
+        <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-slate-800/80">
+          <span id="invLblPlateNo" class="font-black text-cyan-300">رقم اللوحة:</span>
+          <span id="invValPlateNo" class="font-black"></span>
+        </div>
+      </div>
+
+      <!-- 4. طريقة الاستلام -->
+      <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2 text-xs">
+        <span id="invLblReceiveMethod" class="font-black text-cyan-300">طريقة الاستلام:</span>
+        <span id="invValReceiveMethod" class="font-black"></span>
+      </div>
+
+      <!-- 5. تفاصيل المنتجات (اسم المنتج، كميته، وسعره شامل الضريبة) -->
+      <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3 space-y-2 text-xs">
+        <div id="invLblItemsDetails" class="font-black text-cyan-300">تفاصيل المنتجات:</div>
+        <div id="invValItemsList" class="space-y-1.5"></div>
+      </div>
+
+      <!-- 6. المجموع الفرعي، إجمالي الخصومات، ضريبة القيمة المضافة (15%)، والإجمالي النهائي -->
+      <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-1.5 text-xs font-bold">
+        <div class="flex justify-between">
+          <span id="invLblSubtotal" class="text-slate-400">المجموع الفرعي (غير شامل الضريبة):</span>
+          <span id="invValSubtotal">0.00 ر.س</span>
+        </div>
+        <div class="flex justify-between">
+          <span id="invLblDiscounts" class="text-slate-400">إجمالي الخصومات:</span>
+          <span id="invValDiscounts">0.00 ر.س</span>
+        </div>
+        <div class="flex justify-between">
+          <span id="invLblVat" class="text-slate-400">ضريبة القيمة المضافة (15%):</span>
+          <span id="invValVat">0.00 ر.س</span>
+        </div>
+        <div class="flex justify-between text-sm font-black text-cyan-400 pt-1.5 border-t border-slate-800">
+          <span id="invLblFinalTotal">الإجمالي النهائي:</span>
+          <span id="invValFinalTotal">0.00 ر.س</span>
+        </div>
+      </div>
+
+      <!-- 7. اختر طريقة الدفع -->
+      <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2">
+        <div id="invLblPaymentMethod" class="text-xs font-black text-cyan-300">اختر طريقة الدفع:</div>
+        <div id="invPaymentOptions" class="grid grid-cols-2 gap-2"></div>
+      </div>
+
+      <button onclick="closeInvoiceModal()" id="btnCloseInvoice" class="w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black py-3 rounded-2xl text-xs sm:text-sm transition cursor-pointer">
+        تم
+      </button>
+    </div>
+  </div>
+
+  <div id="toastBox" class="hidden fixed bottom-5 left-5 z-[85] bg-cyan-500 text-slate-950 font-black text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-2xl"></div>
 
   <script>
     let currentLang = 'ar';
@@ -581,8 +682,10 @@
     let selectedAssistMode = 'mobility';
     let selectedParkingSpot = 'yusr_1';
     let selectedDeliverySpot = 'driver_window';
+    let selectedPaymentMethod = 'mada';
     let appliedPromoCode = '';
     let isCouponsBoxOpen = false;
+    let latestCreatedInvoice = null;
     const promoDiscountsMap = {
       ADEL: 0.5,
       KAYAN: 0.25
@@ -631,6 +734,29 @@
       }
     ];
     let splashDismissed = false;
+
+    const paymentMethodOptions = [
+      {
+        id: 'mada',
+        icon: '💳',
+        label: { ar: 'مدى', en: 'Mada', tr: 'Mada', ur: 'مدی', zh: 'Mada' }
+      },
+      {
+        id: 'apple_pay',
+        icon: '',
+        label: { ar: 'أبل باي', en: 'Apple Pay', tr: 'Apple Pay', ur: 'ایپل پے', zh: 'Apple Pay' }
+      },
+      {
+        id: 'visa',
+        icon: '💎',
+        label: { ar: 'فيزا', en: 'Visa', tr: 'Visa', ur: 'ویزا', zh: 'Visa' }
+      },
+      {
+        id: 'cash',
+        icon: '💵',
+        label: { ar: 'نقدي (كاش)', en: 'Cash', tr: 'Nakit (Cash)', ur: 'نقد (کیش)', zh: '现金 (Cash)' }
+      }
+    ];
 
     const parkingSpotOptions = [
       {
@@ -754,11 +880,27 @@
         lblDiscounts: 'إجمالي الخصومات:',
         lblVat: 'ضريبة القيمة المضافة (15%):',
         lblTotal: 'الإجمالي المستحق:',
-        btnSubmit: 'إرسال الطلب للصيدلي وتجهيز المسار',
+        btnSubmit: 'تأكيد الطلب',
+        invModalTitle: 'فاتورة الطلب',
+        invLblServiceMode: 'نمط الخدمة:',
+        invLblParking: 'رقم الموقف:',
+        invLblCarType: 'نوع المركبة:',
+        invLblPlateNo: 'رقم اللوحة:',
+        invLblReceiveMethod: 'طريقة الاستلام:',
+        invLblItemsDetails: 'تفاصيل المنتجات:',
+        invLblSubtotal: 'المجموع الفرعي (غير شامل الضريبة):',
+        invLblDiscounts: 'إجمالي الخصومات:',
+        invLblVat: 'ضريبة القيمة المضافة (15%):',
+        invLblFinalTotal: 'الإجمالي النهائي:',
+        invLblPaymentMethod: 'اختر طريقة الدفع:',
+        btnCloseInvoice: 'تم',
+        notSpecified: 'غير محدد',
+        qtyPrefix: 'الكمية:',
+        inclVatSuffix: 'شامل الضريبة',
         currency: 'ر.س',
         addBtn: '+ إضافة للحقيبة',
         dosageLbl: 'الجرعة الإرشادية:',
-        orderSuccess: 'تم إرسال طلبك الصيدلاني بنجاح وإضافته إلى الطلبات قيد التجهيز!'
+        orderSuccess: 'تم تأكيد الطلب وإصدار الفاتورة بنجاح!'
       },
       en: {
         dir: 'ltr',
@@ -815,11 +957,27 @@
         lblDiscounts: 'Total Discounts:',
         lblVat: 'VAT (15%):',
         lblTotal: 'Total Due:',
-        btnSubmit: 'Send Order to Pharmacist',
+        btnSubmit: 'Confirm Order',
+        invModalTitle: 'Order Invoice',
+        invLblServiceMode: 'Service Mode:',
+        invLblParking: 'Parking Bay No.:',
+        invLblCarType: 'Vehicle Type:',
+        invLblPlateNo: 'Plate Number:',
+        invLblReceiveMethod: 'Delivery Method:',
+        invLblItemsDetails: 'Items Details:',
+        invLblSubtotal: 'Subtotal (Excl. VAT):',
+        invLblDiscounts: 'Total Discounts:',
+        invLblVat: 'VAT (15%):',
+        invLblFinalTotal: 'Final Total:',
+        invLblPaymentMethod: 'Select Payment Method:',
+        btnCloseInvoice: 'Done',
+        notSpecified: 'Not specified',
+        qtyPrefix: 'Qty:',
+        inclVatSuffix: 'incl. VAT',
         currency: 'SAR',
         addBtn: '+ Add to Bag',
         dosageLbl: 'Dosage Guide:',
-        orderSuccess: 'Your pharmacy order has been sent and added to Orders in Preparation!'
+        orderSuccess: 'Order confirmed and invoice generated successfully!'
       },
       tr: {
         dir: 'ltr',
@@ -876,11 +1034,27 @@
         lblDiscounts: 'Toplam İndirim:',
         lblVat: 'KDV (15%):',
         lblTotal: 'Toplam Tutar:',
-        btnSubmit: 'Siparişi Eczacıya Gönder',
+        btnSubmit: 'Siparişi Onayla',
+        invModalTitle: 'Sipariş Faturası',
+        invLblServiceMode: 'Hizmet Modu:',
+        invLblParking: 'Park Alanı No:',
+        invLblCarType: 'Araç Tipi:',
+        invLblPlateNo: 'Plaka Numarası:',
+        invLblReceiveMethod: 'Teslimat Yöntemi:',
+        invLblItemsDetails: 'Ürün Detayları:',
+        invLblSubtotal: 'Ara Toplam (KDV Hariç):',
+        invLblDiscounts: 'Toplam İndirim:',
+        invLblVat: 'KDV (15%):',
+        invLblFinalTotal: 'Genel Toplam:',
+        invLblPaymentMethod: 'Ödeme Yöntemi Seçin:',
+        btnCloseInvoice: 'Tamam',
+        notSpecified: 'Belirtilmedi',
+        qtyPrefix: 'Adet:',
+        inclVatSuffix: 'KDV dahil',
         currency: 'SAR',
         addBtn: '+ Çantaya Ekle',
         dosageLbl: 'Kullanım:',
-        orderSuccess: 'Eczane siparişiniz gönderildi ve Hazırlanan Siparişler listesine eklendi!'
+        orderSuccess: 'Sipariş onaylandı ve fatura oluşturuldu!'
       },
       ur: {
         dir: 'rtl',
@@ -937,11 +1111,27 @@
         lblDiscounts: 'کل رعایت:',
         lblVat: 'ٹیکس (15%):',
         lblTotal: 'کل واجب الادا:',
-        btnSubmit: 'آرڈر فارماسسٹ کو بھیجیں',
+        btnSubmit: 'آرڈر کی تصدیق کریں',
+        invModalTitle: 'آرڈر کا بل',
+        invLblServiceMode: 'سروس کا طریقہ:',
+        invLblParking: 'پارکنگ نمبر:',
+        invLblCarType: 'گاڑی کی قسم:',
+        invLblPlateNo: 'نمبر پلیٹ:',
+        invLblReceiveMethod: 'ترسیل کا طریقہ:',
+        invLblItemsDetails: 'ادویات کی تفصیل:',
+        invLblSubtotal: 'ذیلی مجموعہ (بغیر ٹیکس):',
+        invLblDiscounts: 'کل رعایت:',
+        invLblVat: 'ٹیکس (15%):',
+        invLblFinalTotal: 'حتمی کل رقم:',
+        invLblPaymentMethod: 'ادائیگی کا طریقہ منتخب کریں:',
+        btnCloseInvoice: 'ٹھیک ہے',
+        notSpecified: 'درج نہیں کیا گیا',
+        qtyPrefix: 'تعداد:',
+        inclVatSuffix: 'ٹیکس شامل',
         currency: 'ریال',
         addBtn: '+ بیگ میں شامل کریں',
         dosageLbl: 'طریقہ استعمال:',
-        orderSuccess: 'آپ کا آرڈر بھیج دیا گیا اور تیار ہونے والے آرڈرز میں شامل کر دیا گیا ہے!'
+        orderSuccess: 'آپ کا آرڈر کنفرم ہو گیا اور بل تیار ہے!'
       },
       zh: {
         dir: 'ltr',
@@ -998,11 +1188,27 @@
         lblDiscounts: '优惠总额：',
         lblVat: '增值税 (15%)：',
         lblTotal: '应付总额：',
-        btnSubmit: '提交订单至药师工作台',
+        btnSubmit: '确认订单',
+        invModalTitle: '订单发票',
+        invLblServiceMode: '服务模式：',
+        invLblParking: '停车车位号：',
+        invLblCarType: '车辆类型：',
+        invLblPlateNo: '车牌号码：',
+        invLblReceiveMethod: '交付方式：',
+        invLblItemsDetails: '商品明细：',
+        invLblSubtotal: '小计（不含税）：',
+        invLblDiscounts: '优惠总额：',
+        invLblVat: '增值税 (15%)：',
+        invLblFinalTotal: '最终总额：',
+        invLblPaymentMethod: '选择支付方式：',
+        btnCloseInvoice: '完成',
+        notSpecified: '未填写',
+        qtyPrefix: '数量：',
+        inclVatSuffix: '含税',
         currency: 'SAR',
         addBtn: '+ 加入药袋',
         dosageLbl: '用法用量：',
-        orderSuccess: '您的订单已提交并加入准备中的订单！'
+        orderSuccess: '订单已确认并生成发票！'
       }
     };
 
@@ -1815,6 +2021,111 @@
       }, 60);
     }
 
+    function getSelectedAssistModeText() {
+      const modeObj = assistModes.find(m => m.id === selectedAssistMode);
+      return modeObj ? (modeObj.title[currentLang] || modeObj.title.ar) : i18n[currentLang].notSpecified;
+    }
+
+    function renderPaymentOptions() {
+      const container = document.getElementById('invPaymentOptions');
+      if (!container) return;
+
+      container.innerHTML = paymentMethodOptions.map(opt => {
+        const active = opt.id === selectedPaymentMethod;
+        return `
+          <button
+            type="button"
+            onclick="selectPaymentMethod('${opt.id}')"
+            class="px-3 py-2.5 rounded-xl border text-xs font-black transition flex items-center justify-between gap-2 cursor-pointer ${
+              active
+                ? 'bg-cyan-500 border-cyan-400 text-slate-950 shadow-sm'
+                : 'bg-slate-900/90 border-slate-700 hover:border-cyan-500/40 text-slate-200'
+            }"
+          >
+            <span class="flex items-center gap-1.5">
+              <span>${opt.icon}</span>
+              <span>${opt.label[currentLang] || opt.label.ar}</span>
+            </span>
+            <span>${active ? '✓' : '○'}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectPaymentMethod(methodId) {
+      selectedPaymentMethod = methodId;
+      if (latestCreatedInvoice) {
+        const found = paymentMethodOptions.find(p => p.id === methodId);
+        latestCreatedInvoice.paymentMethodText = found ? (found.label[currentLang] || found.label.ar) : '';
+      }
+      renderPaymentOptions();
+      const found = paymentMethodOptions.find(p => p.id === methodId);
+      if (found) speakText(found.label[currentLang] || found.label.ar);
+    }
+
+    function openInvoiceModal() {
+      const backdrop = document.getElementById('invoiceModalBackdrop');
+      if (!backdrop) return;
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.add('invoice-open');
+      });
+    }
+
+    function closeInvoiceModal() {
+      const backdrop = document.getElementById('invoiceModalBackdrop');
+      if (!backdrop) return;
+      backdrop.classList.remove('invoice-open');
+      setTimeout(() => {
+        if (!backdrop.classList.contains('invoice-open')) {
+          backdrop.classList.add('hidden');
+        }
+      }, 360);
+    }
+
+    function renderInvoiceModalContent() {
+      if (!latestCreatedInvoice) return;
+      const L = i18n[currentLang];
+      const inv = latestCreatedInvoice;
+
+      const metaEl = document.getElementById('invModalOrderMeta');
+      if (metaEl) metaEl.textContent = `#${inv.id} • ${inv.createdAt}`;
+
+      document.getElementById('invValServiceMode').textContent = inv.serviceModeText || L.notSpecified;
+      document.getElementById('invValParking').textContent = inv.parkingText || L.notSpecified;
+      document.getElementById('invValCarType').textContent = inv.carType || L.notSpecified;
+      document.getElementById('invValPlateNo').textContent = inv.plateNo || L.notSpecified;
+      document.getElementById('invValReceiveMethod').textContent = inv.deliverySpotText || L.notSpecified;
+
+      const itemsListEl = document.getElementById('invValItemsList');
+      if (itemsListEl) {
+        if (inv.items && inv.items.length > 0) {
+          itemsListEl.innerHTML = inv.items.map(it => {
+            const unitWithVat = it.price * 1.15;
+            const lineTotalWithVat = unitWithVat * it.qty;
+            return `
+              <div class="flex items-center justify-between gap-2 py-1.5 border-b border-slate-800/70 last:border-b-0">
+                <div>
+                  <div class="font-black">${it.name}</div>
+                  <div class="text-[11px] text-slate-400 font-bold">${L.qtyPrefix} ${it.qty} (${L.inclVatSuffix})</div>
+                </div>
+                <div class="font-black text-cyan-400 shrink-0">${formatPrice(lineTotalWithVat)}</div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          itemsListEl.innerHTML = `<div class="text-xs text-slate-400 font-bold">${inv.rx ? `RX: ${inv.rx}` : L.notSpecified}</div>`;
+        }
+      }
+
+      document.getElementById('invValSubtotal').innerHTML = formatPrice(inv.subtotal);
+      document.getElementById('invValDiscounts').innerHTML = formatPrice(inv.discounts);
+      document.getElementById('invValVat').innerHTML = formatPrice(inv.vat);
+      document.getElementById('invValFinalTotal').innerHTML = formatPrice(inv.total);
+
+      renderPaymentOptions();
+    }
+
     function handlePromoInput(rawVal) {
       const inputEl = document.getElementById('promoCodeInput');
       const cleanedUpper = String(rawVal || '').toUpperCase().replace(/[^A-Z]/g, '');
@@ -2267,6 +2578,20 @@
       document.getElementById('lblTotal').textContent = L.lblTotal;
       document.getElementById('btnSubmitOrder').textContent = L.btnSubmit;
 
+      document.getElementById('invModalTitle').textContent = L.invModalTitle;
+      document.getElementById('invLblServiceMode').textContent = L.invLblServiceMode;
+      document.getElementById('invLblParking').textContent = L.invLblParking;
+      document.getElementById('invLblCarType').textContent = L.invLblCarType;
+      document.getElementById('invLblPlateNo').textContent = L.invLblPlateNo;
+      document.getElementById('invLblReceiveMethod').textContent = L.invLblReceiveMethod;
+      document.getElementById('invLblItemsDetails').textContent = L.invLblItemsDetails;
+      document.getElementById('invLblSubtotal').textContent = L.invLblSubtotal;
+      document.getElementById('invLblDiscounts').textContent = L.invLblDiscounts;
+      document.getElementById('invLblVat').textContent = L.invLblVat;
+      document.getElementById('invLblFinalTotal').textContent = L.invLblFinalTotal;
+      document.getElementById('invLblPaymentMethod').textContent = L.invLblPaymentMethod;
+      document.getElementById('btnCloseInvoice').textContent = L.btnCloseInvoice;
+
       renderAssistModes();
       renderParkingSpotOptions();
       renderDeliverySpotOptions();
@@ -2274,6 +2599,7 @@
       renderMedications();
       renderCart();
       renderOrdersView();
+      renderInvoiceModalContent();
     }
 
     function toggleSimpleMode() {
@@ -2759,6 +3085,7 @@
       const rxVal = document.getElementById('rxInput').value.trim();
       const plateVal = (document.getElementById('carPlateInput')?.value || '').trim();
       const colorVal = (document.getElementById('carColorInput')?.value || '').trim();
+      const serviceModeText = getSelectedAssistModeText();
       const parkingText = getSelectedParkingSpotText();
       const spotText = getSelectedDeliverySpotText();
 
@@ -2768,28 +3095,53 @@
         return;
       }
 
-      const { total } = computeCartTotals();
+      const { subtotal, discounts, vat, total } = computeCartTotals();
 
-      const summaryParts = cart.map(item => {
+      const detailedItems = cart.map(item => {
         const med = getBagItemData(item);
-        return med ? `${med.name[currentLang]} × ${item.qty}` : '';
+        if (!med) return null;
+        return {
+          name: med.name[currentLang] || med.name.ar,
+          qty: item.qty,
+          price: med.price
+        };
       }).filter(Boolean);
 
+      const summaryParts = detailedItems.map(it => `${it.name} × ${it.qty}`);
       if (summaryParts.length === 0 && rxVal) {
         summaryParts.push(`RX: ${rxVal}`);
       }
 
+      const orderId = `ORD-${Math.floor(1050 + Math.random() * 8900)}`;
+      const createdAt = 'الآن';
+
       const newOrder = {
-        id: `ORD-${Math.floor(1050 + Math.random() * 8900)}`,
+        id: orderId,
         status: 'preparing',
-        createdAt: 'الآن',
+        createdAt,
         itemsSummary: summaryParts.join(' • '),
         total,
         rx: rxVal,
-        car: [plateVal, colorVal].filter(Boolean).join(' - '),
+        car: [colorVal, plateVal].filter(Boolean).join(' - '),
         parking: parkingText,
         spot: spotText,
         promo: appliedPromoCode
+      };
+
+      latestCreatedInvoice = {
+        id: orderId,
+        createdAt,
+        serviceModeText,
+        parkingText,
+        carType: colorVal,
+        plateNo: plateVal,
+        deliverySpotText: spotText,
+        items: detailedItems,
+        rx: rxVal,
+        subtotal,
+        discounts,
+        vat,
+        total
       };
 
       ordersHistory.unshift(newOrder);
@@ -2799,9 +3151,14 @@
       if (promoInput) promoInput.value = '';
       setPromoMessage('', '');
       activeOrderFilter = 'preparing';
+
       renderCart();
       renderOrdersView();
+      renderInvoiceModalContent();
       closeCartDrawer();
+      setTimeout(() => {
+        openInvoiceModal();
+      }, 220);
       showToast(L.orderSuccess);
       speakText(L.orderSuccess);
     }
