@@ -106,23 +106,26 @@
       color: #475569;
     }
 
-    /* أزرار الأقسام الرئيسية: أزرق بخط أبيض، وعند الضغط تتلوّن تدريجياً من اليمين لليسار باللون الأزرق */
+    /* أزرار الأقسام الرئيسية: أبيض بنص أزرق، وعند الضغط يتلوّن باللون الأزرق بالتدريج من اليمين لليسار */
     .cat-main-btn {
       position: relative;
       overflow: hidden;
-      color: #ffffff;
-      background-image: linear-gradient(to left, #2563eb 0%, #0ea5e9 50%, #06b6d4 50%, #0891b2 100%);
+      color: #0284c7;
+      border: 1px solid #cbd5e1;
+      background-image: linear-gradient(to left, #2563eb 0%, #0284c7 50%, #ffffff 50%, #ffffff 100%);
       background-size: 200% 100%;
       background-position: 100% 0;
-      transition: background-position 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.2s ease, box-shadow 0.3s ease;
+      transition: background-position 0.45s cubic-bezier(0.22, 1, 0.36, 1), color 0.25s ease, border-color 0.25s ease, box-shadow 0.3s ease;
     }
     .cat-main-btn:hover {
-      filter: brightness(1.05);
+      border-color: #38bdf8;
+      background-color: #f8fafc;
     }
     .cat-main-btn.is-active-sweep {
       background-position: 0% 0;
       color: #ffffff;
-      box-shadow: 0 6px 18px -3px rgba(37, 99, 235, 0.5);
+      border-color: #2563eb;
+      box-shadow: 0 6px 16px -3px rgba(37, 99, 235, 0.45);
     }
 
     /* ظهور الأقسام الفرعية حبة حبة بسرعة وسلاسة */
