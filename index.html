@@ -303,61 +303,59 @@
 
   <!-- 3. الترويسة الطبية الرسمية الموحدة -->
   <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-cyan-500/25 shadow-xl">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
 
-      <!-- الشعار الرسمي -->
-      <div class="flex items-center gap-3">
+      <!-- أقصى اليمين: اللوجو واسم صيدلية يُسْر -->
+      <div class="flex items-center gap-3 shrink-0">
         <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-500 text-slate-950 flex items-center justify-center font-black text-2xl shadow-lg shadow-cyan-500/20">
           Rx
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span id="brandTitle" class="text-xl sm:text-2xl font-black text-white">صيدلية يُسْر</span>
-            <span class="text-cyan-400 font-extrabold text-sm sm:text-base" dir="ltr">| Yusr Pharmacy</span>
+            <span id="brandTitle" class="text-xl sm:text-2xl font-black text-white whitespace-nowrap">صيدلية يُسْر</span>
+            <span class="text-cyan-400 font-extrabold text-sm sm:text-base whitespace-nowrap" dir="ltr">| Yusr Pharmacy</span>
           </div>
-          <span id="brandTagline" class="secondary-element text-[11px] text-cyan-300/90 font-bold block">منصة المسار الصيدلاني الذكي للمركبات</span>
+          <span id="brandTagline" class="secondary-element text-[11px] text-cyan-300/90 font-bold block whitespace-nowrap">منصة المسار الصيدلاني الذكي للمركبات</span>
         </div>
       </div>
 
-      <!-- شريط التنقل وأدوات الوصول (السلة أقصى اليسار وبجوارها على اليمين طلباتي) -->
-      <div class="flex-1 flex flex-wrap items-center justify-between gap-2 min-w-[280px]">
-        <div class="flex flex-wrap items-center gap-2">
-          <button onclick="switchPageView('shop')" id="btnNavShop" class="bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow">
-            💊 <span id="btnNavShopText">الصيدلية</span>
-          </button>
-          <button onclick="toggleSimpleMode()" id="btnSimple" class="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow">
-            ✨ <span id="btnSimpleText">التبسيط: إخفاء الثانوية</span>
-          </button>
-          <button onclick="cycleFont()" id="btnFont" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer">
-            🔠 <span id="btnFontText">حجم الخط: 100%</span>
-          </button>
-          <button onclick="openLangModal()" class="secondary-element bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer">
-            🌐 <span id="btnLangText">اللغة (Language)</span>
-          </button>
-          <button onclick="toggleTTS()" id="btnTTS" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
-            <span id="ttsDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span id="btnTTSText">القارئ الصوتي: مفعل</span>
-          </button>
-          <button onclick="toggleTheme()" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-            <span id="btnThemeText">🌙 الوضع الداكن</span>
-          </button>
-          <button onclick="toggleHighContrast()" id="btnContrast" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-            🌓 <span id="btnContrastText">تباين عالٍ</span>
-          </button>
-        </div>
+      <!-- الوسط: باقي الأزرار -->
+      <div class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mx-auto">
+        <button onclick="switchPageView('shop')" id="btnNavShop" class="bg-blue-600 text-white px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow whitespace-nowrap">
+          💊 <span id="btnNavShopText">الصيدلية</span>
+        </button>
+        <button onclick="toggleSimpleMode()" id="btnSimple" class="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow whitespace-nowrap">
+          ✨ <span id="btnSimpleText">التبسيط: إخفاء الثانوية</span>
+        </button>
+        <button onclick="cycleFont()" id="btnFont" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer whitespace-nowrap">
+          🔠 <span id="btnFontText">حجم الخط: 100%</span>
+        </button>
+        <button onclick="openLangModal()" class="secondary-element bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap">
+          🌐 <span id="btnLangText">اللغة (Language)</span>
+        </button>
+        <button onclick="toggleTTS()" id="btnTTS" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap">
+          <span id="ttsDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span id="btnTTSText">القارئ الصوتي: مفعل</span>
+        </button>
+        <button onclick="toggleTheme()" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap">
+          <span id="btnThemeText">🌙 الوضع الداكن</span>
+        </button>
+        <button onclick="toggleHighContrast()" id="btnContrast" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap">
+          🌓 <span id="btnContrastText">تباين عالٍ</span>
+        </button>
+      </div>
 
-        <!-- في RTL: الأول يظهر يميناً (طلباتي) والثاني يظهر يساراً (السلة) -->
-        <div class="flex items-center gap-2 ms-auto">
-          <button onclick="switchPageView('orders')" id="btnNavOrders" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer">
-            📦 <span id="btnNavOrdersText">طلباتي</span>
-            <span id="ordersTotalBadge" class="bg-amber-400 text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-full">0</span>
-          </button>
-          <button onclick="openCartDrawer()" id="btnOpenCart" class="bg-gradient-to-r from-cyan-400 to-teal-300 hover:from-cyan-300 hover:to-teal-200 text-slate-950 px-4 py-1.5 rounded-xl text-xs font-black flex items-center gap-2 transition cursor-pointer shadow-md shadow-cyan-500/25">
-            <span class="text-base leading-none">🛒</span>
-            <span id="btnCartLabel">السلة</span>
-            <span id="bagCountBadge" class="bg-slate-950 text-cyan-300 text-xs font-black px-2 py-0.5 rounded-full min-w-[22px] text-center">0</span>
-          </button>
-        </div>
+      <!-- أقصى اليسار: طلباتي ثم السلة -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button onclick="switchPageView('orders')" id="btnNavOrders" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap">
+          📦 <span id="btnNavOrdersText">طلباتي</span>
+          <span id="ordersTotalBadge" class="bg-amber-400 text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-full">0</span>
+        </button>
+        <button onclick="openCartDrawer()" id="btnOpenCart" class="bg-gradient-to-r from-cyan-400 to-teal-300 hover:from-cyan-300 hover:to-teal-200 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-2 transition cursor-pointer shadow-md shadow-cyan-500/25 whitespace-nowrap">
+          <span class="text-base leading-none">🛒</span>
+          <span id="btnCartLabel">السلة</span>
+          <span id="bagCountBadge" class="bg-slate-950 text-cyan-300 text-xs font-black px-2 py-0.5 rounded-full min-w-[22px] text-center">0</span>
+        </button>
       </div>
 
     </div>
@@ -1519,13 +1517,13 @@
 
       if (navShop) {
         navShop.className = activePageView === 'shop'
-          ? 'bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow'
-          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer';
+          ? 'bg-blue-600 text-white px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow whitespace-nowrap'
+          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap';
       }
       if (navOrders) {
         navOrders.className = activePageView === 'orders'
-          ? 'bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow'
-          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer';
+          ? 'bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow whitespace-nowrap'
+          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap';
       }
 
       if (activePageView === 'orders') {
@@ -1762,15 +1760,15 @@
       }
       if (simpleBtn) {
         simpleBtn.className = isSimpleMode
-          ? 'bg-emerald-400 hover:bg-emerald-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow'
-          : 'bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow';
+          ? 'bg-emerald-400 hover:bg-emerald-300 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow whitespace-nowrap'
+          : 'bg-amber-400 hover:bg-amber-300 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow whitespace-nowrap';
       }
 
       const fontBtn = document.getElementById('btnFont');
       if (fontBtn) {
         fontBtn.className = fontScaleIndex > 0
-          ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow'
-          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer';
+          ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow whitespace-nowrap'
+          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer whitespace-nowrap';
       }
 
       document.getElementById('btnLangText').textContent = L.btnLang;
@@ -1785,8 +1783,8 @@
       }
       if (contrastBtn) {
         contrastBtn.className = isHighContrast
-          ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow'
-          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer';
+          ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow whitespace-nowrap'
+          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap';
       }
 
       document.getElementById('heroBadge').textContent = L.heroBadge;
