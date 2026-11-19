@@ -932,6 +932,7 @@
     ];
 
     const medications = [
+      // 1. الأدوية غير الموصوفة (OTC)
       {
         id: 'med1',
         cat: 'otc_pain',
@@ -953,7 +954,7 @@
         cat: 'otc_cold',
         price: 26,
         badge: 'OTC',
-        name: { ar: 'كلاريتين مضاد للحساسية (لا يسبب النعاس)', en: 'Claritin Allergy 10mg (Non-Drowsy)', tr: 'Claritin Alerji Tableti 10mg', ur: 'کلیریٹین الرجی ٹیبلٹ 10mg', zh: '开瑞坦氯雷他定抗过敏片 10mg' },
+        name: { ar: 'كلاريتين مضاد للحساسية (10 ملجم)', en: 'Claritin Allergy 10mg (Non-Drowsy)', tr: 'Claritin Alerji Tableti 10mg', ur: 'کلیریٹین الرجی ٹیبلٹ 10mg', zh: '开瑞坦氯雷他定抗过敏片 10mg' },
         dosage: { ar: 'قرص واحد مرة واحدة يومياً', en: '1 tablet once daily', tr: 'Günde bir kez 1 tablet', ur: 'روزانہ دن میں ایک بار ایک گولی', zh: '每日一次，每次1片' }
       },
       {
@@ -962,16 +963,164 @@
         price: 32,
         badge: 'OTC',
         name: { ar: 'بخاخ أوتريفين لتخفيف احتقان الأنف', en: 'Otrivin Nasal Decongestant Spray', tr: 'Otrivin Burun Spreyi', ur: 'اوٹریون ناک کا اسپرے', zh: '奥特斯鼻腔喷雾剂' },
-        dosage: { ar: 'بخة في كل فتحة أنف مرتين يومياً (لا يتجاوز 5 أيام)', en: '1 spray per nostril twice daily (max 5 days)', tr: 'Günde 2 kez her burun deliğine 1 sıkım (en fazla 5 gün)', ur: 'دن میں دو بار ہر نتھنے میں ایک اسپرے', zh: '每日两次，每侧鼻孔1喷（不超过5天）' }
+        dosage: { ar: 'بخة في كل فتحة أنف مرتين يومياً (حتى 5 أيام)', en: '1 spray per nostril twice daily (max 5 days)', tr: 'Günde 2 kez her burun deliğine 1 sıkım (en fazla 5 gün)', ur: 'دن میں دو بار ہر نتھنے میں ایک اسپرے', zh: '每日两次，每侧鼻孔1喷（不超过5天）' }
       },
       {
-        id: 'med5',
-        cat: 'dev_glucose',
-        price: 65,
-        badge: 'Med Supply',
-        name: { ar: 'شرائط قياس السكر أكيو-تشيك (50 شريط)', en: 'Accu-Chek Performa Test Strips (50)', tr: 'Accu-Chek Şeker Ölçüm Çubuğu (50)', ur: 'ایکیو چیک شوگر ٹیسٹ اسٹرپس (50)', zh: '罗氏活力型血糖试纸 (50片装)' },
-        dosage: { ar: 'للفحص اليومي لمستوى السكر في الدم بالمنزل', en: 'For daily home blood glucose monitoring', tr: 'Günlük evde kan şekeri ölçümü için', ur: 'گھر پر روزانہ شوگر چیک کرنے کے لیے', zh: '用于日常居家血糖监测' }
+        id: 'med_gi1',
+        cat: 'otc_gi',
+        price: 24,
+        badge: 'OTC',
+        name: { ar: 'شراب ومعلق جافيسكون للحموضة والارتجاع', en: 'Gaviscon Heartburn & Reflux Suspension', tr: 'Gaviscon Mide Ekşimesi Süspansiyonu', ur: 'گیویسکون تیزابیت اور ریفلکس شربت', zh: '嘉胃斯康抗酸护胃混悬液' },
+        dosage: { ar: '10 إلى 20 مل بعد الوجبات وعند النوم', en: '10-20ml after meals and at bedtime', tr: 'Yemeklerden sonra ve yatarken 10-20 ml', ur: 'کھانے کے بعد اور سوتے وقت 10 سے 20 ملی لیٹر', zh: '餐后及睡前服用10至20毫升' }
       },
+      {
+        id: 'med_gi2',
+        cat: 'otc_gi',
+        price: 29,
+        badge: 'OTC',
+        name: { ar: 'مضادات التقلصات والانتفاخ للمعدة والقولون', en: 'Antispasmodic & Bloating Relief Tablets', tr: 'Mide ve Gaz Giderici Tabletler', ur: 'پیٹ کے درد اور گیس سے آرام کی گولیاں', zh: '缓解胃肠痉挛与胀气胶囊' },
+        dosage: { ar: 'قرص واحد قبل الأكل ثلاث مرات يومياً', en: '1 tablet before meals 3 times daily', tr: 'Günde 3 kez yemeklerden önce 1 tablet', ur: 'دن میں تین بار کھانے سے پہلے ایک گولی', zh: '每日3次，每次餐前1片' }
+      },
+
+      // 2. الفيتامينات والمكملات الغذائية
+      {
+        id: 'med_vit_multi1',
+        cat: 'vit_multi',
+        price: 74,
+        badge: 'Vitamins',
+        name: { ar: 'سنتروم فيتامينات ومعادن متعددة متكاملة', en: 'Centrum Complete Multivitamin & Minerals', tr: 'Centrum Komple Multivitamin ve Mineral', ur: 'سینٹرم مکمل ملٹی وٹامن اور منرلز', zh: '善存复合维生素与矿物质片' },
+        dosage: { ar: 'قرص واحد يومياً مع وجبة الإفطار', en: '1 tablet daily with breakfast', tr: 'Kahvaltı ile birlikte günde 1 tablet', ur: 'ناشتے کے ساتھ روزانہ ایک گولی', zh: '每日随早餐服用1片' }
+      },
+      {
+        id: 'med8',
+        cat: 'vit_single',
+        price: 42,
+        badge: 'Supplement',
+        name: { ar: 'فيتامين سي 1000 ملجم + زنك فوار', en: 'Vitamin C 1000mg + Zinc Effervescent', tr: 'Vitamin C 1000mg + Çinko Efervesan', ur: 'وٹامن سی 1000mg + زنک فوار گولیاں', zh: '维生素C 1000mg + 锌泡腾片' },
+        dosage: { ar: 'قرص فوار واحد يذاب في كوب ماء يومياً', en: 'Dissolve 1 tablet in a glass of water daily', tr: 'Günde 1 tablet bir bardak suda eritilir', ur: 'روزانہ ایک گلاس پانی میں ایک گولی حل کریں', zh: '每日1片，溶解于一杯水中饮用' }
+      },
+      {
+        id: 'med_vit_herbal1',
+        cat: 'vit_herbal',
+        price: 58,
+        badge: 'Herbal',
+        name: { ar: 'خلاصة الجينسنغ والزنجبيل الطبيعية للدعم اليومي', en: 'Natural Ginseng & Ginger Herbal Extract', tr: 'Doğal Ginseng ve Zencefil Bitkisel Özü', ur: 'قدرتی جنسینگ اور ادرک کا ہربل سپلیمنٹ', zh: '天然人参姜黄草本提取胶囊' },
+        dosage: { ar: 'كبسولة واحدة صباحاً بعد الطعام', en: '1 capsule in the morning after food', tr: 'Sabah yemekten sonra 1 kapsül', ur: 'صبح کھانے کے بعد ایک کیپسول', zh: '每日早晨饭后服用1粒' }
+      },
+
+      // 3. العناية بالبشرة والجلد
+      {
+        id: 'med_skin_face1',
+        cat: 'skin_face',
+        price: 68,
+        badge: 'Derma Care',
+        name: { ar: 'غسول ومرطب يومي للبشرة بالسيراميد', en: 'Ceramide Daily Facial Cleanser & Moisturizer', tr: 'Seramidli Günlük Yüz Temizleyici ve Nemlendirici', ur: 'سیرامائیڈ چہرے کا روزانہ کلینزر اور موئسچرائزر', zh: '神经酰胺每日温和洁面与保湿乳' },
+        dosage: { ar: 'يُستخدم صباحاً ومساءً على بشرة نظيفة', en: 'Use morning and evening on clean skin', tr: 'Temiz cilde sabah ve akşam uygulayın', ur: 'صاف جلد پر صبح و شام استعمال کریں', zh: '早晚洁面后涂抹于面部' }
+      },
+      {
+        id: 'med_skin_sun1',
+        cat: 'skin_sun',
+        price: 89,
+        badge: 'SPF 50+',
+        name: { ar: 'واقي شمس طبي غير مرئي SPF 50+', en: 'Invisible Broad-Spectrum Sunblock SPF 50+', tr: 'Görünmez Geniş Spektrumlu Güneş Kremi SPF 50+', ur: 'SPF 50+ سن بلاک لوشن', zh: '高倍广谱隐形防晒霜 SPF 50+' },
+        dosage: { ar: 'يُوضع قبل التعرض للشمس بـ 15 دقيقة ويجدد كل ساعتين', en: 'Apply 15 mins before sun exposure; reapply every 2 hrs', tr: 'Güneşe çıkmadan 15 dk önce sürün, 2 saatte bir yenileyin', ur: 'دھوپ میں نکلنے سے 15 منٹ پہلے لگائیں', zh: '外出前15分钟涂抹，每2小时补涂一次' }
+      },
+      {
+        id: 'med_skin_body1',
+        cat: 'skin_body',
+        price: 54,
+        badge: 'Body Care',
+        name: { ar: 'لوشن مرطب مكثف للجسم للبشرة الجافة', en: 'Intensive Body Moisturizing Lotion for Dry Skin', tr: 'Kuru Ciltler İçin Yoğun Vücut Nemlendirici Losyon', ur: 'خشک جلد کے لیے جسم کا موئسچرائزنگ لوشن', zh: '干性肌深层滋润身体乳' },
+        dosage: { ar: 'يُدلك بلطف على الجسم بعد الاستحمام', en: 'Massage gently onto body after showering', tr: 'Duştan sonra vücuda nazikçe masaj yaparak uygulayın', ur: 'نہانے کے بعد جسم پر نرمی سے لگائیں', zh: '沐浴后取适量轻柔涂抹于全身' }
+      },
+
+      // 4. العناية بالشعر
+      {
+        id: 'med_hair_shampoo1',
+        cat: 'hair_shampoo',
+        price: 52,
+        badge: 'Hair Care',
+        name: { ar: 'شامبو وبلسم علاجي لطيف خالٍ من الكبريتات', en: 'Sulfate-Free Medicated Shampoo & Conditioner', tr: 'Sülfatsız Tedavi Edici Şampuan ve Saç Kremi', ur: 'سلفیٹ سے پاک طبی شیمپو اور کنڈیشنر', zh: '无硫酸盐温和修护洗发水与护发素' },
+        dosage: { ar: 'يُدلك على فروة الرأس الرطبة ثم يُشطف جيداً', en: 'Massage into wet scalp and rinse thoroughly', tr: 'Islak saç derisine masaj yapın ve iyice durulayın', ur: 'گیلے بالوں پر مساج کریں اور اچھی طرح دھو لیں', zh: '涂抹于湿润头皮轻柔按摩后冲洗干净' }
+      },
+      {
+        id: 'med_hair_loss1',
+        cat: 'hair_loss',
+        price: 96,
+        badge: 'Strengthening',
+        name: { ar: 'سيروم ومحلول مقوٍّ لبصيلات الشعر والحد من التساقط', en: 'Follicle Strengthening & Hair-Fall Serum', tr: 'Saç Kökü Güçlendirici ve Dökülme Karşıtı Serum', ur: 'بالوں کی جڑوں کو مضبوط کرنے والا سیرم', zh: '强韧发根防脱精华液' },
+        dosage: { ar: 'يُوضع على مناطق الضعف في فروة الرأس يومياً', en: 'Apply daily to thinning areas of the scalp', tr: 'Saç derisindeki seyrek bölgelere günlük uygulayın', ur: 'بالوں کی جڑوں پر روزانہ لگائیں', zh: '每日涂抹于需要强韧的头皮部位' }
+      },
+      {
+        id: 'med_hair_dye1',
+        cat: 'hair_dye',
+        price: 44,
+        badge: 'Color Care',
+        name: { ar: 'صبغة شعر لطيفة ومغذية بدون أمونيا', en: 'Ammonia-Free Nourishing Hair Dye', tr: 'Amonyaksız Besleyici Saç Boyası', ur: 'امونیا کے بغیر بالوں کا رنگ', zh: '无氨温和滋养染发霜' },
+        dosage: { ar: 'يُتبع دليل الاستخدام المرفق مع إجراء اختبار تحسس مسبق', en: 'Follow enclosed leaflet; perform patch test first', tr: 'Kutu içindeki talimatı izleyin, önce alerji testi yapın', ur: 'استعمال سے پہلے پیچ ٹیسٹ کریں اور ہدایات پر عمل کریں', zh: '请按说明书操作，使用前先做皮肤测试' }
+      },
+
+      // 5. العناية بالطفل والأم
+      {
+        id: 'med_baby_milk1',
+        cat: 'baby_milk',
+        price: 85,
+        badge: 'Baby Nutrition',
+        name: { ar: 'حليب أطفال مدعّم وأغذية تكميلية للرضع', en: 'Fortified Infant Formula & Baby Nutrition', tr: 'Takviyeli Bebek Sütü ve Ek Besinler', ur: 'بچوں کا غذائیت بخش دودھ اور خوراک', zh: '强化营养婴儿配方奶粉与辅食' },
+        dosage: { ar: 'يُحضّر حسب العمر والكمية المحددة على العبوة أو الطبيب', en: 'Prepare according to age guide or pediatrician advice', tr: 'Yaşa uygun ölçüde veya doktor tavsiyesine göre hazırlayın', ur: 'عمر کے مطابق یا ڈاکٹر کے مشورے سے تیار کریں', zh: '按月龄比例冲调或遵医嘱喂养' }
+      },
+      {
+        id: 'med_baby_daily1',
+        cat: 'baby_daily',
+        price: 38,
+        badge: 'Baby Care',
+        name: { ar: 'مناديل مبللة وكريم حماية يومي لبشرة الطفل', en: 'Gentle Baby Wipes & Daily Barrier Cream', tr: 'Hassas Bebek Mendili ve Günlük Koruyucu Krem', ur: 'بچوں کے نرم وائپس اور حفاظتی کریم', zh: '婴儿柔湿巾与日常舒缓护臀霜' },
+        dosage: { ar: 'للاستخدام اليومي عند كل تغيير لتهدئة البشرة', en: 'Use daily at every change to soothe skin', tr: 'Her alt değiştirmede cildi yatıştırmak için kullanın', ur: 'ہر تبدیلی کے وقت جلد کو محفوظ رکھنے کے لیے لگائیں', zh: '每次更换时使用，保持肌肤干爽舒适' }
+      },
+      {
+        id: 'med_baby_feed1',
+        cat: 'baby_feeding',
+        price: 49,
+        badge: 'Feeding',
+        name: { ar: 'رضّاعة طبية مضادة للمغص وحلمات سيليكون', en: 'Anti-Colic Baby Bottle & Silicone Teats', tr: 'Gaz Önleyici Biberon ve Silikon Emzikler', ur: 'اینٹی کولک فیڈر اور سلیکون نپلز', zh: '防胀气婴儿奶瓶与软硅胶奶嘴' },
+        dosage: { ar: 'تُعقّم جيداً قبل الاستخدام الأول وبعد كل رضعة', en: 'Sterilize thoroughly before first use and after each feed', tr: 'İlk kullanımdan önce ve her beslemeden sonra sterilize edin', ur: 'ہر استعمال سے پہلے اور بعد میں اچھی طرح جراثیم سے پاک کریں', zh: '首次使用前及每次喂养后彻底消毒' }
+      },
+      {
+        id: 'med_mom_care1',
+        cat: 'mom_care',
+        price: 62,
+        badge: 'Maternity',
+        name: { ar: 'مستلزمات العناية للأم أثناء الحمل والرضاعة', en: 'Maternity & Nursing Care Essentials', tr: 'Hamilelik ve Emzirme Dönemi Anne Bakım Ürünleri', ur: 'حمل اور دودھ پلانے کے دوران ماں کی نگہداشت', zh: '孕期与哺乳期妈妈护理用品' },
+        dosage: { ar: 'يُستخدم حسب الحاجة اليومية للعناية والراحة', en: 'Use as needed for daily maternal care and comfort', tr: 'Günlük konfor ve bakım için gerektiği şekilde kullanın', ur: 'روزمرہ آرام اور نگہداشت کے لیے ضرورت کے مطابق استعمال کریں', zh: '按日常孕产护理需要随时使用' }
+      },
+
+      // 6. العناية الشخصية والنظافة اليومية
+      {
+        id: 'med_hyg_oral1',
+        cat: 'hygiene_oral',
+        price: 23,
+        badge: 'Oral Care',
+        name: { ar: 'معجون أسنان وغسول فم لحماية اللثة والأسنان', en: 'Gum & Enamel Protection Toothpaste & Rinse', tr: 'Diş Eti ve Mine Koruyucu Macun ve Gargara', ur: 'مسوڑھوں اور دانتوں کی حفاظت کے لیے ٹوتھ پیسٹ', zh: '护龈固齿牙膏与清新漱口水' },
+        dosage: { ar: 'يُستخدم مرتين يومياً صباحاً ومساءً', en: 'Use twice daily, morning and evening', tr: 'Sabah ve akşam olmak üzere günde iki kez kullanın', ur: 'دن میں دو بار صبح اور شام استعمال کریں', zh: '每日早晚各刷牙/漱口一次' }
+      },
+      {
+        id: 'med_hyg_body1',
+        cat: 'hygiene_body',
+        price: 27,
+        badge: 'Hygiene',
+        name: { ar: 'غسول يومي لطيف ومعقم لليدين والجسم', en: 'Gentle Daily Body & Hand Hygiene Wash', tr: 'Günlük Nazik El ve Vücut Temizleme Jeli', ur: 'ہاتھوں اور جسم کی صفائی کے لیے روزانہ واش', zh: '温和日常手部与身体清洁洗护液' },
+        dosage: { ar: 'للاستخدام اليومي للحفاظ على النظافة والانتعاش', en: 'For daily use to maintain cleanliness and freshness', tr: 'Temizlik ve ferahlık için günlük kullanıma uygundur', ur: 'روزانہ صفائی اور تازگی کے لیے استعمال کریں', zh: '日常清洁使用，保持清爽卫生' }
+      },
+      {
+        id: 'med_hyg_men1',
+        cat: 'hygiene_men',
+        price: 36,
+        badge: 'Men Care',
+        name: { ar: 'بلسم ما بعد الحلاقة ومجموعة العناية اليومية للرجال', en: 'Aftershave Soothing Balm & Men Daily Care', tr: 'Tıraş Sonrası Yatıştırıcı Balsam ve Erkek Bakımı', ur: 'شیو کے بعد سکون بخش بام اور مردانہ نگہداشت', zh: '须后舒缓润肤露与男士日常护理套装' },
+        dosage: { ar: 'يُوضع بعد الحلاقة لتهدئة البشرة ومنع التحسس', en: 'Apply after shaving to soothe skin and prevent irritation', tr: 'Tıraştan sonra cildi yatıştırmak için uygulayın', ur: 'شیو کے بعد جلد کو سکون دینے کے لیے لگائیں', zh: '剃须后涂抹以舒缓肌肤不适' }
+      },
+
+      // 7. الأجهزة الطبية والرقابة الصحية المنزلية
       {
         id: 'med6',
         cat: 'dev_bp',
@@ -981,23 +1130,82 @@
         dosage: { ar: 'قياس بضغطة زر واحدة مع ذاكرة قراءات', en: 'One-touch measurement with memory log', tr: 'Tek tuşla hafızalı tansiyon ölçümü', ur: 'ایک بٹن سے بلڈ پریشر کی درست پیمائش', zh: '一键精准测量，自带读数记忆功能' }
       },
       {
-        id: 'med7',
-        cat: 'dev_nebulizer',
-        price: 78,
-        badge: 'First Aid',
-        name: { ar: 'حقيبة الإسعافات الأولية المتكاملة للمركبة', en: 'Complete Vehicle First Aid Medical Kit', tr: 'Araç İçin Tam Teşekküllü İlk Yardım Çantası', ur: 'گاڑی کے لیے مکمل فرسٹ ایڈ باکس', zh: '车载无障碍综合急救医疗包' },
-        dosage: { ar: 'تحتوي على ضمادات معقمة، مطهر، شاش، وقفازات طبية', en: 'Includes sterile bandages, antiseptic, gauze & gloves', tr: 'Steril bandaj, antiseptik ve gazlı bez içerir', ur: 'اسٹریلائزڈ پٹیاں، جراثیم کش محلول اور دستانے شامل ہیں', zh: '含无菌绷带、消毒液、纱布及医用手套' }
+        id: 'med5',
+        cat: 'dev_glucose',
+        price: 65,
+        badge: 'Med Supply',
+        name: { ar: 'شرائط وجهاز قياس سكر الدم المنزلي', en: 'Home Blood Glucose Meter & Test Strips', tr: 'Ev Tipi Kan Şekeri Ölçüm Cihazı ve Stripleri', ur: 'گھریلو بلڈ شوگر میٹر اور ٹیسٹ اسٹرپس', zh: '家用血糖监测仪与配套试纸' },
+        dosage: { ar: 'للفحص اليومي لمستوى السكر في الدم بالمنزل', en: 'For daily home blood glucose monitoring', tr: 'Günlük evde kan şekeri ölçümü için', ur: 'گھر پر روزانہ شوگر چیک کرنے کے لیے', zh: '用于日常居家血糖监测' }
       },
       {
-        id: 'med8',
-        cat: 'vit_single',
-        price: 42,
-        badge: 'Supplement',
-        name: { ar: 'فيتامين سي 1000 ملجم + زنك فوار للمناعة', en: 'Vitamin C 1000mg + Zinc Effervescent', tr: 'Vitamin C 1000mg + Çinko Efervesan', ur: 'وٹامن سی 1000mg + زنک فوار گولیاں', zh: '维生素C 1000mg + 锌泡腾片' },
-        dosage: { ar: 'قرص فوار واحد يذاب في كوب ماء يومياً', en: 'Dissolve 1 tablet in a glass of water daily', tr: 'Günde 1 tablet bir bardak suda eritilir', ur: 'روزانہ ایک گلاس پانی میں ایک گولی حل کریں', zh: '每日1片，溶解于一杯水中饮用' }
+        id: 'med_dev_temp1',
+        cat: 'dev_temp_scale',
+        price: 55,
+        badge: 'Device',
+        name: { ar: 'ميزان حرارة رقمي وميزان إلكتروني للوزن', en: 'Digital Thermometer & Electronic Body Scale', tr: 'Dijital Ateş Ölçer ve Elektronik Baskül', ur: 'ڈیجیٹل تھرمامیٹر اور وزن کی مشین', zh: '电子体温计与高精度体重秤' },
+        dosage: { ar: 'قراءة سريعة وواضحة للمتابعة الصحية المنزلية', en: 'Fast and clear readings for home health tracking', tr: 'Evde sağlık takibi için hızlı ve net ölçüm', ur: 'گھر پر صحت کی نگرانی کے لیے تیز اور درست ریڈنگ', zh: '快速清晰读数，方便居家健康监测' }
+      },
+      {
+        id: 'med7',
+        cat: 'dev_nebulizer',
+        price: 120,
+        badge: 'Medical',
+        name: { ar: 'جهاز استنشاق البخار (Nebulizer) وكمامات حماية', en: 'Nebulizer Inhalation Device & Protective Masks', tr: 'Nebülizatör Buhar Cihazı ve Koruyucu Maskeler', ur: 'نیبولائزر مشین اور حفاظتی ماسک', zh: '医用雾化吸入器与防护口罩' },
+        dosage: { ar: 'لجلسات الاستنشاق الموصوفة والحماية اليومية', en: 'For prescribed inhalation therapy & daily protection', tr: 'Reçeteli buhar tedavisi ve günlük koruma için', ur: 'نسخہ شدہ سانس کے علاج اور روزمرہ تحفظ کے لیے', zh: '用于雾化吸入护理与日常呼吸防护' }
+      },
+
+      // 8. التغذية الرياضية والرشاقة
+      {
+        id: 'med_sport_prot1',
+        cat: 'sport_protein',
+        price: 185,
+        badge: 'Whey Protein',
+        name: { ar: 'واي بروتين (Whey Protein) لدعم الكتلة العضلية', en: 'Whey Protein Formula for Lean Muscle Support', tr: 'Kas Gelişimi İçin Whey Protein Tozu', ur: 'مسلز کی مضبوطی کے لیے وے پروٹین', zh: '乳清蛋白粉 (Whey Protein) 增肌塑形' },
+        dosage: { ar: 'مكيال واحد بعد التمرين أو حسب الاحتياج اليومي', en: '1 scoop post-workout or as daily protein goal requires', tr: 'Antrenman sonrası 1 ölçek veya günlük ihtiyaca göre', ur: 'ورزش کے بعد ایک اسکوپ یا روزانہ ضرورت کے مطابق', zh: '训练后1勺或按每日蛋白质需求饮用' }
+      },
+      {
+        id: 'med_sport_amino1',
+        cat: 'sport_amino',
+        price: 92,
+        badge: 'Amino & Energy',
+        name: { ar: 'أحماض أمينية (BCAA) ومشروب طاقة رياضي', en: 'BCAA Amino Acids & Sports Energy Drink', tr: 'BCAA Amino Asitler ve Sporcu Enerji İçeceği', ur: 'بی سی اے اے امائنو ایسڈز اور انرجی ڈرنک', zh: 'BCAA支链氨基酸与运动能量饮品' },
+        dosage: { ar: 'يُتناول قبل أو أثناء التمرين لدعم التحمل', en: 'Take before or during workout to support endurance', tr: 'Dayanıklılığı desteklemek için antrenman öncesi veya sırasında', ur: 'ورزش سے پہلے یا دوران طاقت کے لیے لیں', zh: '运动前或运动中饮用，助力耐力表现' }
+      },
+      {
+        id: 'med_sport_weight1',
+        cat: 'sport_weight',
+        price: 67,
+        badge: 'Fitness',
+        name: { ar: 'بدائل وجبات، سناكات صحية، ومنتجات إنقاص الوزن', en: 'Meal Replacements, Healthy Snacks & Weight Aids', tr: 'Öğün Alternatifleri, Sağlıklı Atıştırmalıklar ve Form', ur: 'کھانے کے متبادل، ہیلدی اسنیکس اور وزن کنٹرول', zh: '代餐奶昔、健康零食与体重管理产品' },
+        dosage: { ar: 'تُدمج ضمن نظام غذائي متوازن وحركة منتظمة', en: 'Use as part of a balanced diet and active routine', tr: 'Dengeli beslenme ve aktif yaşam ile birlikte kullanın', ur: 'متوازن غذا اور باقاعدہ ورزش کے ساتھ استعمال کریں', zh: '配合均衡饮食与规律运动使用' }
+      },
+
+      // 9. العناية بالعيون والأذنين
+      {
+        id: 'med_eye_drops1',
+        cat: 'eye_drops',
+        price: 28,
+        badge: 'Eye Care',
+        name: { ar: 'قطرات ترطيب العين (الدموع الاصطناعية)', en: 'Lubricating Eye Drops (Artificial Tears)', tr: 'Nemlendirici Göz Damlası (Yapay Gözyaşı)', ur: 'آنکھوں کو تر رکھنے والے قطرے (مصنوعی آنسو)', zh: '人工泪液保湿滴眼液' },
+        dosage: { ar: 'نقطة إلى نقطتين في كل عين عند الحاجة أو الجفاف', en: '1-2 drops per eye as needed for dryness', tr: 'Kuruluk halinde her göze 1-2 damla damlatın', ur: 'خشکی کی صورت میں ہر آنکھ میں 1 سے 2 قطرے ڈالیں', zh: '眼干或按需每眼滴入1至2滴' }
+      },
+      {
+        id: 'med_eye_lens1',
+        cat: 'eye_lens',
+        price: 35,
+        badge: 'Lens Care',
+        name: { ar: 'محلول تعقيم وحفظ العدسات اللاصقة مع حافظة', en: 'Contact Lens Solution & Sterile Case', tr: 'Kontakt Lens Solüsyonu ve Saklama Kabı', ur: 'کانٹیکٹ لینز کا محلول اور کیس', zh: '隐形眼镜多功能护理液与便携镜盒' },
+        dosage: { ar: 'تُغمر العدسات في محلول جديد بعد كل إزالة', en: 'Soak lenses in fresh solution after each removal', tr: 'Her çıkarmadan sonra lensleri taze solüsyonda bekletin', ur: 'لینز اتارنے کے بعد نئے محلول میں محفوظ رکھیں', zh: '每次摘下后浸泡于新鲜护理液中' }
+      },
+      {
+        id: 'med_ear_care1',
+        cat: 'ear_care',
+        price: 34,
+        badge: 'Ear Care',
+        name: { ar: 'بخاخ تنظيف الأذن وسدادات أذن مريحة', en: 'Ear Cleaning Spray & Comfort Earplugs', tr: 'Kulak Temizleme Spreyi ve Rahat Kulak Tıkacı', ur: 'کان صاف کرنے کا اسپرے اور ایئر پلگ', zh: '耳道清洁喷雾与舒适隔音耳塞' },
+        dosage: { ar: 'يُستخدم البخاخ بلطف والسدادات عند الضوضاء أو النوم', en: 'Use spray gently; wear earplugs for noise or sleep', tr: 'Spreyi nazikçe uygulayın; tıkaçları gürültü veya uyku için takın', ur: 'اسپرے نرمی سے استعمال کریں اور شور میں ایئر پلگ لگائیں', zh: '温和喷入清洁；睡眠或嘈杂环境可佩戴耳塞' }
       }
     ];
-
     function revealArabicGraduallyRTL(elementId, fullText, durationMs, onComplete) {
       const el = document.getElementById(elementId);
       if (!el) return;
