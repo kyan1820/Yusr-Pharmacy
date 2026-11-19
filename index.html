@@ -303,6 +303,9 @@
         <button onclick="toggleSimpleMode()" id="btnSimple" class="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow">
           ✨ <span id="btnSimpleText">التبسيط: إخفاء الثانوية</span>
         </button>
+        <button onclick="cycleFont()" id="btnFont" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer">
+          🔠 <span id="btnFontText">حجم الخط: 100%</span>
+        </button>
         <button onclick="openLangModal()" class="secondary-element bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer">
           🌐 <span id="btnLangText">اللغة (Language)</span>
         </button>
@@ -310,10 +313,7 @@
           <span id="ttsDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
           <span id="btnTTSText">القارئ الصوتي: مفعل</span>
         </button>
-        <button onclick="cycleFont()" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-          <span id="btnFontText">الخط: 100%</span>
-        </button>
-        <button onclick="toggleTheme()" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+        <button onclick="toggleTheme()" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
           <span id="btnThemeText">🌙 الوضع الداكن</span>
         </button>
         <button onclick="toggleHighContrast()" id="btnContrast" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
@@ -418,7 +418,7 @@
     let isHighContrast = false;
     let isSimpleMode = false;
     let fontScaleIndex = 0;
-    const fontScales = [100, 110, 120];
+    const fontScales = [100, 110, 120, 135];
     let selectedAssistMode = 'mobility';
     let selectedCategory = 'all';
     let expandedCategories = {};
@@ -438,7 +438,7 @@
         btnLang: 'اللغة (Language)',
         ttsOn: 'القارئ الصوتي: مفعل',
         ttsOff: 'القارئ الصوتي: متوقف',
-        fontLbl: 'الخط:',
+        fontLbl: 'حجم الخط:',
         themeLight: '☀️ الوضع النهاري',
         themeDark: '🌙 الوضع الداكن',
         contrastOn: 'تباين عالٍ: مفعل',
@@ -474,7 +474,7 @@
         btnLang: 'Language',
         ttsOn: 'Voice Reader: ON',
         ttsOff: 'Voice Reader: OFF',
-        fontLbl: 'Font:',
+        fontLbl: 'Font Size:',
         themeLight: '☀️ Light Mode',
         themeDark: '🌙 Dark Mode',
         contrastOn: 'High Contrast: ON',
@@ -510,7 +510,7 @@
         btnLang: 'Dil (Language)',
         ttsOn: 'Sesli Okuyucu: Açık',
         ttsOff: 'Sesli Okuyucu: Kapalı',
-        fontLbl: 'Yazı:',
+        fontLbl: 'Yazı Boyutu:',
         themeLight: '☀️ Gündüz Modu',
         themeDark: '🌙 Gece Modu',
         contrastOn: 'Yüksek Kontrast: Açık',
@@ -546,7 +546,7 @@
         btnLang: 'زبان (Language)',
         ttsOn: 'صوتی قاری: فعال',
         ttsOff: 'صوتی قاری: بند',
-        fontLbl: 'فونٹ:',
+        fontLbl: 'فونٹ سائز:',
         themeLight: '☀️ لائٹ موڈ',
         themeDark: '🌙 ڈارک موڈ',
         contrastOn: 'ہائی کنٹراسٹ: فعال',
@@ -582,7 +582,7 @@
         btnLang: '语言 (Language)',
         ttsOn: '语音朗读：开启',
         ttsOff: '语音朗读：关闭',
-        fontLbl: '字号:',
+        fontLbl: '字体大小:',
         themeLight: '☀️ 日间模式',
         themeDark: '🌙 夜间模式',
         contrastOn: '高对比度：开启',
@@ -1435,6 +1435,13 @@
           : 'bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow';
       }
 
+      const fontBtn = document.getElementById('btnFont');
+      if (fontBtn) {
+        fontBtn.className = fontScaleIndex > 0
+          ? 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow'
+          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer';
+      }
+
       document.getElementById('btnLangText').textContent = L.btnLang;
       document.getElementById('btnTTSText').textContent = ttsEnabled ? L.ttsOn : L.ttsOff;
       document.getElementById('btnFontText').textContent = `${L.fontLbl} ${fontScales[fontScaleIndex]}%`;
@@ -1492,6 +1499,7 @@
       fontScaleIndex = (fontScaleIndex + 1) % fontScales.length;
       document.documentElement.style.fontSize = `${fontScales[fontScaleIndex]}%`;
       applyLanguage(currentLang);
+      speakText(`${i18n[currentLang].fontLbl} ${fontScales[fontScaleIndex]}%`);
     }
 
     function toggleHighContrast() {
