@@ -174,7 +174,7 @@
   <!-- 3. الترويسة الطبية الرسمية الموحدة -->
   <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-cyan-500/25 shadow-xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
-      
+
       <!-- الشعار الرسمي -->
       <div class="flex items-center gap-3">
         <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-500 text-slate-950 flex items-center justify-center font-black text-2xl shadow-lg shadow-cyan-500/20">
@@ -276,7 +276,7 @@
             <span id="valSubtotal">0.00 ر.س</span>
           </div>
           <div class="flex justify-between">
-            <span id="lblVat" class="text-slate-400">الضريبة (معفاة للأدوية الموصوفة / 15%):</span>
+            <span id="lblVat" class="text-slate-400">ضريبة القيمة المضافة (15%):</span>
             <span id="valVat">0.00 ر.س</span>
           </div>
           <div class="flex justify-between text-sm font-black text-cyan-400 pt-1.5 border-t border-slate-800">
@@ -304,9 +304,8 @@
     const fontScales = [100, 110, 120];
     let selectedAssistMode = 'mobility';
     let selectedCategory = 'otc';
-let expandedCategories = { otc: true };
-let customRxCounter = 1;
     let expandedCategories = { otc: true };
+    let customRxCounter = 1;
     let cart = [];
     let splashDismissed = false;
 
@@ -934,14 +933,6 @@ let customRxCounter = 1;
 
     const medications = [
       {
-        id: 'med_rx1',
-        cat: 'rx',
-        price: 45,
-        badge: 'Rx',
-        name: { ar: 'علاج موصوف إلكترونياً — مراجعة الصيدلي', en: 'E-Prescription Dispensing — Pharmacist Review', tr: 'E-Reçete İlacı — Eczacı Onaylı', ur: 'ای-نسخہ دوا — فارماسسٹ تصدیق', zh: '电子处方调配 — 药师审核' },
-        dosage: { ar: 'يُصرف وفق الوصفة الطبية المعتمدة وشرح الصيدلي', en: 'Dispensed per approved prescription & pharmacist guidance', tr: 'Onaylı reçete ve eczacı açıklamasına göre verilir', ur: 'معتمد نسخہ اور فارماسسٹ کی ہدایت کے مطابق', zh: '按获批处方及药师说明调配使用' }
-      },
-      {
         id: 'med1',
         cat: 'otc_pain',
         price: 14,
@@ -1171,6 +1162,12 @@ let customRxCounter = 1;
       if (modeObj) speakText(modeObj.title[currentLang]);
     }
 
+    function selectCategory(id) {
+      selectedCategory = id;
+      renderCategories();
+      renderMedications();
+    }
+
     function toggleCategoryGroup(catId) {
       expandedCategories[catId] = !expandedCategories[catId];
       selectedCategory = catId;
@@ -1236,7 +1233,6 @@ let customRxCounter = 1;
       const L = i18n[currentLang];
       const container = document.getElementById('medicationsGrid');
 
-      // إذا اختار العميل قسم "الأدوية الموصوفة" تظهر بطاقة إدخال الوصفة الطبية مع خيارين للإضافة للسلة
       if (selectedCategory === 'rx') {
         const rxTexts = {
           ar: {
@@ -1245,8 +1241,7 @@ let customRxCounter = 1;
             desc: 'اكتب رقم الوصفة الطبية أو أسماء الأدوية الموصوفة، ثم اختر طريقة الإضافة إلى الحقيبة الدوائية.',
             inputPh: 'اكتب رقم الوصفة الطبية أو تفاصيل الوصفة هنا (مثال: RX-48210)...',
             opt1: 'إضافة للسلة: صرف الوصفة (خيار 1)',
-            opt2: 'إضافة للسلة: صرف + شرح صيدلي (خيار 2)',
-            emptyAlert: 'يرجى كتابة رقم الوصفة الطبية أو تفاصيلها أولاً قبل الإضافة للسلة.'
+            opt2: 'إضافة للسلة: صرف + شرح صيدلي (خيار 2)'
           },
           en: {
             freeBadge: 'Free Service',
@@ -1254,8 +1249,7 @@ let customRxCounter = 1;
             desc: 'Enter your prescription number or prescribed medications, then choose an option to add to your bag.',
             inputPh: 'Enter prescription number or details here (e.g., RX-48210)...',
             opt1: 'Add to Bag: Standard Dispense (Option 1)',
-            opt2: 'Add to Bag: Dispense + Pharmacist Guide (Option 2)',
-            emptyAlert: 'Please enter the prescription number or details first.'
+            opt2: 'Add to Bag: Dispense + Pharmacist Guide (Option 2)'
           },
           tr: {
             freeBadge: 'Ücretsiz Hizmet',
@@ -1263,8 +1257,7 @@ let customRxCounter = 1;
             desc: 'Reçete numaranızı veya ilaç detaylarını yazın ve çantaya ekleme seçeneğini belirleyin.',
             inputPh: 'Reçete numarasını veya detaylarını buraya yazın (Örn: RX-48210)...',
             opt1: 'Çantaya Ekle: Standart Teslim (Seçenek 1)',
-            opt2: 'Çantaya Ekle: Teslim + Eczacı Danışmanlığı (Seçenek 2)',
-            emptyAlert: 'Lütfen önce reçete numarasını veya detaylarını yazın.'
+            opt2: 'Çantaya Ekle: Teslim + Eczacı Danışmanlığı (Seçenek 2)'
           },
           ur: {
             freeBadge: 'مفت سروس',
@@ -1272,8 +1265,7 @@ let customRxCounter = 1;
             desc: 'اپنا نسخہ نمبر یا ادویات کی تفصیل لکھیں اور بیگ میں شامل کرنے کا اختیار منتخب کریں۔',
             inputPh: 'نسخہ نمبر یا تفصیل یہاں لکھیں (مثال: RX-48210)...',
             opt1: 'بیگ میں شامل کریں: عام فراہمی (آپشن 1)',
-            opt2: 'بیگ میں شامل کریں: فراہمی + فارماسسٹ رہنمائی (آپشن 2)',
-            emptyAlert: 'براہ کرم پہلے نسخہ نمبر یا تفصیل لکھیں۔'
+            opt2: 'بیگ میں شامل کریں: فراہمی + فارماسسٹ رہنمائی (آپشن 2)'
           },
           zh: {
             freeBadge: '免费服务',
@@ -1281,8 +1273,7 @@ let customRxCounter = 1;
             desc: '请输入处方号或处方药品明细，然后选择一种方式加入药袋。',
             inputPh: '在此输入处方号或处方详情（如：RX-48210）...',
             opt1: '加入药袋：常规调配（选项 1）',
-            opt2: '加入药袋：调配 + 药师指导（选项 2）',
-            emptyAlert: '请先填写处方号或处方详情。'
+            opt2: '加入药袋：调配 + 药师指导（选项 2）'
           }
         };
         const R = rxTexts[currentLang] || rxTexts.ar;
@@ -1482,11 +1473,6 @@ let customRxCounter = 1;
       }, 0);
       const vat = subtotal * 0.15;
       const total = subtotal + vat;
-
-      document.getElementById('valSubtotal').textContent = `${subtotal.toFixed(2)} ${L.currency}`;
-      document.getElementById('valVat').textContent = `${vat.toFixed(2)} ${L.currency}`;
-      document.getElementById('valTotal').textContent = `${total.toFixed(2)} ${L.currency}`;
-    }
 
       document.getElementById('valSubtotal').textContent = `${subtotal.toFixed(2)} ${L.currency}`;
       document.getElementById('valVat').textContent = `${vat.toFixed(2)} ${L.currency}`;
