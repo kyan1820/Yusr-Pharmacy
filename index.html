@@ -17,6 +17,27 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
+    /* فتح وإغلاق درج السلة بسلاسة */
+    #cartDrawerBackdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #cartDrawerBackdrop.drawer-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #cartDrawerPanel {
+      transform: translateX(-100%);
+      transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    html[dir="ltr"] #cartDrawerPanel {
+      transform: translateX(100%);
+    }
+    #cartDrawerBackdrop.drawer-open #cartDrawerPanel {
+      transform: translateX(0);
+    }
+
     /* وضع التبسيط: إخفاء العناصر والأزرار الثانوية وإبقاء الأساسية */
     body.simple-mode .secondary-element {
       display: none !important;
@@ -375,18 +396,18 @@
 
   </main>
 
-  <!-- 5. نافذة / درج السلة والفاتورة (تفتح عند الضغط على زر السلة) -->
-  <div id="cartDrawerBackdrop" onclick="closeCartDrawer()" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex justify-end">
-    <aside onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-s border-cyan-500/40 w-full max-w-md h-full p-5 sm:p-6 shadow-2xl flex flex-col justify-between gap-4 overflow-y-auto">
+  <!-- 5. نافذة / درج السلة والفاتورة (تفتح وتقفل بسلاسة عند الضغط على زر السلة) -->
+  <div id="cartDrawerBackdrop" onclick="closeCartDrawer()" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex justify-end">
+    <aside id="cartDrawerPanel" onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-s border-cyan-500/40 w-full max-w-md h-full p-5 sm:p-6 shadow-2xl flex flex-col justify-between gap-4 overflow-y-auto">
       <div class="space-y-4">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
           <div>
-            <h2 id="bagTitle" class="text-base font-black text-cyan-400">الحقيبة الدوائية</h2>
+            <h2 id="bagTitle" class="text-base font-black text-cyan-400">الحقيبة الدوائية والفاتورة</h2>
             <p id="bagSubtitle" class="secondary-element text-[11px] text-muted-clinical text-slate-400 font-bold">تُصرف وتُسلّم مباشرة إلى نافذة مركبتك</p>
           </div>
           <div class="flex items-center gap-2">
             <span id="drawerBagCount" class="bg-cyan-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full">0</span>
-            <button onclick="closeCartDrawer()" aria-label="إغلاق السلة" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-black text-sm flex items-center justify-center cursor-pointer">
+            <button onclick="closeCartDrawer()" aria-label="إغلاق السلة" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-black text-sm flex items-center justify-center transition cursor-pointer">
               ✕
             </button>
           </div>
@@ -1340,12 +1361,22 @@
 
     function openCartDrawer() {
       const backdrop = document.getElementById('cartDrawerBackdrop');
-      if (backdrop) backdrop.classList.remove('hidden');
+      if (!backdrop) return;
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.add('drawer-open');
+      });
     }
 
     function closeCartDrawer() {
       const backdrop = document.getElementById('cartDrawerBackdrop');
-      if (backdrop) backdrop.classList.add('hidden');
+      if (!backdrop) return;
+      backdrop.classList.remove('drawer-open');
+      setTimeout(() => {
+        if (!backdrop.classList.contains('drawer-open')) {
+          backdrop.classList.add('hidden');
+        }
+      }, 360);
     }
 
     function revealArabicGraduallyRTL(elementId, fullText, durationMs, onComplete) {
