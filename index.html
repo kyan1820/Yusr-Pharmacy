@@ -1377,7 +1377,8 @@
     }
 
     function toggleCategoryGroup(catId) {
-      expandedCategories[catId] = !expandedCategories[catId];
+      const willOpen = !expandedCategories[catId];
+      expandedCategories = willOpen ? { [catId]: true } : {};
       selectedCategory = catId;
       renderCategories();
       renderMedications();
