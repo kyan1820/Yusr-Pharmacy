@@ -103,35 +103,24 @@
       color: #0f172a;
     }
     body.light-mode .text-muted-clinical {
-      @keyframes subCatItemIn {
-      from {
-        opacity: 0;
-        transform: translateY(-7px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      color: #475569;
     }
-    .subcat-smooth-row {
-      opacity: 0;
-      animation: subCatItemIn 0.26s ease forwards;
-    }
-      @keyframes subCatStaggerIn {
+
+    /* ظهور الأقسام الفرعية حبة حبة بسلاسة */
+    @keyframes subCatCascadeIn {
       0% {
         opacity: 0;
-        transform: translateY(-6px);
+        transform: translateY(-8px) scale(0.98);
       }
       100% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
       }
     }
-    .subcat-stagger-item {
+    .subcat-cascade-item {
       opacity: 0;
-      animation: subCatStaggerIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    }
-      color: #475569;
+      will-change: transform, opacity;
+      animation: subCatCascadeIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) var(--stagger-delay, 0ms) forwards;
     }
   </style>
 </head>
@@ -333,6 +322,7 @@
     let selectedAssistMode = 'mobility';
     let selectedCategory = 'otc';
     let expandedCategories = { otc: true };
+    let lastAnimatedGroupKey = '';
     let customRxCounter = 1;
     let cart = [];
     let splashDismissed = false;
@@ -960,7 +950,6 @@
     ];
 
     const medications = [
-      // 1. الأدوية غير الموصوفة (OTC)
       {
         id: 'med1',
         cat: 'otc_pain',
@@ -1009,8 +998,6 @@
         name: { ar: 'مضادات التقلصات والانتفاخ للمعدة والقولون', en: 'Antispasmodic & Bloating Relief Tablets', tr: 'Mide ve Gaz Giderici Tabletler', ur: 'پیٹ کے درد اور گیس سے آرام کی گولیاں', zh: '缓解胃肠痉挛与胀气胶囊' },
         dosage: { ar: 'قرص واحد قبل الأكل ثلاث مرات يومياً', en: '1 tablet before meals 3 times daily', tr: 'Günde 3 kez yemeklerden önce 1 tablet', ur: 'دن میں تین بار کھانے سے پہلے ایک گولی', zh: '每日3次，每次餐前1片' }
       },
-
-      // 2. الفيتامينات والمكملات الغذائية
       {
         id: 'med_vit_multi1',
         cat: 'vit_multi',
@@ -1035,8 +1022,6 @@
         name: { ar: 'خلاصة الجينسنغ والزنجبيل الطبيعية للدعم اليومي', en: 'Natural Ginseng & Ginger Herbal Extract', tr: 'Doğal Ginseng ve Zencefil Bitkisel Özü', ur: 'قدرتی جنسینگ اور ادرک کا ہربل سپلیمنٹ', zh: '天然人参姜黄草本提取胶囊' },
         dosage: { ar: 'كبسولة واحدة صباحاً بعد الطعام', en: '1 capsule in the morning after food', tr: 'Sabah yemekten sonra 1 kapsül', ur: 'صبح کھانے کے بعد ایک کیپسول', zh: '每日早晨饭后服用1粒' }
       },
-
-      // 3. العناية بالبشرة والجلد
       {
         id: 'med_skin_face1',
         cat: 'skin_face',
@@ -1061,8 +1046,6 @@
         name: { ar: 'لوشن مرطب مكثف للجسم للبشرة الجافة', en: 'Intensive Body Moisturizing Lotion for Dry Skin', tr: 'Kuru Ciltler İçin Yoğun Vücut Nemlendirici Losyon', ur: 'خشک جلد کے لیے جسم کا موئسچرائزنگ لوشن', zh: '干性肌深层滋润身体乳' },
         dosage: { ar: 'يُدلك بلطف على الجسم بعد الاستحمام', en: 'Massage gently onto body after showering', tr: 'Duştan sonra vücuda nazikçe masaj yaparak uygulayın', ur: 'نہانے کے بعد جسم پر نرمی سے لگائیں', zh: '沐浴后取适量轻柔涂抹于全身' }
       },
-
-      // 4. العناية بالشعر
       {
         id: 'med_hair_shampoo1',
         cat: 'hair_shampoo',
@@ -1087,8 +1070,6 @@
         name: { ar: 'صبغة شعر لطيفة ومغذية بدون أمونيا', en: 'Ammonia-Free Nourishing Hair Dye', tr: 'Amonyaksız Besleyici Saç Boyası', ur: 'امونیا کے بغیر بالوں کا رنگ', zh: '无氨温和滋养染发霜' },
         dosage: { ar: 'يُتبع دليل الاستخدام المرفق مع إجراء اختبار تحسس مسبق', en: 'Follow enclosed leaflet; perform patch test first', tr: 'Kutu içindeki talimatı izleyin, önce alerji testi yapın', ur: 'استعمال سے پہلے پیچ ٹیسٹ کریں اور ہدایات پر عمل کریں', zh: '请按说明书操作，使用前先做皮肤测试' }
       },
-
-      // 5. العناية بالطفل والأم
       {
         id: 'med_baby_milk1',
         cat: 'baby_milk',
@@ -1121,8 +1102,6 @@
         name: { ar: 'مستلزمات العناية للأم أثناء الحمل والرضاعة', en: 'Maternity & Nursing Care Essentials', tr: 'Hamilelik ve Emzirme Dönemi Anne Bakım Ürünleri', ur: 'حمل اور دودھ پلانے کے دوران ماں کی نگہداشت', zh: '孕期与哺乳期妈妈护理用品' },
         dosage: { ar: 'يُستخدم حسب الحاجة اليومية للعناية والراحة', en: 'Use as needed for daily maternal care and comfort', tr: 'Günlük konfor ve bakım için gerektiği şekilde kullanın', ur: 'روزمرہ آرام اور نگہداشت کے لیے ضرورت کے مطابق استعمال کریں', zh: '按日常孕产护理需要随时使用' }
       },
-
-      // 6. العناية الشخصية والنظافة اليومية
       {
         id: 'med_hyg_oral1',
         cat: 'hygiene_oral',
@@ -1147,8 +1126,6 @@
         name: { ar: 'بلسم ما بعد الحلاقة ومجموعة العناية اليومية للرجال', en: 'Aftershave Soothing Balm & Men Daily Care', tr: 'Tıraş Sonrası Yatıştırıcı Balsam ve Erkek Bakımı', ur: 'شیو کے بعد سکون بخش بام اور مردانہ نگہداشت', zh: '须后舒缓润肤露与男士日常护理套装' },
         dosage: { ar: 'يُوضع بعد الحلاقة لتهدئة البشرة ومنع التحسس', en: 'Apply after shaving to soothe skin and prevent irritation', tr: 'Tıraştan sonra cildi yatıştırmak için uygulayın', ur: 'شیو کے بعد جلد کو سکون دینے کے لیے لگائیں', zh: '剃须后涂抹以舒缓肌肤不适' }
       },
-
-      // 7. الأجهزة الطبية والرقابة الصحية المنزلية
       {
         id: 'med6',
         cat: 'dev_bp',
@@ -1181,8 +1158,6 @@
         name: { ar: 'جهاز استنشاق البخار (Nebulizer) وكمامات حماية', en: 'Nebulizer Inhalation Device & Protective Masks', tr: 'Nebülizatör Buhar Cihazı ve Koruyucu Maskeler', ur: 'نیبولائزر مشین اور حفاظتی ماسک', zh: '医用雾化吸入器与防护口罩' },
         dosage: { ar: 'لجلسات الاستنشاق الموصوفة والحماية اليومية', en: 'For prescribed inhalation therapy & daily protection', tr: 'Reçeteli buhar tedavisi ve günlük koruma için', ur: 'نسخہ شدہ سانس کے علاج اور روزمرہ تحفظ کے لیے', zh: '用于雾化吸入护理与日常呼吸防护' }
       },
-
-      // 8. التغذية الرياضية والرشاقة
       {
         id: 'med_sport_prot1',
         cat: 'sport_protein',
@@ -1207,8 +1182,6 @@
         name: { ar: 'بدائل وجبات، سناكات صحية، ومنتجات إنقاص الوزن', en: 'Meal Replacements, Healthy Snacks & Weight Aids', tr: 'Öğün Alternatifleri, Sağlıklı Atıştırmalıklar ve Form', ur: 'کھانے کے متبادل، ہیلدی اسنیکس اور وزن کنٹرول', zh: '代餐奶昔、健康零食与体重管理产品' },
         dosage: { ar: 'تُدمج ضمن نظام غذائي متوازن وحركة منتظمة', en: 'Use as part of a balanced diet and active routine', tr: 'Dengeli beslenme ve aktif yaşam ile birlikte kullanın', ur: 'متوازن غذا اور باقاعدہ ورزش کے ساتھ استعمال کریں', zh: '配合均衡饮食与规律运动使用' }
       },
-
-      // 9. العناية بالعيون والأذنين
       {
         id: 'med_eye_drops1',
         cat: 'eye_drops',
@@ -1234,6 +1207,7 @@
         dosage: { ar: 'يُستخدم البخاخ بلطف والسدادات عند الضوضاء أو النوم', en: 'Use spray gently; wear earplugs for noise or sleep', tr: 'Spreyi nazikçe uygulayın; tıkaçları gürültü veya uyku için takın', ur: 'اسپرے نرمی سے استعمال کریں اور شور میں ایئر پلگ لگائیں', zh: '温和喷入清洁；睡眠或嘈杂环境可佩戴耳塞' }
       }
     ];
+
     function revealArabicGraduallyRTL(elementId, fullText, durationMs, onComplete) {
       const el = document.getElementById(elementId);
       if (!el) return;
@@ -1408,6 +1382,11 @@
       const willOpen = !expandedCategories[catId];
       expandedCategories = willOpen ? { [catId]: true } : {};
       selectedCategory = catId;
+      if (willOpen) {
+        lastAnimatedGroupKey = `${catId}_${Date.now()}`;
+      } else {
+        lastAnimatedGroupKey = '';
+      }
       renderCategories();
       renderMedications();
     }
@@ -1430,20 +1409,36 @@
           ? `toggleCategoryGroup('${c.id}')`
           : `selectCategory('${c.id}')`;
 
-        const childrenHtml = (hasChildren && isExpanded)
-          ? `<div class="mt-1 me-3 pe-2.5 border-s-2 border-cyan-500/40 space-y-1">${
-              c.children.map((ch, i) => {
-                const chActive = selectedCategory === ch.id;
-                const activeCls = chActive
-                  ? 'bg-teal-400 text-slate-950 font-black shadow-sm'
-                  : 'hover:bg-slate-800/60 text-slate-300';
-                const dotCls = chActive ? 'bg-slate-950' : 'bg-cyan-400';
-                return `<button type="button" onclick="selectCategory('${ch.id}')" style="animation-delay:${i * 70}ms" class="subcat-smooth-row w-full text-start px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer"><span class="w-1.5 h-1.5 rounded-full ${dotCls} shrink-0"></span><span class="px-1.5 py-0.5 rounded-lg ${activeCls}">${ch.name[currentLang]}</span></button>`;
-              }).join('')
-            }</div>`
-          : '';
+        const animateThisOpen = isExpanded && lastAnimatedGroupKey.startsWith(`${c.id}_`);
 
-        return `<div><button type="button" onclick="${clickAction}" class="w-full text-start px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition flex items-center justify-between gap-2 cursor-pointer ${mainBtnClass}"><span class="flex items-center gap-2"><span>${c.icon}</span><span>${c.name[currentLang]}</span></span>${hasChildren ? `<span class="text-[11px] font-black">${isExpanded ? '▾' : '▸'}</span>` : ''}</button>${childrenHtml}</div>`;
+        const childrenHtml = hasChildren && isExpanded ? `
+          <div data-group-key="${animateThisOpen ? lastAnimatedGroupKey : ''}" class="mt-1 me-3 pe-2.5 border-s-2 border-cyan-500/40 space-y-1">
+            ${c.children.map((ch, idx) => {
+              const chActive = selectedCategory === ch.id;
+              const animClass = animateThisOpen ? 'subcat-cascade-item' : '';
+              const delayStyle = animateThisOpen ? `--stagger-delay: ${idx * 75}ms;` : '';
+              return `
+                <button type="button" onclick="selectCategory('${ch.id}')" style="${delayStyle}" class="${animClass} w-full text-start px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${chActive ? 'bg-teal-400 text-slate-950 font-black shadow-sm' : 'hover:bg-slate-800/60 text-slate-300'}">
+                  <span class="w-1.5 h-1.5 rounded-full ${chActive ? 'bg-slate-950' : 'bg-cyan-400'} shrink-0"></span>
+                  <span>${ch.name[currentLang]}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        ` : '';
+
+        return `
+          <div>
+            <button type="button" onclick="${clickAction}" class="w-full text-start px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition flex items-center justify-between gap-2 cursor-pointer ${mainBtnClass}">
+              <span class="flex items-center gap-2">
+                <span>${c.icon}</span>
+                <span>${c.name[currentLang]}</span>
+              </span>
+              ${hasChildren ? `<span class="text-[11px] font-black">${isExpanded ? '▾' : '▸'}</span>` : ''}
+            </button>
+            ${childrenHtml}
+          </div>
+        `;
       }).join('');
     }
 
@@ -1739,7 +1734,7 @@
             <div class="clinical-subcard bg-slate-950 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2">
               <div>
                 <div class="text-xs font-black">${med.name[currentLang]}</div>
-                <div class="text-[11px] text-cyan-400 font-bold">${(med.price * item.qty).toFixed(2)} ${L.currency}</div>
+                <div class="text-[11px] text-cyan-400 font-bold">${formatPrice(med.price * item.qty)}</div>
               </div>
               <div class="flex items-center gap-1.5">
                 <button onclick="changeQty('${item.id}', -1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 font-black text-xs cursor-pointer">-</button>
@@ -1774,11 +1769,13 @@
       showToast(L.orderSuccess);
       speakText(L.orderSuccess);
     }
-function formatPrice(amount) {
+
+    function formatPrice(amount) {
       const num = Number(amount) || 0;
       const formatted = Number.isInteger(num) ? String(num) : num.toFixed(2);
       return `<span class="inline-flex items-center gap-1" dir="ltr">${formatted}<svg class="inline-block w-4 h-4 fill-current shrink-0 mx-0.5" viewBox="0 0 100 100" aria-label="ريال سعودي"><path d="M58 12 L70 6 L70 72 L58 76 Z"/><path d="M36 20 L48 14 L48 72 C48 82 42 88 31 91 L15 95 L18 82 L31 79 C35 78 36 75 36 70 Z"/><path d="M18 53 L88 38 L85 50 L15 65 Z"/><path d="M58 67 L86 60 L83 72 L58 78 Z"/><path d="M52 86 L84 79 L81 91 L49 98 Z"/></svg></span>`;
     }
+
     function showToast(msg) {
       const box = document.getElementById('toastBox');
       box.textContent = msg;
