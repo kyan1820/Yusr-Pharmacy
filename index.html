@@ -106,39 +106,43 @@
       color: #475569;
     }
 
-    /* وضع التباين العالي (High Contrast) */
+    /* وضع التباين العالي المعتمد على وضوح التباين الداكن */
     body.high-contrast-mode {
-      background-color: #000000 !important;
-      color: #ffffff !important;
-    }
-    body.light-mode.high-contrast-mode {
-      background-color: #ffffff !important;
-      color: #000000 !important;
+      background-color: #020617 !important;
+      color: #f8fafc !important;
     }
     body.high-contrast-mode .clinical-card,
     body.high-contrast-mode .clinical-subcard {
+      background-color: #090d16 !important;
       border-width: 2px !important;
-      border-color: #000000 !important;
-      background-color: #ffffff !important;
-      color: #000000 !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
     }
-    body:not(.light-mode).high-contrast-mode .clinical-card,
-    body:not(.light-mode).high-contrast-mode .clinical-subcard {
+    body.high-contrast-mode .clinical-input {
+      background-color: #020617 !important;
       border-width: 2px !important;
       border-color: #facc15 !important;
-      background-color: #000000 !important;
       color: #ffffff !important;
     }
     body.high-contrast-mode .text-muted-clinical,
     body.high-contrast-mode .text-slate-400,
     body.high-contrast-mode .text-slate-300 {
-      color: inherit !important;
+      color: #e2e8f0 !important;
       opacity: 1 !important;
     }
     body.high-contrast-mode .cat-main-btn {
+      background-color: #0f172a !important;
+      color: #38bdf8 !important;
       border-width: 2px !important;
-      border-color: #000000 !important;
+      border-color: #38bdf8 !important;
       font-weight: 900 !important;
+    }
+    body.high-contrast-mode .cat-main-btn.is-active-sweep {
+      color: #ffffff !important;
+      border-color: #facc15 !important;
+    }
+    body.high-contrast-mode .cat-main-btn.is-active-sweep::before {
+      background: linear-gradient(to left, #1d4ed8, #0284c7) !important;
     }
 
     /* أزرار الأقسام: أبيض بنص أزرق، وعند الضغط تتلون بالأزرق تدريجياً من اليمين لليسار */
