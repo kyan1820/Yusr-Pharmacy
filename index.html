@@ -106,26 +106,52 @@
       color: #475569;
     }
 
-    /* أزرار الأقسام الرئيسية: أبيض بنص أزرق، وعند الضغط يتلوّن باللون الأزرق بالتدريج من اليمين لليسار */
+    /* أزرار الأقسام: أبيض بنص أزرق، وعند الضغط تتلون بالأزرق تدريجياً من اليمين لليسار */
     .cat-main-btn {
       position: relative;
       overflow: hidden;
+      background-color: #ffffff;
       color: #0284c7;
-      border: 1px solid #cbd5e1;
-      background-image: linear-gradient(to left, #2563eb 0%, #0284c7 50%, #ffffff 50%, #ffffff 100%);
-      background-size: 200% 100%;
-      background-position: 100% 0;
-      transition: background-position 0.45s cubic-bezier(0.22, 1, 0.36, 1), color 0.25s ease, border-color 0.25s ease, box-shadow 0.3s ease;
+      border: 1.5px solid #cbd5e1;
+      transition: color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .cat-main-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 0%;
+      background: linear-gradient(to left, #2563eb, #0284c7);
+      z-index: 0;
+      transition: width 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    [dir="ltr"] .cat-main-btn::before {
+      right: auto;
+      left: 0;
+      background: linear-gradient(to right, #2563eb, #0284c7);
+    }
+    .cat-main-btn > span {
+      position: relative;
+      z-index: 1;
     }
     .cat-main-btn:hover {
       border-color: #38bdf8;
-      background-color: #f8fafc;
     }
     .cat-main-btn.is-active-sweep {
-      background-position: 0% 0;
       color: #ffffff;
       border-color: #2563eb;
-      box-shadow: 0 6px 16px -3px rgba(37, 99, 235, 0.45);
+      box-shadow: 0 6px 16px -3px rgba(37, 99, 235, 0.4);
+    }
+    .cat-main-btn.is-active-sweep::before {
+      width: 100%;
+    }
+    .cat-main-btn.is-active-sweep.animate-sweep::before {
+      animation: blueSweepFromRight 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes blueSweepFromRight {
+      from { width: 0%; }
+      to { width: 100%; }
     }
 
     /* ظهور الأقسام الفرعية حبة حبة بسرعة وسلاسة */
@@ -345,6 +371,7 @@
     let selectedCategory = 'all';
     let expandedCategories = {};
     let lastAnimatedGroupKey = '';
+    let lastClickedMainCat = '';
     let customRxCounter = 1;
     let cart = [];
     let splashDismissed = false;
@@ -1399,6 +1426,9 @@
       if (id === 'all' || id === 'rx') {
         expandedCategories = {};
         lastAnimatedGroupKey = '';
+        lastClickedMainCat = id;
+      } else {
+        lastClickedMainCat = '';
       }
       renderCategories();
       renderMedications();
@@ -1408,6 +1438,7 @@
       const willOpen = !expandedCategories[catId];
       expandedCategories = willOpen ? { [catId]: true } : {};
       selectedCategory = catId;
+      lastClickedMainCat = willOpen ? catId : '';
       if (willOpen) {
         lastAnimatedGroupKey = `${catId}_${Date.now()}`;
       } else {
@@ -1428,7 +1459,10 @@
         const hasSelectedChild = hasChildren && c.children.some(ch => ch.id === selectedCategory);
         const isActive = isSelected || hasSelectedChild;
 
-        const mainBtnClass = isActive ? 'is-active-sweep font-black' : 'font-extrabold';
+        const shouldAnimateSweep = isActive && lastClickedMainCat === c.id;
+        const mainBtnClass = isActive
+          ? `is-active-sweep ${shouldAnimateSweep ? 'animate-sweep' : ''} font-black`
+          : 'font-extrabold';
 
         const clickAction = hasChildren
           ? `toggleCategoryGroup('${c.id}')`
