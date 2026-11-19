@@ -319,8 +319,15 @@
         </div>
       </div>
 
-      <!-- شريط أدوات الوصول والمظهر وزر السلة -->
+      <!-- شريط التنقل وأدوات الوصول وزر السلة -->
       <div class="flex flex-wrap items-center gap-2">
+        <button onclick="switchPageView('shop')" id="btnNavShop" class="bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow">
+          💊 <span id="btnNavShopText">الصيدلية</span>
+        </button>
+        <button onclick="switchPageView('orders')" id="btnNavOrders" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer">
+          📦 <span id="btnNavOrdersText">طلباتها</span>
+          <span id="ordersTotalBadge" class="bg-amber-400 text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-full">0</span>
+        </button>
         <button onclick="openCartDrawer()" id="btnOpenCart" class="bg-gradient-to-r from-cyan-400 to-teal-300 hover:from-cyan-300 hover:to-teal-200 text-slate-950 px-4 py-1.5 rounded-xl text-xs font-black flex items-center gap-2 transition cursor-pointer shadow-md shadow-cyan-500/25">
           <span class="text-base leading-none">🛒</span>
           <span id="btnCartLabel">السلة</span>
@@ -350,8 +357,8 @@
     </div>
   </header>
 
-  <!-- 4. محتوى واجهة العميل (بدون الفاتورة المباشرة) -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+  <!-- 4. محتوى واجهة العميل (الصيدلية) -->
+  <main id="shopView" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
     <section class="clinical-card bg-slate-900 border border-cyan-500/30 rounded-3xl p-5 sm:p-6 shadow-xl">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-800">
@@ -395,6 +402,40 @@
     </section>
 
   </main>
+
+  <!-- 4B. واجهة طلباتها (الطلبات المكتملة، الملغاة، وقيد التجهيز) -->
+  <section id="ordersView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div class="clinical-card bg-slate-900 border border-cyan-500/30 rounded-3xl p-5 sm:p-6 shadow-xl space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <h1 id="ordersPageTitle" class="text-xl sm:text-2xl font-black text-cyan-400">طلباتها</h1>
+          <p id="ordersPageSubtitle" class="secondary-element text-xs text-muted-clinical text-slate-400 font-bold mt-1">متابعة الطلبات قيد التجهيز والطلبات المكتملة والملغاة</p>
+        </div>
+        <button onclick="switchPageView('shop')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-2xl transition cursor-pointer self-start sm:self-auto">
+          ← <span id="btnBackToShop">العودة إلى الصيدلية</span>
+        </button>
+      </div>
+
+      <!-- تبويبات حالات الطلبات -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <button onclick="setOrderFilter('preparing')" id="tabPreparing" class="p-3.5 rounded-2xl border-2 border-amber-400 bg-amber-400/15 text-start transition cursor-pointer flex items-center justify-between">
+          <span class="text-xs sm:text-sm font-black">⏳ <span id="lblPreparingTab">الطلبات قيد التجهيز</span></span>
+          <span id="countPreparing" class="bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-0.5 rounded-full">0</span>
+        </button>
+        <button onclick="setOrderFilter('completed')" id="tabCompleted" class="clinical-subcard p-3.5 rounded-2xl border border-slate-700 hover:border-emerald-400 text-start transition cursor-pointer flex items-center justify-between">
+          <span class="text-xs sm:text-sm font-black">✅ <span id="lblCompletedTab">الطلبات المكتملة</span></span>
+          <span id="countCompleted" class="bg-emerald-500 text-slate-950 text-xs font-black px-2.5 py-0.5 rounded-full">0</span>
+        </button>
+        <button onclick="setOrderFilter('cancelled')" id="tabCancelled" class="clinical-subcard p-3.5 rounded-2xl border border-slate-700 hover:border-rose-400 text-start transition cursor-pointer flex items-center justify-between">
+          <span class="text-xs sm:text-sm font-black">❌ <span id="lblCancelledTab">الطلبات الملغاة</span></span>
+          <span id="countCancelled" class="bg-rose-500 text-white text-xs font-black px-2.5 py-0.5 rounded-full">0</span>
+        </button>
+      </div>
+
+      <!-- قائمة الطلبات حسب الحالة المختارة -->
+      <div id="ordersListContainer" class="space-y-3"></div>
+    </div>
+  </section>
 
   <!-- 5. نافذة / درج السلة والفاتورة (تفتح وتقفل بسلاسة عند الضغط على زر السلة) -->
   <div id="cartDrawerBackdrop" onclick="closeCartDrawer()" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex justify-end">
@@ -462,6 +503,37 @@
     let lastClickedMainCat = '';
     let customRxCounter = 1;
     let cart = [];
+    let activePageView = 'shop';
+    let activeOrderFilter = 'preparing';
+    let ordersHistory = [
+      {
+        id: 'ORD-1041',
+        status: 'preparing',
+        createdAt: 'اليوم • 10:25 م',
+        itemsSummary: 'بانادول إكسترا (24 قرص) × 1',
+        total: 16.1,
+        rx: 'RX-9042',
+        car: 'أ ب ج 1234'
+      },
+      {
+        id: 'ORD-1038',
+        status: 'completed',
+        createdAt: 'أمس • 08:15 م',
+        itemsSummary: 'فيتامين سي 1000 ملجم + زنك فوار × 1',
+        total: 48.3,
+        rx: '',
+        car: 'سيدان أبيض'
+      },
+      {
+        id: 'ORD-1032',
+        status: 'cancelled',
+        createdAt: 'قبل يومين • 06:40 م',
+        itemsSummary: 'قطرات ترطيب العين (الدموع الاصطناعية) × 1',
+        total: 32.2,
+        rx: '',
+        car: ''
+      }
+    ];
     let splashDismissed = false;
 
     const i18n = {
@@ -469,6 +541,8 @@
         dir: 'rtl',
         brandTitle: 'صيدلية يُسْر',
         brandTagline: 'منصة المسار الصيدلاني الذكي للمركبات',
+        btnNavShop: 'الصيدلية',
+        btnNavOrders: 'طلباتها',
         btnCartLabel: 'السلة',
         simpleOn: 'التبسيط: مفعل (الأساسية فقط)',
         simpleOff: 'التبسيط: إخفاء الثانوية',
@@ -487,6 +561,18 @@
         assistLabel: 'اختر نمط الخدمة المناسبة لك عند نافذة الصيدلية:',
         catSidebarTitle: 'أقسام الصيدلية',
         searchPlaceholder: 'ابحث عن اسم الدواء أو المستلزم الطبي...',
+        ordersPageTitle: 'طلباتها',
+        ordersPageSubtitle: 'متابعة الطلبات قيد التجهيز والطلبات المكتملة والملغاة',
+        btnBackToShop: 'العودة إلى الصيدلية',
+        lblPreparingTab: 'الطلبات قيد التجهيز',
+        lblCompletedTab: 'الطلبات المكتملة',
+        lblCancelledTab: 'الطلبات الملغاة',
+        emptyOrders: 'لا توجد طلبات في هذا القسم حالياً.',
+        btnMarkCompleted: 'إتمام الطلب',
+        btnCancelOrder: 'إلغاء الطلب',
+        statusPreparingBadge: 'قيد التجهيز',
+        statusCompletedBadge: 'مكتمل',
+        statusCancelledBadge: 'ملغي',
         bagTitle: 'الحقيبة الدوائية والفاتورة',
         bagSubtitle: 'تُصرف وتُسلّم مباشرة إلى نافذة مركبتك',
         emptyBag: 'الحقيبة الدوائية فارغة حالياً، اختر الأدوية أو أدخل رقم الوصفة.',
@@ -500,12 +586,14 @@
         currency: 'ر.س',
         addBtn: '+ إضافة للحقيبة',
         dosageLbl: 'الجرعة الإرشادية:',
-        orderSuccess: 'تم إرسال طلبك الصيدلاني بنجاح! سيقوم الصيدلي بمراجعته وتجهيزه لنافذة سيارتك.'
+        orderSuccess: 'تم إرسال طلبك الصيدلاني بنجاح وإضافته إلى الطلبات قيد التجهيز!'
       },
       en: {
         dir: 'ltr',
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Smart Accessible Drive-Thru Pharmacy',
+        btnNavShop: 'Pharmacy',
+        btnNavOrders: 'Her Orders',
         btnCartLabel: 'Cart',
         simpleOn: 'Simplify: ON (Core Only)',
         simpleOff: 'Simplify: Hide Secondary',
@@ -524,6 +612,18 @@
         assistLabel: 'Select your preferred assistance mode at the pharmacy window:',
         catSidebarTitle: 'Pharmacy Departments',
         searchPlaceholder: 'Search medication or medical supply...',
+        ordersPageTitle: 'Her Orders',
+        ordersPageSubtitle: 'Track orders in preparation, completed orders, and cancelled orders',
+        btnBackToShop: 'Back to Pharmacy',
+        lblPreparingTab: 'Orders in Preparation',
+        lblCompletedTab: 'Completed Orders',
+        lblCancelledTab: 'Cancelled Orders',
+        emptyOrders: 'No orders in this section yet.',
+        btnMarkCompleted: 'Mark Completed',
+        btnCancelOrder: 'Cancel Order',
+        statusPreparingBadge: 'In Preparation',
+        statusCompletedBadge: 'Completed',
+        statusCancelledBadge: 'Cancelled',
         bagTitle: 'Medical Bag & Invoice',
         bagSubtitle: 'Dispensed & delivered straight to your car window',
         emptyBag: 'Your medical bag is empty. Add items or enter an RX number.',
@@ -537,12 +637,14 @@
         currency: 'SAR',
         addBtn: '+ Add to Bag',
         dosageLbl: 'Dosage Guide:',
-        orderSuccess: 'Your pharmacy order has been sent! The pharmacist is preparing it for your car window.'
+        orderSuccess: 'Your pharmacy order has been sent and added to Orders in Preparation!'
       },
       tr: {
         dir: 'ltr',
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Akıllı Arabaya Servis Eczane Platformu',
+        btnNavShop: 'Eczane',
+        btnNavOrders: 'Siparişleri',
         btnCartLabel: 'Sepet',
         simpleOn: 'Sade Mod: AÇIK (Temel)',
         simpleOff: 'Sade Mod: İkincilleri Gizle',
@@ -561,6 +663,18 @@
         assistLabel: 'Eczane penceresinde size uygun destek modunu seçin:',
         catSidebarTitle: 'Eczane Bölümleri',
         searchPlaceholder: 'İlaç veya tıbbi malzeme ara...',
+        ordersPageTitle: 'Siparişleri',
+        ordersPageSubtitle: 'Hazırlanan, tamamlanan ve iptal edilen siparişler',
+        btnBackToShop: 'Eczaneye Dön',
+        lblPreparingTab: 'Hazırlanan Siparişler',
+        lblCompletedTab: 'Tamamlanan Siparişler',
+        lblCancelledTab: 'İptal Edilen Siparişler',
+        emptyOrders: 'Bu bölümde henüz sipariş yok.',
+        btnMarkCompleted: 'Tamamlandı Yap',
+        btnCancelOrder: 'İptal Et',
+        statusPreparingBadge: 'Hazırlanıyor',
+        statusCompletedBadge: 'Tamamlandı',
+        statusCancelledBadge: 'İptal Edildi',
         bagTitle: 'İlaç Çantası ve Fatura',
         bagSubtitle: 'Doğrudan aracınızın camına teslim edilir',
         emptyBag: 'İlaç çantanız boş, ürün seçin veya reçete numarası girin.',
@@ -574,12 +688,14 @@
         currency: 'SAR',
         addBtn: '+ Çantaya Ekle',
         dosageLbl: 'Kullanım:',
-        orderSuccess: 'Eczane siparişiniz başarıyla gönderildi! Eczacımız aracınız için hazırlıyor.'
+        orderSuccess: 'Eczane siparişiniz gönderildi ve Hazırlanan Siparişler listesine eklendi!'
       },
       ur: {
         dir: 'rtl',
         brandTitle: 'یُسر فارمیسی',
         brandTagline: 'گاڑیوں کے لیے اسمارٹ فارمیسی پلیٹ فارم',
+        btnNavShop: 'فارمیسی',
+        btnNavOrders: 'ان کے آرڈرز',
         btnCartLabel: 'ٹوکری',
         simpleOn: 'سادہ موڈ: فعال (صرف بنیادی)',
         simpleOff: 'سادہ موڈ: اضافی چھپائیں',
@@ -598,6 +714,18 @@
         assistLabel: 'فارمیسی ونڈو پر اپنی سہولت کا طریقہ منتخب کریں:',
         catSidebarTitle: 'فارمیسی کے شعبے',
         searchPlaceholder: 'دوا یا طبی سامان تلاش کریں...',
+        ordersPageTitle: 'ان کے آرڈرز',
+        ordersPageSubtitle: 'تیار ہونے والے، مکمل اور منسوخ شدہ آرڈرز',
+        btnBackToShop: 'فارمیسی پر واپس جائیں',
+        lblPreparingTab: 'تیار ہونے والے آرڈرز',
+        lblCompletedTab: 'مکمل شدہ آرڈرز',
+        lblCancelledTab: 'منسوخ شدہ آرڈرز',
+        emptyOrders: 'اس حصے میں فی الحال کوئی آرڈر نہیں ہے۔',
+        btnMarkCompleted: 'مکمل کریں',
+        btnCancelOrder: 'منسوخ کریں',
+        statusPreparingBadge: 'تیار ہو رہا ہے',
+        statusCompletedBadge: 'مکمل',
+        statusCancelledBadge: 'منسوخ',
         bagTitle: 'طبی بیگ اور بل',
         bagSubtitle: 'براہِ راست آپ کی گاڑی کی کھڑکی پر ترسیل',
         emptyBag: 'طبی بیگ خالی ہے، ادویات منتخب کریں یا نسخہ نمبر درج کریں۔',
@@ -611,12 +739,14 @@
         currency: 'ریال',
         addBtn: '+ بیگ میں شامل کریں',
         dosageLbl: 'طریقہ استعمال:',
-        orderSuccess: 'آپ کا آرڈر فارماسسٹ کو بھیج دیا گیا ہے!'
+        orderSuccess: 'آپ کا آرڈر بھیج دیا گیا اور تیار ہونے والے آرڈرز میں شامل کر دیا گیا ہے!'
       },
       zh: {
         dir: 'ltr',
         brandTitle: 'Yusr Pharmacy',
         brandTagline: '智慧无障碍汽车穿梭药房',
+        btnNavShop: '药房',
+        btnNavOrders: '她的订单',
         btnCartLabel: '购物车',
         simpleOn: '极简模式：已开启',
         simpleOff: '极简模式：隐藏次要项',
@@ -635,6 +765,18 @@
         assistLabel: '请选择您在药房窗口需要的无障碍辅助方式：',
         catSidebarTitle: '药房科室分类',
         searchPlaceholder: '搜索药品或医疗器械名称...',
+        ordersPageTitle: '她的订单',
+        ordersPageSubtitle: '查看准备中、已完成和已取消的订单',
+        btnBackToShop: '返回药房',
+        lblPreparingTab: '准备中的订单',
+        lblCompletedTab: '已完成订单',
+        lblCancelledTab: '已取消订单',
+        emptyOrders: '该分类下暂无订单。',
+        btnMarkCompleted: '标记完成',
+        btnCancelOrder: '取消订单',
+        statusPreparingBadge: '准备中',
+        statusCompletedBadge: '已完成',
+        statusCancelledBadge: '已取消',
         bagTitle: '我的药袋与账单',
         bagSubtitle: '药师审核后直接送达您的车窗',
         emptyBag: '药袋目前为空，请添加药品或输入处方号。',
@@ -648,7 +790,7 @@
         currency: 'SAR',
         addBtn: '+ 加入药袋',
         dosageLbl: '用法用量：',
-        orderSuccess: '您的药房订单已提交！药师正在为您调配药品。'
+        orderSuccess: '您的订单已提交并加入准备中的订单！'
       }
     };
 
@@ -1359,6 +1501,136 @@
       }
     ];
 
+    function switchPageView(viewName) {
+      activePageView = viewName === 'orders' ? 'orders' : 'shop';
+      const shopEl = document.getElementById('shopView');
+      const ordersEl = document.getElementById('ordersView');
+      const navShop = document.getElementById('btnNavShop');
+      const navOrders = document.getElementById('btnNavOrders');
+
+      if (shopEl) shopEl.classList.toggle('hidden', activePageView !== 'shop');
+      if (ordersEl) ordersEl.classList.toggle('hidden', activePageView !== 'orders');
+
+      if (navShop) {
+        navShop.className = activePageView === 'shop'
+          ? 'bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow'
+          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer';
+      }
+      if (navOrders) {
+        navOrders.className = activePageView === 'orders'
+          ? 'bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow'
+          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer';
+      }
+
+      if (activePageView === 'orders') {
+        renderOrdersView();
+      }
+    }
+
+    function setOrderFilter(status) {
+      activeOrderFilter = ['preparing', 'completed', 'cancelled'].includes(status) ? status : 'preparing';
+      renderOrdersView();
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const target = ordersHistory.find(o => o.id === orderId);
+      if (!target) return;
+      target.status = newStatus;
+      renderOrdersView();
+    }
+
+    function renderOrdersView() {
+      const L = i18n[currentLang];
+      const container = document.getElementById('ordersListContainer');
+      if (!container) return;
+
+      const prepCount = ordersHistory.filter(o => o.status === 'preparing').length;
+      const compCount = ordersHistory.filter(o => o.status === 'completed').length;
+      const cancCount = ordersHistory.filter(o => o.status === 'cancelled').length;
+
+      const cPrep = document.getElementById('countPreparing');
+      const cComp = document.getElementById('countCompleted');
+      const cCanc = document.getElementById('countCancelled');
+      const cTotalNav = document.getElementById('ordersTotalBadge');
+
+      if (cPrep) cPrep.textContent = prepCount;
+      if (cComp) cComp.textContent = compCount;
+      if (cCanc) cCanc.textContent = cancCount;
+      if (cTotalNav) cTotalNav.textContent = ordersHistory.length;
+
+      const tabPrep = document.getElementById('tabPreparing');
+      const tabComp = document.getElementById('tabCompleted');
+      const tabCanc = document.getElementById('tabCancelled');
+
+      if (tabPrep) {
+        tabPrep.className = activeOrderFilter === 'preparing'
+          ? 'p-3.5 rounded-2xl border-2 border-amber-400 bg-amber-400/20 text-start transition cursor-pointer flex items-center justify-between shadow'
+          : 'clinical-subcard p-3.5 rounded-2xl border border-slate-700 hover:border-amber-400 text-start transition cursor-pointer flex items-center justify-between';
+      }
+      if (tabComp) {
+        tabComp.className = activeOrderFilter === 'completed'
+          ? 'p-3.5 rounded-2xl border-2 border-emerald-400 bg-emerald-500/20 text-start transition cursor-pointer flex items-center justify-between shadow'
+          : 'clinical-subcard p-3.5 rounded-2xl border border-slate-700 hover:border-emerald-400 text-start transition cursor-pointer flex items-center justify-between';
+      }
+      if (tabCanc) {
+        tabCanc.className = activeOrderFilter === 'cancelled'
+          ? 'p-3.5 rounded-2xl border-2 border-rose-400 bg-rose-500/20 text-start transition cursor-pointer flex items-center justify-between shadow'
+          : 'clinical-subcard p-3.5 rounded-2xl border border-slate-700 hover:border-rose-400 text-start transition cursor-pointer flex items-center justify-between';
+      }
+
+      const filtered = ordersHistory.filter(o => o.status === activeOrderFilter);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="clinical-subcard bg-slate-950/80 border border-slate-800 rounded-2xl p-6 text-center text-xs font-bold text-slate-400">${L.emptyOrders}</div>`;
+        return;
+      }
+
+      const badgeMap = {
+        preparing: `<span class="bg-amber-400 text-slate-950 text-[11px] font-black px-3 py-1 rounded-full">${L.statusPreparingBadge}</span>`,
+        completed: `<span class="bg-emerald-500 text-slate-950 text-[11px] font-black px-3 py-1 rounded-full">${L.statusCompletedBadge}</span>`,
+        cancelled: `<span class="bg-rose-500 text-white text-[11px] font-black px-3 py-1 rounded-full">${L.statusCancelledBadge}</span>`
+      };
+
+      container.innerHTML = filtered.map(ord => {
+        const actionsHtml = ord.status === 'preparing'
+          ? `
+            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80">
+              <button onclick="updateOrderStatus('${ord.id}', 'completed')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer">
+                ✓ ${L.btnMarkCompleted}
+              </button>
+              <button onclick="updateOrderStatus('${ord.id}', 'cancelled')" class="bg-rose-600 hover:bg-rose-500 text-white font-black text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer">
+                ✕ ${L.btnCancelOrder}
+              </button>
+            </div>
+          `
+          : '';
+
+        return `
+          <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-2.5 shadow">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                <span class="text-sm font-black text-cyan-400">#${ord.id}</span>
+                <span class="text-[11px] text-slate-400 font-bold">${ord.createdAt}</span>
+              </div>
+              ${badgeMap[ord.status] || ''}
+            </div>
+
+            <div class="text-xs sm:text-sm font-black leading-relaxed">${ord.itemsSummary}</div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+              <div class="flex flex-wrap items-center gap-2 text-slate-400">
+                ${ord.rx ? `<span class="bg-slate-800 text-cyan-300 px-2.5 py-0.5 rounded-lg">RX: ${ord.rx}</span>` : ''}
+                ${ord.car ? `<span class="bg-slate-800 text-slate-200 px-2.5 py-0.5 rounded-lg">🚗 ${ord.car}</span>` : ''}
+              </div>
+              <div class="text-sm font-black text-cyan-500">${formatPrice(ord.total)}</div>
+            </div>
+
+            ${actionsHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
     function openCartDrawer() {
       const backdrop = document.getElementById('cartDrawerBackdrop');
       if (!backdrop) return;
@@ -1473,6 +1745,8 @@
 
       document.getElementById('brandTitle').textContent = L.brandTitle;
       document.getElementById('brandTagline').textContent = L.brandTagline;
+      document.getElementById('btnNavShopText').textContent = L.btnNavShop;
+      document.getElementById('btnNavOrdersText').textContent = L.btnNavOrders;
       document.getElementById('btnCartLabel').textContent = L.btnCartLabel;
 
       const simpleBtn = document.getElementById('btnSimple');
@@ -1516,6 +1790,14 @@
       document.getElementById('assistLabel').textContent = L.assistLabel;
       document.getElementById('catSidebarTitle').textContent = L.catSidebarTitle;
       document.getElementById('searchMedInput').placeholder = L.searchPlaceholder;
+
+      document.getElementById('ordersPageTitle').textContent = L.ordersPageTitle;
+      document.getElementById('ordersPageSubtitle').textContent = L.ordersPageSubtitle;
+      document.getElementById('btnBackToShop').textContent = L.btnBackToShop;
+      document.getElementById('lblPreparingTab').textContent = L.lblPreparingTab;
+      document.getElementById('lblCompletedTab').textContent = L.lblCompletedTab;
+      document.getElementById('lblCancelledTab').textContent = L.lblCancelledTab;
+
       document.getElementById('bagTitle').textContent = L.bagTitle;
       document.getElementById('bagSubtitle').textContent = L.bagSubtitle;
       document.getElementById('carInfoTitle').textContent = L.carInfoTitle;
@@ -1530,6 +1812,7 @@
       renderCategories();
       renderMedications();
       renderCart();
+      renderOrdersView();
     }
 
     function toggleSimpleMode() {
@@ -1993,11 +2276,45 @@
     function submitPharmacyOrder() {
       const L = i18n[currentLang];
       const rxVal = document.getElementById('rxInput').value.trim();
+      const plateVal = (document.getElementById('carPlateInput')?.value || '').trim();
+      const colorVal = (document.getElementById('carColorInput')?.value || '').trim();
+
       if (cart.length === 0 && !rxVal) {
         showToast(L.emptyBag);
         speakText(L.emptyBag);
         return;
       }
+
+      const subtotal = cart.reduce((sum, item) => {
+        const med = getBagItemData(item);
+        return sum + (med ? med.price * item.qty : 0);
+      }, 0);
+      const total = subtotal * 1.15;
+
+      const summaryParts = cart.map(item => {
+        const med = getBagItemData(item);
+        return med ? `${med.name[currentLang]} × ${item.qty}` : '';
+      }).filter(Boolean);
+
+      if (summaryParts.length === 0 && rxVal) {
+        summaryParts.push(`RX: ${rxVal}`);
+      }
+
+      const newOrder = {
+        id: `ORD-${Math.floor(1050 + Math.random() * 8900)}`,
+        status: 'preparing',
+        createdAt: 'الآن',
+        itemsSummary: summaryParts.join(' • '),
+        total,
+        rx: rxVal,
+        car: [plateVal, colorVal].filter(Boolean).join(' - ')
+      };
+
+      ordersHistory.unshift(newOrder);
+      cart = [];
+      activeOrderFilter = 'preparing';
+      renderCart();
+      renderOrdersView();
       closeCartDrawer();
       showToast(L.orderSuccess);
       speakText(L.orderSuccess);
