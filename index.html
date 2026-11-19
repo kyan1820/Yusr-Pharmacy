@@ -1416,10 +1416,10 @@
 
         const childrenHtml = hasChildren && isExpanded ? `
           <div class="mt-1 me-3 pe-2.5 border-s-2 border-cyan-500/40 space-y-1">
-            ${c.children.map(ch => {
+            ${c.children.map((ch, idx) => {
               const chActive = selectedCategory === ch.id;
               return `
-                <button onclick="selectCategory('${ch.id}')" class="w-full text-start px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${chActive ? 'bg-teal-400 text-slate-950 font-black shadow-sm' : 'hover:bg-slate-800/60 text-slate-300'}">
+                <button onclick="selectCategory('${ch.id}')" style="animation-delay: ${idx * 65}ms;" class="subcat-stagger-item w-full text-start px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${chActive ? 'bg-teal-400 text-slate-950 font-black shadow-sm' : 'hover:bg-slate-800/60 text-slate-300'}">
                   <span class="w-1.5 h-1.5 rounded-full ${chActive ? 'bg-slate-950' : 'bg-cyan-400'} shrink-0"></span>
                   <span>${ch.name[currentLang]}</span>
                 </button>
