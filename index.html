@@ -106,20 +106,23 @@
       color: #475569;
     }
 
-    /* تلون القسم الرئيسي باللون الأزرق بشكل سلس من اليمين لليسار */
+    /* أزرار الأقسام الرئيسية: أزرق بخط أبيض، وعند الضغط تتلوّن تدريجياً من اليمين لليسار باللون الأزرق */
     .cat-main-btn {
       position: relative;
       overflow: hidden;
-      background-image: linear-gradient(to left, #06b6d4 50%, transparent 50%);
+      color: #ffffff;
+      background-image: linear-gradient(to left, #2563eb 0%, #0ea5e9 50%, #06b6d4 50%, #0891b2 100%);
       background-size: 200% 100%;
       background-position: 100% 0;
-      transition: background-position 0.38s cubic-bezier(0.22, 1, 0.36, 1), color 0.25s ease, box-shadow 0.25s ease;
+      transition: background-position 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.2s ease, box-shadow 0.3s ease;
+    }
+    .cat-main-btn:hover {
+      filter: brightness(1.05);
     }
     .cat-main-btn.is-active-sweep {
       background-position: 0% 0;
-      color: #020617;
-      font-weight: 900;
-      box-shadow: 0 4px 14px -2px rgba(6, 182, 212, 0.45);
+      color: #ffffff;
+      box-shadow: 0 6px 18px -3px rgba(37, 99, 235, 0.5);
     }
 
     /* ظهور الأقسام الفرعية حبة حبة بسرعة وسلاسة */
@@ -1422,9 +1425,7 @@
         const hasSelectedChild = hasChildren && c.children.some(ch => ch.id === selectedCategory);
         const isActive = isSelected || hasSelectedChild;
 
-        const mainBtnClass = isActive
-          ? 'is-active-sweep'
-          : 'hover:bg-slate-800/70 text-slate-300';
+        const mainBtnClass = isActive ? 'is-active-sweep font-black' : 'font-extrabold';
 
         const clickAction = hasChildren
           ? `toggleCategoryGroup('${c.id}')`
@@ -1439,8 +1440,8 @@
               const animClass = animateThisOpen ? 'subcat-cascade-item' : '';
               const delayStyle = animateThisOpen ? `--stagger-delay: ${idx * 30}ms;` : '';
               return `
-                <button type="button" onclick="selectCategory('${ch.id}')" style="${delayStyle}" class="${animClass} w-full text-start px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${chActive ? 'bg-teal-400 text-slate-950 font-black shadow-sm' : 'hover:bg-slate-800/60 text-slate-300'}">
-                  <span class="w-1.5 h-1.5 rounded-full ${chActive ? 'bg-slate-950' : 'bg-cyan-400'} shrink-0"></span>
+                <button type="button" onclick="selectCategory('${ch.id}')" style="${delayStyle}" class="${animClass} w-full text-start px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${chActive ? 'bg-blue-600 text-white font-black shadow-sm' : 'hover:bg-slate-800/60 text-slate-300'}">
+                  <span class="w-1.5 h-1.5 rounded-full ${chActive ? 'bg-white' : 'bg-cyan-400'} shrink-0"></span>
                   <span>${ch.name[currentLang]}</span>
                 </button>
               `;
@@ -1450,7 +1451,7 @@
 
         return `
           <div>
-            <button type="button" onclick="${clickAction}" class="cat-main-btn w-full text-start px-3.5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center justify-between gap-2 cursor-pointer ${mainBtnClass}">
+            <button type="button" onclick="${clickAction}" class="cat-main-btn w-full text-start px-3.5 py-2.5 rounded-2xl text-xs flex items-center justify-between gap-2 cursor-pointer ${mainBtnClass}">
               <span class="flex items-center gap-2">
                 <span>${c.icon}</span>
                 <span>${c.name[currentLang]}</span>
