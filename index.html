@@ -1602,7 +1602,7 @@
               <p class="text-xs text-muted-clinical text-slate-400 font-semibold leading-relaxed">${L.dosageLbl} ${m.dosage[currentLang]}</p>
             </div>
             <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 sm:min-w-[125px]">
-              <span class="text-sm font-black text-cyan-600">${formatPrice(m.price)}</span>
+              <span class="text-sm font-black text-cyan-600">${m.price} ${L.currency}</span>
               <button onclick="addToCart('${m.id}')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition cursor-pointer w-full sm:w-auto text-center">
                 ${L.addBtn}
               </button>
@@ -1720,7 +1720,7 @@
             <div class="clinical-subcard bg-slate-950 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2">
               <div>
                 <div class="text-xs font-black">${med.name[currentLang]}</div>
-                <div class="text-[11px] text-cyan-400 font-bold">${formatPrice(med.price * item.qty)}</div>
+                <div class="text-[11px] text-cyan-400 font-bold">${(med.price * item.qty).toFixed(2)} ${L.currency}</div>
               </div>
               <div class="flex items-center gap-1.5">
                 <button onclick="changeQty('${item.id}', -1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 font-black text-xs cursor-pointer">-</button>
@@ -1739,9 +1739,9 @@
       const vat = subtotal * 0.15;
       const total = subtotal + vat;
 
-      document.getElementById('valSubtotal').innerHTML = formatPrice(subtotal);
-      document.getElementById('valVat').innerHTML = formatPrice(vat);
-      document.getElementById('valTotal').innerHTML = formatPrice(total);
+      document.getElementById('valSubtotal').textContent = `${subtotal.toFixed(2)} ${L.currency}`;
+      document.getElementById('valVat').textContent = `${vat.toFixed(2)} ${L.currency}`;
+      document.getElementById('valTotal').textContent = `${total.toFixed(2)} ${L.currency}`;
     }
 
     function submitPharmacyOrder() {
@@ -1755,11 +1755,7 @@
       showToast(L.orderSuccess);
       speakText(L.orderSuccess);
     }
-function formatPrice(amount) {
-      const num = Number(amount) || 0;
-      const formatted = Number.isInteger(num) ? String(num) : num.toFixed(2);
-      return `<span class="inline-flex items-center gap-1" dir="ltr">${formatted}<span class="font-extrabold mx-1">⃁</span></span>`;
-    }
+
     function showToast(msg) {
       const box = document.getElementById('toastBox');
       box.textContent = msg;
