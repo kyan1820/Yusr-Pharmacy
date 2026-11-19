@@ -106,6 +106,22 @@
       color: #475569;
     }
 
+    /* تلون القسم الرئيسي باللون الأزرق بشكل سلس من اليمين لليسار */
+    .cat-main-btn {
+      position: relative;
+      overflow: hidden;
+      background-image: linear-gradient(to left, #06b6d4 50%, transparent 50%);
+      background-size: 200% 100%;
+      background-position: 100% 0;
+      transition: background-position 0.38s cubic-bezier(0.22, 1, 0.36, 1), color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .cat-main-btn.is-active-sweep {
+      background-position: 0% 0;
+      color: #020617;
+      font-weight: 900;
+      box-shadow: 0 4px 14px -2px rgba(6, 182, 212, 0.45);
+    }
+
     /* ظهور الأقسام الفرعية حبة حبة بسرعة وسلاسة */
     @keyframes subCatCascadeIn {
       0% {
@@ -1404,9 +1420,10 @@
         const isExpanded = !!expandedCategories[c.id];
         const isSelected = selectedCategory === c.id;
         const hasSelectedChild = hasChildren && c.children.some(ch => ch.id === selectedCategory);
+        const isActive = isSelected || hasSelectedChild;
 
-        const mainBtnClass = (isSelected || hasSelectedChild)
-          ? 'bg-cyan-500 text-slate-950 font-black shadow'
+        const mainBtnClass = isActive
+          ? 'is-active-sweep'
           : 'hover:bg-slate-800/70 text-slate-300';
 
         const clickAction = hasChildren
@@ -1433,7 +1450,7 @@
 
         return `
           <div>
-            <button type="button" onclick="${clickAction}" class="w-full text-start px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition flex items-center justify-between gap-2 cursor-pointer ${mainBtnClass}">
+            <button type="button" onclick="${clickAction}" class="cat-main-btn w-full text-start px-3.5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center justify-between gap-2 cursor-pointer ${mainBtnClass}">
               <span class="flex items-center gap-2">
                 <span>${c.icon}</span>
                 <span>${c.name[currentLang]}</span>
