@@ -298,8 +298,13 @@
         </div>
       </div>
 
-      <!-- شريط أدوات الوصول والمظهر المدمج -->
+      <!-- شريط أدوات الوصول والمظهر وزر السلة -->
       <div class="flex flex-wrap items-center gap-2">
+        <button onclick="openCartDrawer()" id="btnOpenCart" class="bg-gradient-to-r from-cyan-400 to-teal-300 hover:from-cyan-300 hover:to-teal-200 text-slate-950 px-4 py-1.5 rounded-xl text-xs font-black flex items-center gap-2 transition cursor-pointer shadow-md shadow-cyan-500/25">
+          <span class="text-base leading-none">🛒</span>
+          <span id="btnCartLabel">السلة</span>
+          <span id="bagCountBadge" class="bg-slate-950 text-cyan-300 text-xs font-black px-2 py-0.5 rounded-full min-w-[22px] text-center">0</span>
+        </button>
         <button onclick="toggleSimpleMode()" id="btnSimple" class="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow">
           ✨ <span id="btnSimpleText">التبسيط: إخفاء الثانوية</span>
         </button>
@@ -324,7 +329,7 @@
     </div>
   </header>
 
-  <!-- 4. محتوى واجهة العميل -->
+  <!-- 4. محتوى واجهة العميل (بدون الفاتورة المباشرة) -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
     <section class="clinical-card bg-slate-900 border border-cyan-500/30 rounded-3xl p-5 sm:p-6 shadow-xl">
@@ -353,12 +358,12 @@
 
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-      <aside class="lg:col-span-3 clinical-card bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-lg space-y-3">
+      <aside class="lg:col-span-4 clinical-card bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-lg space-y-3">
         <h2 id="catSidebarTitle" class="text-sm font-black text-cyan-400 px-2">أقسام الصيدلية</h2>
         <div id="categoryList" class="space-y-1.5"></div>
       </aside>
 
-      <div class="lg:col-span-5 space-y-4">
+      <div class="lg:col-span-8 space-y-4">
         <div class="clinical-card bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-lg">
           <input id="searchMedInput" oninput="renderMedications()" type="text" placeholder="ابحث عن اسم الدواء أو المستلزم الطبي..." class="clinical-input w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold outline-none" />
         </div>
@@ -366,16 +371,28 @@
         <div id="medicationsGrid" class="space-y-3"></div>
       </div>
 
-      <aside class="lg:col-span-4 clinical-card bg-slate-900 border border-cyan-500/30 rounded-3xl p-5 shadow-xl space-y-4 sticky top-20">
+    </section>
+
+  </main>
+
+  <!-- 5. نافذة / درج السلة والفاتورة (تفتح عند الضغط على زر السلة) -->
+  <div id="cartDrawerBackdrop" onclick="closeCartDrawer()" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex justify-end">
+    <aside onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-s border-cyan-500/40 w-full max-w-md h-full p-5 sm:p-6 shadow-2xl flex flex-col justify-between gap-4 overflow-y-auto">
+      <div class="space-y-4">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
           <div>
             <h2 id="bagTitle" class="text-base font-black text-cyan-400">الحقيبة الدوائية</h2>
             <p id="bagSubtitle" class="secondary-element text-[11px] text-muted-clinical text-slate-400 font-bold">تُصرف وتُسلّم مباشرة إلى نافذة مركبتك</p>
           </div>
-          <span id="bagCountBadge" class="bg-cyan-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full">0</span>
+          <div class="flex items-center gap-2">
+            <span id="drawerBagCount" class="bg-cyan-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full">0</span>
+            <button onclick="closeCartDrawer()" aria-label="إغلاق السلة" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-black text-sm flex items-center justify-center cursor-pointer">
+              ✕
+            </button>
+          </div>
         </div>
 
-        <div id="cartItemsContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+        <div id="cartItemsContainer" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
 
         <div class="secondary-element clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
           <div id="carInfoTitle" class="text-xs font-black text-cyan-300">بيانات المركبة لتسليم الدواء للنافذة</div>
@@ -399,17 +416,15 @@
             <span id="valTotal">0.00 ر.س</span>
           </div>
         </div>
+      </div>
 
-        <button onclick="submitPharmacyOrder()" id="btnSubmitOrder" class="w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black py-3.5 rounded-2xl text-sm shadow-lg shadow-cyan-500/20 transition cursor-pointer">
-          إرسال الطلب للصيدلي وتجهيز المسار
-        </button>
-      </aside>
+      <button onclick="submitPharmacyOrder()" id="btnSubmitOrder" class="w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black py-3.5 rounded-2xl text-sm shadow-lg shadow-cyan-500/20 transition cursor-pointer shrink-0">
+        إرسال الطلب للصيدلي وتجهيز المسار
+      </button>
+    </aside>
+  </div>
 
-    </section>
-
-  </main>
-
-  <div id="toastBox" class="hidden fixed bottom-5 left-5 z-50 bg-cyan-500 text-slate-950 font-black text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-2xl"></div>
+  <div id="toastBox" class="hidden fixed bottom-5 left-5 z-[60] bg-cyan-500 text-slate-950 font-black text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-2xl"></div>
 
   <script>
     let currentLang = 'ar';
@@ -433,6 +448,7 @@
         dir: 'rtl',
         brandTitle: 'صيدلية يُسْر',
         brandTagline: 'منصة المسار الصيدلاني الذكي للمركبات',
+        btnCartLabel: 'السلة',
         simpleOn: 'التبسيط: مفعل (الأساسية فقط)',
         simpleOff: 'التبسيط: إخفاء الثانوية',
         btnLang: 'اللغة (Language)',
@@ -450,7 +466,7 @@
         assistLabel: 'اختر نمط الخدمة المناسبة لك عند نافذة الصيدلية:',
         catSidebarTitle: 'أقسام الصيدلية',
         searchPlaceholder: 'ابحث عن اسم الدواء أو المستلزم الطبي...',
-        bagTitle: 'الحقيبة الدوائية',
+        bagTitle: 'الحقيبة الدوائية والفاتورة',
         bagSubtitle: 'تُصرف وتُسلّم مباشرة إلى نافذة مركبتك',
         emptyBag: 'الحقيبة الدوائية فارغة حالياً، اختر الأدوية أو أدخل رقم الوصفة.',
         carInfoTitle: 'بيانات المركبة لتسليم الدواء للنافذة',
@@ -469,6 +485,7 @@
         dir: 'ltr',
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Smart Accessible Drive-Thru Pharmacy',
+        btnCartLabel: 'Cart',
         simpleOn: 'Simplify: ON (Core Only)',
         simpleOff: 'Simplify: Hide Secondary',
         btnLang: 'Language',
@@ -486,7 +503,7 @@
         assistLabel: 'Select your preferred assistance mode at the pharmacy window:',
         catSidebarTitle: 'Pharmacy Departments',
         searchPlaceholder: 'Search medication or medical supply...',
-        bagTitle: 'Medical Bag',
+        bagTitle: 'Medical Bag & Invoice',
         bagSubtitle: 'Dispensed & delivered straight to your car window',
         emptyBag: 'Your medical bag is empty. Add items or enter an RX number.',
         carInfoTitle: 'Vehicle Info for Window Delivery',
@@ -505,6 +522,7 @@
         dir: 'ltr',
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Akıllı Arabaya Servis Eczane Platformu',
+        btnCartLabel: 'Sepet',
         simpleOn: 'Sade Mod: AÇIK (Temel)',
         simpleOff: 'Sade Mod: İkincilleri Gizle',
         btnLang: 'Dil (Language)',
@@ -522,7 +540,7 @@
         assistLabel: 'Eczane penceresinde size uygun destek modunu seçin:',
         catSidebarTitle: 'Eczane Bölümleri',
         searchPlaceholder: 'İlaç veya tıbbi malzeme ara...',
-        bagTitle: 'İlaç Çantası',
+        bagTitle: 'İlaç Çantası ve Fatura',
         bagSubtitle: 'Doğrudan aracınızın camına teslim edilir',
         emptyBag: 'İlaç çantanız boş, ürün seçin veya reçete numarası girin.',
         carInfoTitle: 'Teslimat İçin Araç Bilgileri',
@@ -541,6 +559,7 @@
         dir: 'rtl',
         brandTitle: 'یُسر فارمیسی',
         brandTagline: 'گاڑیوں کے لیے اسمارٹ فارمیسی پلیٹ فارم',
+        btnCartLabel: 'ٹوکری',
         simpleOn: 'سادہ موڈ: فعال (صرف بنیادی)',
         simpleOff: 'سادہ موڈ: اضافی چھپائیں',
         btnLang: 'زبان (Language)',
@@ -558,7 +577,7 @@
         assistLabel: 'فارمیسی ونڈو پر اپنی سہولت کا طریقہ منتخب کریں:',
         catSidebarTitle: 'فارمیسی کے شعبے',
         searchPlaceholder: 'دوا یا طبی سامان تلاش کریں...',
-        bagTitle: 'طبی بیگ',
+        bagTitle: 'طبی بیگ اور بل',
         bagSubtitle: 'براہِ راست آپ کی گاڑی کی کھڑکی پر ترسیل',
         emptyBag: 'طبی بیگ خالی ہے، ادویات منتخب کریں یا نسخہ نمبر درج کریں۔',
         carInfoTitle: 'ترسیل کے لیے گاڑی کی تفصیلات',
@@ -577,6 +596,7 @@
         dir: 'ltr',
         brandTitle: 'Yusr Pharmacy',
         brandTagline: '智慧无障碍汽车穿梭药房',
+        btnCartLabel: '购物车',
         simpleOn: '极简模式：已开启',
         simpleOff: '极简模式：隐藏次要项',
         btnLang: '语言 (Language)',
@@ -594,7 +614,7 @@
         assistLabel: '请选择您在药房窗口需要的无障碍辅助方式：',
         catSidebarTitle: '药房科室分类',
         searchPlaceholder: '搜索药品或医疗器械名称...',
-        bagTitle: '我的药袋',
+        bagTitle: '我的药袋与账单',
         bagSubtitle: '药师审核后直接送达您的车窗',
         emptyBag: '药袋目前为空，请添加药品或输入处方号。',
         carInfoTitle: '接药车辆信息',
@@ -1008,7 +1028,7 @@
               ar: 'بدائل الوجبات، السناكات الصحية، ومنتجات المساعدة على إنقاص الوزن',
               en: 'Meal Replacements, Healthy Snacks & Weight Loss Aids',
               tr: 'Öğün Yerine Geçenler, Sağlıklı Atıştırmalıklar ve Kilo Yönetimi',
-              ur: 'کھانے کے متبادل، صحت بخش اسنیکس اور وزن کم کرنے کی مصنوعات',
+              ur: 'کھانے کے متبادل، ہیلدی اسنیکس اور وزن کم کرنے کی مصنوعات',
               zh: '代餐、健康零食与体重管理产品'
             }
           }
@@ -1318,6 +1338,16 @@
       }
     ];
 
+    function openCartDrawer() {
+      const backdrop = document.getElementById('cartDrawerBackdrop');
+      if (backdrop) backdrop.classList.remove('hidden');
+    }
+
+    function closeCartDrawer() {
+      const backdrop = document.getElementById('cartDrawerBackdrop');
+      if (backdrop) backdrop.classList.add('hidden');
+    }
+
     function revealArabicGraduallyRTL(elementId, fullText, durationMs, onComplete) {
       const el = document.getElementById(elementId);
       if (!el) return;
@@ -1412,6 +1442,7 @@
 
       document.getElementById('brandTitle').textContent = L.brandTitle;
       document.getElementById('brandTagline').textContent = L.brandTagline;
+      document.getElementById('btnCartLabel').textContent = L.btnCartLabel;
 
       const simpleBtn = document.getElementById('btnSimple');
       const simpleText = document.getElementById('btnSimpleText');
@@ -1887,7 +1918,12 @@
       const L = i18n[currentLang];
       const container = document.getElementById('cartItemsContainer');
       const totalItems = cart.reduce((s, i) => s + i.qty, 0);
-      document.getElementById('bagCountBadge').textContent = totalItems;
+
+      const headerBadge = document.getElementById('bagCountBadge');
+      if (headerBadge) headerBadge.textContent = totalItems;
+
+      const drawerBadge = document.getElementById('drawerBagCount');
+      if (drawerBadge) drawerBadge.textContent = totalItems;
 
       if (cart.length === 0) {
         container.innerHTML = `<div class="text-xs text-slate-400 font-bold text-center py-6">${L.emptyBag}</div>`;
@@ -1931,6 +1967,7 @@
         speakText(L.emptyBag);
         return;
       }
+      closeCartDrawer();
       showToast(L.orderSuccess);
       speakText(L.orderSuccess);
     }
