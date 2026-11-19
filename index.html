@@ -17,6 +17,11 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
+    /* وضع التبسيط: إخفاء العناصر والأزرار الثانوية وإبقاء الأساسية */
+    body.simple-mode .secondary-element {
+      display: none !important;
+    }
+
     /* حركات شاشة الترحيب الافتتاحية */
     .splash-badge-reveal {
       opacity: 0;
@@ -289,26 +294,29 @@
             <span id="brandTitle" class="text-xl sm:text-2xl font-black text-white">صيدلية يُسْر</span>
             <span class="text-cyan-400 font-extrabold text-sm sm:text-base" dir="ltr">| Yusr Pharmacy</span>
           </div>
-          <span id="brandTagline" class="text-[11px] text-cyan-300/90 font-bold block">منصة المسار الصيدلاني الذكي للمركبات</span>
+          <span id="brandTagline" class="secondary-element text-[11px] text-cyan-300/90 font-bold block">منصة المسار الصيدلاني الذكي للمركبات</span>
         </div>
       </div>
 
       <!-- شريط أدوات الوصول والمظهر المدمج -->
       <div class="flex flex-wrap items-center gap-2">
-        <button onclick="openLangModal()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer">
+        <button onclick="toggleSimpleMode()" id="btnSimple" class="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow">
+          ✨ <span id="btnSimpleText">التبسيط: إخفاء الثانوية</span>
+        </button>
+        <button onclick="openLangModal()" class="secondary-element bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer">
           🌐 <span id="btnLangText">اللغة (Language)</span>
         </button>
-        <button onclick="toggleTTS()" id="btnTTS" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
+        <button onclick="toggleTTS()" id="btnTTS" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
           <span id="ttsDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
           <span id="btnTTSText">القارئ الصوتي: مفعل</span>
         </button>
-        <button onclick="cycleFont()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+        <button onclick="cycleFont()" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
           <span id="btnFontText">الخط: 100%</span>
         </button>
-        <button onclick="toggleTheme()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+        <button onclick="toggleTheme()" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
           <span id="btnThemeText">🌙 الوضع الداكن</span>
         </button>
-        <button onclick="toggleHighContrast()" id="btnContrast" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+        <button onclick="toggleHighContrast()" id="btnContrast" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
           🌓 <span id="btnContrastText">تباين عالٍ</span>
         </button>
       </div>
@@ -322,20 +330,20 @@
     <section class="clinical-card bg-slate-900 border border-cyan-500/30 rounded-3xl p-5 sm:p-6 shadow-xl">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-800">
         <div class="space-y-1">
-          <div class="inline-flex items-center gap-2 text-cyan-400 text-xs font-extrabold">
+          <div class="secondary-element inline-flex items-center gap-2 text-cyan-400 text-xs font-extrabold">
             <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
             <span id="heroBadge">خدمة الصرف الدوائي المباشر لنافذة المركبة</span>
           </div>
           <h1 id="heroHeading" class="text-xl sm:text-2xl font-black">اطلب أدويتك أو اصرف وصفتك الطبية وأنت داخل سيارتك</h1>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-2.5 w-full lg:w-auto">
+        <div class="secondary-element flex flex-col sm:flex-row gap-2.5 w-full lg:w-auto">
           <input id="rxInput" type="text" placeholder="رقم الوصفة الطبية (اختياري) مثال: RX-9042" class="clinical-input bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold outline-none w-full sm:w-72" />
           <input id="allergyInput" type="text" placeholder="حساسية دوائية؟ (مثال: بنسلين)" class="clinical-input bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold outline-none w-full sm:w-56" />
         </div>
       </div>
 
-      <div class="pt-4">
+      <div class="secondary-element pt-4">
         <div class="flex items-center justify-between mb-2.5">
           <span id="assistLabel" class="text-xs font-extrabold text-cyan-300">اختر نمط الخدمة المناسبة لك عند نافذة الصيدلية:</span>
         </div>
@@ -362,14 +370,14 @@
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
           <div>
             <h2 id="bagTitle" class="text-base font-black text-cyan-400">الحقيبة الدوائية</h2>
-            <p id="bagSubtitle" class="text-[11px] text-muted-clinical text-slate-400 font-bold">تُصرف وتُسلّم مباشرة إلى نافذة مركبتك</p>
+            <p id="bagSubtitle" class="secondary-element text-[11px] text-muted-clinical text-slate-400 font-bold">تُصرف وتُسلّم مباشرة إلى نافذة مركبتك</p>
           </div>
           <span id="bagCountBadge" class="bg-cyan-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full">0</span>
         </div>
 
         <div id="cartItemsContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
 
-        <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
+        <div class="secondary-element clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
           <div id="carInfoTitle" class="text-xs font-black text-cyan-300">بيانات المركبة لتسليم الدواء للنافذة</div>
           <div class="grid grid-cols-2 gap-2">
             <input id="carPlateInput" type="text" placeholder="رقم اللوحة (مثال: أ ب ج 1234)" class="clinical-input bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold outline-none" />
@@ -378,11 +386,11 @@
         </div>
 
         <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-1.5 text-xs font-bold">
-          <div class="flex justify-between">
+          <div class="secondary-element flex justify-between">
             <span id="lblSubtotal" class="text-slate-400">إجمالي الأدوية:</span>
             <span id="valSubtotal">0.00 ر.س</span>
           </div>
-          <div class="flex justify-between">
+          <div class="secondary-element flex justify-between">
             <span id="lblVat" class="text-slate-400">ضريبة القيمة المضافة (15%):</span>
             <span id="valVat">0.00 ر.س</span>
           </div>
@@ -408,6 +416,7 @@
     let ttsEnabled = true;
     let isLightMode = true;
     let isHighContrast = false;
+    let isSimpleMode = false;
     let fontScaleIndex = 0;
     const fontScales = [100, 110, 120];
     let selectedAssistMode = 'mobility';
@@ -424,6 +433,8 @@
         dir: 'rtl',
         brandTitle: 'صيدلية يُسْر',
         brandTagline: 'منصة المسار الصيدلاني الذكي للمركبات',
+        simpleOn: 'التبسيط: مفعل (الأساسية فقط)',
+        simpleOff: 'التبسيط: إخفاء الثانوية',
         btnLang: 'اللغة (Language)',
         ttsOn: 'القارئ الصوتي: مفعل',
         ttsOff: 'القارئ الصوتي: متوقف',
@@ -458,6 +469,8 @@
         dir: 'ltr',
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Smart Accessible Drive-Thru Pharmacy',
+        simpleOn: 'Simplify: ON (Core Only)',
+        simpleOff: 'Simplify: Hide Secondary',
         btnLang: 'Language',
         ttsOn: 'Voice Reader: ON',
         ttsOff: 'Voice Reader: OFF',
@@ -492,6 +505,8 @@
         dir: 'ltr',
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Akıllı Arabaya Servis Eczane Platformu',
+        simpleOn: 'Sade Mod: AÇIK (Temel)',
+        simpleOff: 'Sade Mod: İkincilleri Gizle',
         btnLang: 'Dil (Language)',
         ttsOn: 'Sesli Okuyucu: Açık',
         ttsOff: 'Sesli Okuyucu: Kapalı',
@@ -526,6 +541,8 @@
         dir: 'rtl',
         brandTitle: 'یُسر فارمیسی',
         brandTagline: 'گاڑیوں کے لیے اسمارٹ فارمیسی پلیٹ فارم',
+        simpleOn: 'سادہ موڈ: فعال (صرف بنیادی)',
+        simpleOff: 'سادہ موڈ: اضافی چھپائیں',
         btnLang: 'زبان (Language)',
         ttsOn: 'صوتی قاری: فعال',
         ttsOff: 'صوتی قاری: بند',
@@ -560,6 +577,8 @@
         dir: 'ltr',
         brandTitle: 'Yusr Pharmacy',
         brandTagline: '智慧无障碍汽车穿梭药房',
+        simpleOn: '极简模式：已开启',
+        simpleOff: '极简模式：隐藏次要项',
         btnLang: '语言 (Language)',
         ttsOn: '语音朗读：开启',
         ttsOff: '语音朗读：关闭',
@@ -1000,7 +1019,7 @@
               ar: 'بدائل الوجبات، السناكات الصحية، ومنتجات المساعدة على إنقاص الوزن',
               en: 'Meal Replacements, Healthy Snacks & Weight Loss Aids',
               tr: 'Öğün Yerine Geçenler, Sağlıklı Atıştırmalıklar ve Kilo Yönetimi',
-              ur: 'کھانے کے متبادل، صحت بخش اسنیکس اور وزن کم کرنے کی مصنوعات',
+              ur: 'کھانے کے متبادل، ہیلدی اسنیکس اور وزن کم کرنے کی مصنوعات',
               zh: '代餐、健康零食与体重管理产品'
             }
           }
@@ -1404,6 +1423,18 @@
 
       document.getElementById('brandTitle').textContent = L.brandTitle;
       document.getElementById('brandTagline').textContent = L.brandTagline;
+
+      const simpleBtn = document.getElementById('btnSimple');
+      const simpleText = document.getElementById('btnSimpleText');
+      if (simpleText) {
+        simpleText.textContent = isSimpleMode ? L.simpleOn : L.simpleOff;
+      }
+      if (simpleBtn) {
+        simpleBtn.className = isSimpleMode
+          ? 'bg-emerald-400 hover:bg-emerald-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow'
+          : 'bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow';
+      }
+
       document.getElementById('btnLangText').textContent = L.btnLang;
       document.getElementById('btnTTSText').textContent = ttsEnabled ? L.ttsOn : L.ttsOff;
       document.getElementById('btnFontText').textContent = `${L.fontLbl} ${fontScales[fontScaleIndex]}%`;
@@ -1441,6 +1472,13 @@
       renderCategories();
       renderMedications();
       renderCart();
+    }
+
+    function toggleSimpleMode() {
+      isSimpleMode = !isSimpleMode;
+      document.body.classList.toggle('simple-mode', isSimpleMode);
+      applyLanguage(currentLang);
+      speakText(isSimpleMode ? i18n[currentLang].simpleOn : i18n[currentLang].simpleOff);
     }
 
     function toggleTTS() {
@@ -1640,7 +1678,7 @@
               </span>
             </div>
 
-            <p class="text-xs text-slate-400 font-semibold leading-relaxed">${R.desc}</p>
+            <p class="secondary-element text-xs text-slate-400 font-semibold leading-relaxed">${R.desc}</p>
 
             <div>
               <input
@@ -1663,7 +1701,7 @@
               <button
                 type="button"
                 onclick="addPrescriptionToBag('consult')"
-                class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-4 py-3 rounded-2xl transition shadow cursor-pointer text-center"
+                class="secondary-element bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-4 py-3 rounded-2xl transition shadow cursor-pointer text-center"
               >
                 ${R.opt2}
               </button>
@@ -1740,10 +1778,10 @@
           <div class="clinical-card bg-slate-900 border border-slate-800 hover:border-cyan-500/40 rounded-3xl p-4 shadow-md transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="space-y-1.5 min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-2">
-                <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-600 border border-cyan-500/30 shrink-0">${m.badge}</span>
+                <span class="secondary-element text-[10px] font-black px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-600 border border-cyan-500/30 shrink-0">${m.badge}</span>
                 <h3 class="text-sm font-black leading-snug">${m.name[currentLang]}</h3>
               </div>
-              <p class="text-xs text-muted-clinical text-slate-400 font-semibold leading-relaxed">${L.dosageLbl} ${m.dosage[currentLang]}</p>
+              <p class="secondary-element text-xs text-muted-clinical text-slate-400 font-semibold leading-relaxed">${L.dosageLbl} ${m.dosage[currentLang]}</p>
             </div>
             <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 sm:min-w-[125px]">
               <span class="text-sm font-black text-cyan-600">${formatPrice(m.price)}</span>
