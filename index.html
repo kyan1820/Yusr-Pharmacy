@@ -103,6 +103,40 @@
       color: #0f172a;
     }
     body.light-mode .text-muted-clinical {
+      /* وضع التباين العالي (High Contrast) */
+    body.high-contrast-mode {
+      background-color: #000000 !important;
+      color: #ffffff !important;
+    }
+    body.light-mode.high-contrast-mode {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+    }
+    body.high-contrast-mode .clinical-card,
+    body.high-contrast-mode .clinical-subcard {
+      border-width: 2px !important;
+      border-color: #000000 !important;
+      background-color: #ffffff !important;
+      color: #000000 !important;
+    }
+    body:not(.light-mode).high-contrast-mode .clinical-card,
+    body:not(.light-mode).high-contrast-mode .clinical-subcard {
+      border-width: 2px !important;
+      border-color: #facc15 !important;
+      background-color: #000000 !important;
+      color: #ffffff !important;
+    }
+    body.high-contrast-mode .text-muted-clinical,
+    body.high-contrast-mode .text-slate-400,
+    body.high-contrast-mode .text-slate-300 {
+      color: inherit !important;
+      opacity: 1 !important;
+    }
+    body.high-contrast-mode .cat-main-btn {
+      border-width: 2px !important;
+      border-color: #000000 !important;
+      font-weight: 900 !important;
+    }
       color: #475569;
     }
 
@@ -168,7 +202,7 @@
     .subcat-cascade-item {
       opacity: 0;
       will-change: transform, opacity;
-      animation: subCatCascadeIn 0.16s cubic-bezier(0.22, 1, 0.36, 1) var(--stagger-delay, 0ms) forwards;
+      animation: subCatCascadeIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) var(--stagger-delay, 0ms) forwards;
     }
   </style>
 </head>
