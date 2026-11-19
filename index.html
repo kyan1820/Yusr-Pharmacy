@@ -1602,7 +1602,7 @@
               <p class="text-xs text-muted-clinical text-slate-400 font-semibold leading-relaxed">${L.dosageLbl} ${m.dosage[currentLang]}</p>
             </div>
             <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 sm:min-w-[125px]">
-              <span class="text-sm font-black text-cyan-600">${m.price} ${formatPrice(m.price)}
+              <span class="text-sm font-black text-cyan-600">${formatPrice(m.price)}</span>
               <button onclick="addToCart('${m.id}')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition cursor-pointer w-full sm:w-auto text-center">
                 ${L.addBtn}
               </button>
