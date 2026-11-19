@@ -103,7 +103,10 @@
       color: #0f172a;
     }
     body.light-mode .text-muted-clinical {
-      /* وضع التباين العالي (High Contrast) */
+      color: #475569;
+    }
+
+    /* وضع التباين العالي (High Contrast) */
     body.high-contrast-mode {
       background-color: #000000 !important;
       color: #ffffff !important;
@@ -136,8 +139,6 @@
       border-width: 2px !important;
       border-color: #000000 !important;
       font-weight: 900 !important;
-    }
-      color: #475569;
     }
 
     /* أزرار الأقسام: أبيض بنص أزرق، وعند الضغط تتلون بالأزرق تدريجياً من اليمين لليسار */
@@ -303,6 +304,9 @@
         <button onclick="toggleTheme()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
           <span id="btnThemeText">🌙 الوضع الداكن</span>
         </button>
+        <button onclick="toggleHighContrast()" id="btnContrast" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+          🌓 <span id="btnContrastText">تباين عالٍ</span>
+        </button>
       </div>
 
     </div>
@@ -399,6 +403,7 @@
     let currentLang = 'ar';
     let ttsEnabled = true;
     let isLightMode = true;
+    let isHighContrast = false;
     let fontScaleIndex = 0;
     const fontScales = [100, 110, 120];
     let selectedAssistMode = 'mobility';
@@ -421,6 +426,8 @@
         fontLbl: 'الخط:',
         themeLight: '☀️ الوضع النهاري',
         themeDark: '🌙 الوضع الداكن',
+        contrastOn: 'تباين عالٍ: مفعل',
+        contrastOff: 'تباين عالٍ',
         heroBadge: 'خدمة الصرف الدوائي المباشر لنافذة المركبة',
         heroHeading: 'اطلب أدويتك أو اصرف وصفتك الطبية وأنت داخل سيارتك',
         rxPlaceholder: 'رقم الوصفة الطبية (اختياري) مثال: RX-9042',
@@ -453,6 +460,8 @@
         fontLbl: 'Font:',
         themeLight: '☀️ Light Mode',
         themeDark: '🌙 Dark Mode',
+        contrastOn: 'High Contrast: ON',
+        contrastOff: 'High Contrast',
         heroBadge: 'Direct Car-Window Pharmaceutical Dispensing',
         heroHeading: 'Order medications or fill your prescription from inside your vehicle',
         rxPlaceholder: 'E-Prescription No. (Optional) e.g. RX-9042',
@@ -485,6 +494,8 @@
         fontLbl: 'Yazı:',
         themeLight: '☀️ Gündüz Modu',
         themeDark: '🌙 Gece Modu',
+        contrastOn: 'Yüksek Kontrast: Açık',
+        contrastOff: 'Yüksek Kontrast',
         heroBadge: 'Araç Camına Doğrudan İlaç Teslim Hizmeti',
         heroHeading: 'Aracınızdan inmeden ilaçlarınızı sipariş edin veya reçetenizi hazırlatın',
         rxPlaceholder: 'E-Reçete No (İsteğe bağlı) Örn: RX-9042',
@@ -517,6 +528,8 @@
         fontLbl: 'فونٹ:',
         themeLight: '☀️ لائٹ موڈ',
         themeDark: '🌙 ڈارک موڈ',
+        contrastOn: 'ہائی کنٹراسٹ: فعال',
+        contrastOff: 'ہائی کنٹراسٹ',
         heroBadge: 'گاڑی کی کھڑکی تک براہِ راست ادویات کی فراہمی',
         heroHeading: 'اپنی گاڑی کے اندر بیٹھے ادویات یا طبی نسخہ حاصل کریں',
         rxPlaceholder: 'نسخہ نمبر (اختیاری) مثال: RX-9042',
@@ -549,6 +562,8 @@
         fontLbl: '字号:',
         themeLight: '☀️ 日间模式',
         themeDark: '🌙 夜间模式',
+        contrastOn: '高对比度：开启',
+        contrastOff: '高对比度',
         heroBadge: '车窗直达安全配药服务',
         heroHeading: '无需下车，在车内即可订购药品或调配电子处方',
         rxPlaceholder: '电子处方号（选填）如: RX-9042',
@@ -1390,6 +1405,17 @@
       document.getElementById('btnFontText').textContent = `${L.fontLbl} ${fontScales[fontScaleIndex]}%`;
       document.getElementById('btnThemeText').textContent = isLightMode ? L.themeDark : L.themeLight;
 
+      const contrastBtn = document.getElementById('btnContrast');
+      const contrastText = document.getElementById('btnContrastText');
+      if (contrastText) {
+        contrastText.textContent = isHighContrast ? L.contrastOn : L.contrastOff;
+      }
+      if (contrastBtn) {
+        contrastBtn.className = isHighContrast
+          ? 'bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow'
+          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer';
+      }
+
       document.getElementById('heroBadge').textContent = L.heroBadge;
       document.getElementById('heroHeading').textContent = L.heroHeading;
       document.getElementById('rxInput').placeholder = L.rxPlaceholder;
@@ -1424,6 +1450,13 @@
       fontScaleIndex = (fontScaleIndex + 1) % fontScales.length;
       document.documentElement.style.fontSize = `${fontScales[fontScaleIndex]}%`;
       applyLanguage(currentLang);
+    }
+
+    function toggleHighContrast() {
+      isHighContrast = !isHighContrast;
+      document.body.classList.toggle('high-contrast-mode', isHighContrast);
+      applyLanguage(currentLang);
+      speakText(isHighContrast ? i18n[currentLang].contrastOn : i18n[currentLang].contrastOff);
     }
 
     function toggleTheme() {
@@ -1509,9 +1542,9 @@
             ${c.children.map((ch, idx) => {
               const chActive = selectedCategory === ch.id;
               const animClass = animateThisOpen ? 'subcat-cascade-item' : '';
-              const delayStyle = animateThisOpen ? `--stagger-delay: ${idx * 30}ms;` : '';
+              const delayStyle = animateThisOpen ? `style="--stagger-delay: ${idx * 75}ms;"` : '';
               return `
-                <button type="button" onclick="selectCategory('${ch.id}')" style="${delayStyle}" class="${animClass} w-full text-start px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${chActive ? 'bg-blue-600 text-white font-black shadow-sm' : 'hover:bg-slate-800/60 text-slate-300'}">
+                <button type="button" onclick="selectCategory('${ch.id}')" ${delayStyle} class="${animClass} w-full text-start px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${chActive ? 'bg-blue-600 text-white font-black shadow-sm' : 'hover:bg-slate-800/60 text-slate-300'}">
                   <span class="w-1.5 h-1.5 rounded-full ${chActive ? 'bg-white' : 'bg-cyan-400'} shrink-0"></span>
                   <span>${ch.name[currentLang]}</span>
                 </button>
