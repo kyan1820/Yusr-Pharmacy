@@ -58,6 +58,46 @@
       transform: translateY(0) scale(1);
     }
 
+    /* فتح وإغلاق نافذة المؤقت بسلاسة */
+    #timerModalBackdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #timerModalBackdrop.timer-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #timerModalCard {
+      opacity: 0;
+      transform: translateY(18px) scale(0.96);
+      transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.34s ease;
+    }
+    #timerModalBackdrop.timer-open #timerModalCard {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* فتح وإغلاق نافذة التأكيد أثناء المؤقت بسلاسة */
+    #confirmActionBackdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #confirmActionBackdrop.confirm-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #confirmActionCard {
+      opacity: 0;
+      transform: translateY(16px) scale(0.96);
+      transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.32s ease;
+    }
+    #confirmActionBackdrop.confirm-open #confirmActionCard {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
     /* وضع التبسيط: إخفاء العناصر والأزرار الثانوية وإبقاء الأساسية */
     body.simple-mode .secondary-element {
       display: none !important;
@@ -589,7 +629,7 @@
   </div>
 
   <!-- 6. نافذة الفاتورة النهائية المنبثقة بعد تأكيد الطلب -->
-  <div id="invoiceModalBackdrop" onclick="closeInvoiceModal()" class="fixed inset-0 z-[75] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+  <div id="invoiceModalBackdrop" onclick="closeInvoiceModal()" class="fixed inset-0 z-[72] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div id="invoiceModalCard" onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-2 border-cyan-500/40 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-3.5 my-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div>
@@ -663,13 +703,81 @@
         <div id="invPaymentOptions" class="grid grid-cols-2 gap-2"></div>
       </div>
 
-      <button onclick="closeInvoiceModal()" id="btnCloseInvoice" class="w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black py-3 rounded-2xl text-xs sm:text-sm transition cursor-pointer">
-        تم
-      </button>
+      <!-- زرا اعتماد الطلب وتعديل السلة -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+        <button onclick="openApprovalTimerModal()" id="btnApproveInvoiceOrder" class="bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black py-3 rounded-2xl text-xs sm:text-sm shadow-lg shadow-cyan-500/20 transition cursor-pointer">
+          اعتماد الطلب
+        </button>
+        <button onclick="editCartFromInvoice()" id="btnEditCartFromInvoice" class="bg-slate-800 hover:bg-slate-700 border border-cyan-500/40 text-cyan-300 font-black py-3 rounded-2xl text-xs sm:text-sm transition cursor-pointer">
+          تعديل السلة
+        </button>
+      </div>
     </div>
   </div>
 
-  <div id="toastBox" class="hidden fixed bottom-5 left-5 z-[85] bg-cyan-500 text-slate-950 font-black text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-2xl"></div>
+  <!-- 7. نافذة المؤقت التنازلي لاعتماد الطلب (بتصميم سيان/أزرق طبي مختلف عن الصورة) -->
+  <div id="timerModalBackdrop" onclick="closeApprovalTimerModal()" class="fixed inset-0 z-[76] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="timerModalCard" onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-2 border-cyan-400/60 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl space-y-4">
+      <div class="inline-flex items-center gap-2 bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 px-4 py-1 rounded-full text-xs font-black">
+        <span>⏱️</span>
+        <span id="timerBadgeText">نافذة المراجعة الذكية قبل الاعتماد</span>
+      </div>
+
+      <h2 id="timerHeadingText" class="text-xl font-black">مراجعة نهائية لطلبك</h2>
+      <p id="timerDescText" class="text-xs text-slate-400 font-bold leading-relaxed">
+        سيتم اعتماد طلبك وإرساله للمسار الذكي تلقائياً عند انتهاء الوقت، أو يمكنك التحكم فوراً من الأزرار أدناه:
+      </p>
+
+      <div class="clinical-subcard bg-slate-950 border border-cyan-500/30 rounded-2xl p-4 space-y-2.5">
+        <div class="flex items-center justify-between gap-3">
+          <span id="lblRemainingTimer" class="text-xs font-black text-cyan-300">الوقت المتبقي للاعتماد التلقائي:</span>
+          <span id="timerCountdownDisplay" dir="ltr" class="bg-cyan-500/20 border border-cyan-400 text-cyan-300 px-3.5 py-1 rounded-xl text-sm font-black tracking-widest">02:00</span>
+        </div>
+        <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+          <div id="timerProgressBar" class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-1000" style="width: 100%;"></div>
+        </div>
+      </div>
+
+      <div class="space-y-2.5 pt-1">
+        <button onclick="requestConfirmAction('approve_now')" id="btnApproveNowTimer" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black py-3 rounded-2xl text-xs sm:text-sm shadow-lg shadow-cyan-500/20 transition cursor-pointer">
+          ✓ اعتماد الطلب فوراً (عدم الانتظار)
+        </button>
+        <button onclick="requestConfirmAction('edit_cart')" id="btnEditCartTimer" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-black py-3 rounded-2xl text-xs sm:text-sm transition cursor-pointer">
+          ✎ تعديل السلة
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. نافذة التأكيد أثناء المؤقت (بتصميم سيان/أزرق مختلف عن الصورة) -->
+  <div id="confirmActionBackdrop" onclick="cancelConfirmAction()" class="fixed inset-0 z-[80] bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="confirmActionCard" onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-2 border-blue-500 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl space-y-4">
+      <div class="inline-flex items-center gap-2 bg-blue-500/15 border border-blue-400/40 text-blue-300 px-4 py-1 rounded-full text-xs font-black">
+        <span id="confirmBadgeText">تأكيد الإجراء الفوري</span>
+      </div>
+
+      <h3 id="confirmTitleText" class="text-xl font-black">اعتماد الطلب الآن؟</h3>
+      <p id="confirmDescText" class="text-xs text-slate-400 font-bold leading-relaxed">
+        هل أنت متأكد من رغبتك في اعتماد الطلب وإرساله فوراً للمسار الذكي قبل انتهاء المؤقت؟
+      </p>
+
+      <label class="clinical-subcard bg-slate-950 border border-slate-800 rounded-2xl px-4 py-3 flex items-center justify-between gap-3 text-xs font-extrabold cursor-pointer">
+        <span id="lblSkipConfirmNext">عدم إظهار رسالة التأكيد هذه مرة أخرى</span>
+        <input id="chkSkipConfirmNext" type="checkbox" class="w-4 h-4 accent-cyan-500 cursor-pointer" />
+      </label>
+
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button onclick="cancelConfirmAction()" id="btnCancelConfirmDialog" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-black py-3 rounded-2xl text-xs sm:text-sm transition cursor-pointer">
+          تراجع
+        </button>
+        <button onclick="proceedConfirmedAction()" id="btnProceedConfirmDialog" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black py-3 rounded-2xl text-xs sm:text-sm shadow-lg transition cursor-pointer">
+          نعم، تأكيد
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastBox" class="hidden fixed bottom-5 left-5 z-[90] bg-cyan-500 text-slate-950 font-black text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-2xl"></div>
 
   <script>
     let currentLang = 'ar';
@@ -686,6 +794,10 @@
     let appliedPromoCode = '';
     let isCouponsBoxOpen = false;
     let latestCreatedInvoice = null;
+    let timerIntervalId = null;
+    let remainingTimerSeconds = 120;
+    let pendingConfirmAction = null;
+    let skipConfirmDialogOnceOrMore = false;
     const promoDiscountsMap = {
       ADEL: 0.5,
       KAYAN: 0.25
@@ -893,7 +1005,23 @@
         invLblVat: 'ضريبة القيمة المضافة (15%):',
         invLblFinalTotal: 'الإجمالي النهائي:',
         invLblPaymentMethod: 'اختر طريقة الدفع:',
-        btnCloseInvoice: 'تم',
+        btnApproveInvoiceOrder: 'اعتماد الطلب',
+        btnEditCartFromInvoice: 'تعديل السلة',
+        timerBadgeText: 'نافذة المراجعة الذكية قبل الاعتماد',
+        timerHeadingText: 'مراجعة نهائية لطلبك',
+        timerDescText: 'سيتم اعتماد طلبك وإرساله للمسار الذكي تلقائياً عند انتهاء الوقت، أو يمكنك التحكم فوراً من الأزرار أدناه:',
+        lblRemainingTimer: 'الوقت المتبقي للاعتماد التلقائي:',
+        btnApproveNowTimer: '✓ اعتماد الطلب فوراً (عدم الانتظار)',
+        btnEditCartTimer: '✎ تعديل السلة',
+        confirmBadgeText: 'تأكيد الإجراء الفوري',
+        confirmApproveTitle: 'اعتماد الطلب الآن؟',
+        confirmApproveDesc: 'هل أنت متأكد من رغبتك في اعتماد الطلب وإرساله فوراً للمسار الذكي قبل انتهاء المؤقت؟',
+        confirmEditTitle: 'العودة لتعديل السلة؟',
+        confirmEditDesc: 'هل أنت متأكد من رغبتك في إيقاف المؤقت والعودة إلى السلة لتعديل المنتجات أو الخيارات؟',
+        lblSkipConfirmNext: 'عدم إظهار رسالة التأكيد هذه مرة أخرى',
+        btnCancelConfirmDialog: 'تراجع',
+        btnProceedConfirmDialog: 'نعم، تأكيد',
+        orderApprovedToast: 'تم اعتماد طلبك وإرساله إلى المسار الصيدلاني الذكي!',
         notSpecified: 'غير محدد',
         qtyPrefix: 'الكمية:',
         inclVatSuffix: 'شامل الضريبة',
@@ -970,7 +1098,23 @@
         invLblVat: 'VAT (15%):',
         invLblFinalTotal: 'Final Total:',
         invLblPaymentMethod: 'Select Payment Method:',
-        btnCloseInvoice: 'Done',
+        btnApproveInvoiceOrder: 'Approve Order',
+        btnEditCartFromInvoice: 'Edit Cart',
+        timerBadgeText: 'Smart Review Window Before Approval',
+        timerHeadingText: 'Final Review of Your Order',
+        timerDescText: 'Your order will be automatically approved and sent to the smart lane when time runs out, or control immediately below:',
+        lblRemainingTimer: 'Remaining time for auto-approval:',
+        btnApproveNowTimer: '✓ Approve Order Now (Skip Wait)',
+        btnEditCartTimer: '✎ Edit Cart',
+        confirmBadgeText: 'Confirm Immediate Action',
+        confirmApproveTitle: 'Approve Order Now?',
+        confirmApproveDesc: 'Are you sure you want to approve and send your order immediately before the timer ends?',
+        confirmEditTitle: 'Return to Edit Cart?',
+        confirmEditDesc: 'Are you sure you want to stop the timer and return to the cart to edit items or options?',
+        lblSkipConfirmNext: 'Do not show this confirmation message again',
+        btnCancelConfirmDialog: 'Back',
+        btnProceedConfirmDialog: 'Yes, Confirm',
+        orderApprovedToast: 'Your order has been approved and sent to the smart pharmacy lane!',
         notSpecified: 'Not specified',
         qtyPrefix: 'Qty:',
         inclVatSuffix: 'incl. VAT',
@@ -1047,7 +1191,23 @@
         invLblVat: 'KDV (15%):',
         invLblFinalTotal: 'Genel Toplam:',
         invLblPaymentMethod: 'Ödeme Yöntemi Seçin:',
-        btnCloseInvoice: 'Tamam',
+        btnApproveInvoiceOrder: 'Siparişi Onayla',
+        btnEditCartFromInvoice: 'Sepeti Düzenle',
+        timerBadgeText: 'Onay Öncesi Akıllı İnceleme Süresi',
+        timerHeadingText: 'Siparişinizin Son İncelemesi',
+        timerDescText: 'Süre dolduğunda siparişiniz otomatik onaylanır veya aşağıdaki düğmelerden hemen işlem yapabilirsiniz:',
+        lblRemainingTimer: 'Otomatik onay için kalan süre:',
+        btnApproveNowTimer: '✓ Siparişi Hemen Onayla (Bekleme)',
+        btnEditCartTimer: '✎ Sepeti Düzenle',
+        confirmBadgeText: 'Anlık İşlemi Onayla',
+        confirmApproveTitle: 'Sipariş Şimdi Onaylansın mı?',
+        confirmApproveDesc: 'Süre dolmadan siparişinizi hemen onaylayıp göndermek istediğinize emin misiniz?',
+        confirmEditTitle: 'Sepeti Düzenlemeye Dön?',
+        confirmEditDesc: 'Sayacı durdurup ürün veya seçenekleri düzenlemek için sepete dönmek istediğinize emin misiniz?',
+        lblSkipConfirmNext: 'Bu onay mesajını bir daha gösterme',
+        btnCancelConfirmDialog: 'Geri',
+        btnProceedConfirmDialog: 'Evet, Onayla',
+        orderApprovedToast: 'Siparişiniz onaylandı ve akıllı eczane hattına gönderildi!',
         notSpecified: 'Belirtilmedi',
         qtyPrefix: 'Adet:',
         inclVatSuffix: 'KDV dahil',
@@ -1124,7 +1284,23 @@
         invLblVat: 'ٹیکس (15%):',
         invLblFinalTotal: 'حتمی کل رقم:',
         invLblPaymentMethod: 'ادائیگی کا طریقہ منتخب کریں:',
-        btnCloseInvoice: 'ٹھیک ہے',
+        btnApproveInvoiceOrder: 'آرڈر منظور کریں',
+        btnEditCartFromInvoice: 'بیگ میں ترمیم کریں',
+        timerBadgeText: 'منظوری سے پہلے اسمارٹ جائزہ وقت',
+        timerHeadingText: 'آپ کے آرڈر کا حتمی جائزہ',
+        timerDescText: 'وقت ختم ہونے پر آپ کا آرڈر خود بخود منظور ہو جائے گا، یا نیچے دیے گئے بٹنز سے فوراً کنٹرول کریں:',
+        lblRemainingTimer: 'خودکار منظوری کے لیے باقی وقت:',
+        btnApproveNowTimer: '✓ ابھی آرڈر منظور کریں (انتظار نہ کریں)',
+        btnEditCartTimer: '✎ بیگ میں ترمیم کریں',
+        confirmBadgeText: 'فوری کارروائی کی تصدیق',
+        confirmApproveTitle: 'کیا آپ ابھی آرڈر منظور کرنا چاہتے ہیں؟',
+        confirmApproveDesc: 'کیا آپ ٹائمر ختم ہونے سے پہلے آرڈر فوری منظور اور بھیجنے پر متفق ہیں؟',
+        confirmEditTitle: 'بیگ میں ترمیم کے لیے واپس جائیں؟',
+        confirmEditDesc: 'کیا آپ ٹائمر روک کر مصنوعات یا اختیارات بدلنے کے لیے بیگ میں جانا چاہتے ہیں؟',
+        lblSkipConfirmNext: 'یہ تصدیقی پیغام دوبارہ نہ دکھائیں',
+        btnCancelConfirmDialog: 'واپس',
+        btnProceedConfirmDialog: 'ہاں، تصدیق کریں',
+        orderApprovedToast: 'آپ کا آرڈر منظور کر لیا گیا ہے!',
         notSpecified: 'درج نہیں کیا گیا',
         qtyPrefix: 'تعداد:',
         inclVatSuffix: 'ٹیکس شامل',
@@ -1201,7 +1377,23 @@
         invLblVat: '增值税 (15%)：',
         invLblFinalTotal: '最终总额：',
         invLblPaymentMethod: '选择支付方式：',
-        btnCloseInvoice: '完成',
+        btnApproveInvoiceOrder: '批准订单',
+        btnEditCartFromInvoice: '修改购物车',
+        timerBadgeText: '确认前智能审核倒计时',
+        timerHeadingText: '订单最终审核',
+        timerDescText: '倒计时结束后订单将自动批准并送往智能通道，您也可使用下方按钮立即操作：',
+        lblRemainingTimer: '自动批准剩余时间：',
+        btnApproveNowTimer: '✓ 立即批准订单（无需等待）',
+        btnEditCartTimer: '✎ 修改购物车',
+        confirmBadgeText: '确认立即执行',
+        confirmApproveTitle: '立即批准订单吗？',
+        confirmApproveDesc: '确定要在倒计时结束前立即批准并发送订单吗？',
+        confirmEditTitle: '返回修改购物车吗？',
+        confirmEditDesc: '确定要停止倒计时并返回购物车修改商品或选项吗？',
+        lblSkipConfirmNext: '不再显示此确认提示',
+        btnCancelConfirmDialog: '返回',
+        btnProceedConfirmDialog: '是的，确认',
+        orderApprovedToast: '订单已批准并发送至智能药房通道！',
         notSpecified: '未填写',
         qtyPrefix: '数量：',
         inclVatSuffix: '含税',
@@ -2026,6 +2218,139 @@
       return modeObj ? (modeObj.title[currentLang] || modeObj.title.ar) : i18n[currentLang].notSpecified;
     }
 
+    function formatCountdown(sec) {
+      const safe = Math.max(0, Number(sec) || 0);
+      const mins = Math.floor(safe / 60);
+      const secs = safe % 60;
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function updateTimerVisuals() {
+      const disp = document.getElementById('timerCountdownDisplay');
+      const bar = document.getElementById('timerProgressBar');
+      if (disp) disp.textContent = formatCountdown(remainingTimerSeconds);
+      if (bar) {
+        const pct = Math.max(0, Math.min(100, (remainingTimerSeconds / 120) * 100));
+        bar.style.width = `${pct}%`;
+      }
+    }
+
+    function openApprovalTimerModal() {
+      closeInvoiceModal();
+      remainingTimerSeconds = 120;
+      updateTimerVisuals();
+
+      const backdrop = document.getElementById('timerModalBackdrop');
+      if (!backdrop) return;
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.add('timer-open');
+      });
+
+      clearInterval(timerIntervalId);
+      timerIntervalId = setInterval(() => {
+        remainingTimerSeconds -= 1;
+        updateTimerVisuals();
+        if (remainingTimerSeconds <= 0) {
+          clearInterval(timerIntervalId);
+          timerIntervalId = null;
+          finalizeOrderApproval();
+        }
+      }, 1000);
+    }
+
+    function closeApprovalTimerModal() {
+      clearInterval(timerIntervalId);
+      timerIntervalId = null;
+      const backdrop = document.getElementById('timerModalBackdrop');
+      if (!backdrop) return;
+      backdrop.classList.remove('timer-open');
+      setTimeout(() => {
+        if (!backdrop.classList.contains('timer-open')) {
+          backdrop.classList.add('hidden');
+        }
+      }, 360);
+    }
+
+    function applyConfirmDialogTexts() {
+      const L = i18n[currentLang];
+      const isEdit = pendingConfirmAction === 'edit_cart';
+      document.getElementById('confirmBadgeText').textContent = L.confirmBadgeText;
+      document.getElementById('confirmTitleText').textContent = isEdit ? L.confirmEditTitle : L.confirmApproveTitle;
+      document.getElementById('confirmDescText').textContent = isEdit ? L.confirmEditDesc : L.confirmApproveDesc;
+      document.getElementById('lblSkipConfirmNext').textContent = L.lblSkipConfirmNext;
+      document.getElementById('btnCancelConfirmDialog').textContent = L.btnCancelConfirmDialog;
+      document.getElementById('btnProceedConfirmDialog').textContent = L.btnProceedConfirmDialog;
+    }
+
+    function requestConfirmAction(actionType) {
+      pendingConfirmAction = actionType;
+      if (skipConfirmDialogOnceOrMore) {
+        executeTimerAction(actionType);
+        return;
+      }
+
+      const chk = document.getElementById('chkSkipConfirmNext');
+      if (chk) chk.checked = false;
+      applyConfirmDialogTexts();
+
+      const backdrop = document.getElementById('confirmActionBackdrop');
+      if (!backdrop) return;
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.add('confirm-open');
+      });
+    }
+
+    function cancelConfirmAction() {
+      pendingConfirmAction = null;
+      const backdrop = document.getElementById('confirmActionBackdrop');
+      if (!backdrop) return;
+      backdrop.classList.remove('confirm-open');
+      setTimeout(() => {
+        if (!backdrop.classList.contains('confirm-open')) {
+          backdrop.classList.add('hidden');
+        }
+      }, 340);
+    }
+
+    function proceedConfirmedAction() {
+      const chk = document.getElementById('chkSkipConfirmNext');
+      if (chk && chk.checked) {
+        skipConfirmDialogOnceOrMore = true;
+      }
+      const actionToRun = pendingConfirmAction;
+      cancelConfirmAction();
+      setTimeout(() => {
+        executeTimerAction(actionToRun);
+      }, 180);
+    }
+
+    function executeTimerAction(actionType) {
+      if (actionType === 'approve_now') {
+        finalizeOrderApproval();
+      } else if (actionType === 'edit_cart') {
+        closeApprovalTimerModal();
+        setTimeout(() => {
+          openCartDrawer();
+        }, 200);
+      }
+    }
+
+    function finalizeOrderApproval() {
+      closeApprovalTimerModal();
+      const msg = i18n[currentLang].orderApprovedToast;
+      showToast(msg);
+      speakText(msg);
+    }
+
+    function editCartFromInvoice() {
+      closeInvoiceModal();
+      setTimeout(() => {
+        openCartDrawer();
+      }, 220);
+    }
+
     function renderPaymentOptions() {
       const container = document.getElementById('invPaymentOptions');
       if (!container) return;
@@ -2590,7 +2915,17 @@
       document.getElementById('invLblVat').textContent = L.invLblVat;
       document.getElementById('invLblFinalTotal').textContent = L.invLblFinalTotal;
       document.getElementById('invLblPaymentMethod').textContent = L.invLblPaymentMethod;
-      document.getElementById('btnCloseInvoice').textContent = L.btnCloseInvoice;
+      document.getElementById('btnApproveInvoiceOrder').textContent = L.btnApproveInvoiceOrder;
+      document.getElementById('btnEditCartFromInvoice').textContent = L.btnEditCartFromInvoice;
+
+      document.getElementById('timerBadgeText').textContent = L.timerBadgeText;
+      document.getElementById('timerHeadingText').textContent = L.timerHeadingText;
+      document.getElementById('timerDescText').textContent = L.timerDescText;
+      document.getElementById('lblRemainingTimer').textContent = L.lblRemainingTimer;
+      document.getElementById('btnApproveNowTimer').textContent = L.btnApproveNowTimer;
+      document.getElementById('btnEditCartTimer').textContent = L.btnEditCartTimer;
+
+      applyConfirmDialogTexts();
 
       renderAssistModes();
       renderParkingSpotOptions();
