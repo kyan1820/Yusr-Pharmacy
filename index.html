@@ -460,6 +460,12 @@
 
         <div id="cartItemsContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
 
+        <!-- رقم موقف أو مسار الانتظار الذكي (فوق مكان التسليم) -->
+        <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2">
+          <div id="parkingSpotTitle" class="text-xs font-black text-cyan-300">رقم موقف أو مسار الانتظار الذكي:</div>
+          <div id="parkingSpotOptions" class="grid grid-cols-3 gap-2"></div>
+        </div>
+
         <!-- مكان تسليم الطلب في السيارة داخل الفاتورة -->
         <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2">
           <div id="deliverySpotTitle" class="text-xs font-black text-cyan-300">مكان تسليم الطلب في السيارة:</div>
@@ -507,6 +513,7 @@
     let fontScaleIndex = 0;
     const fontScales = [100, 110, 120, 135];
     let selectedAssistMode = 'mobility';
+    let selectedParkingSpot = 'yusr_1';
     let selectedDeliverySpot = 'driver_window';
     let selectedCategory = 'rx';
     let expandedCategories = {};
@@ -525,6 +532,7 @@
         total: 16.1,
         rx: 'RX-9042',
         car: 'أ ب ج 1234',
+        parking: 'موقف يُسر 1',
         spot: 'تسليم عبر نافذة السائق بحامل ممتد'
       },
       {
@@ -535,6 +543,7 @@
         total: 48.3,
         rx: '',
         car: 'سيدان أبيض',
+        parking: 'موقف يُسر 2',
         spot: 'وضع الطلب على المقعد المجاور للسائق'
       },
       {
@@ -545,10 +554,44 @@
         total: 32.2,
         rx: '',
         car: '',
+        parking: 'موقف يُسر 3',
         spot: 'وضع الطلب في الشنطة الخلفية للسيارة'
       }
     ];
     let splashDismissed = false;
+
+    const parkingSpotOptions = [
+      {
+        id: 'yusr_1',
+        label: {
+          ar: 'موقف يُسر 1',
+          en: 'Yusr Bay 1',
+          tr: 'Yusr Park 1',
+          ur: 'یُسر پارکنگ 1',
+          zh: 'Yusr 车位 1'
+        }
+      },
+      {
+        id: 'yusr_2',
+        label: {
+          ar: 'موقف يُسر 2',
+          en: 'Yusr Bay 2',
+          tr: 'Yusr Park 2',
+          ur: 'یُسر پارکنگ 2',
+          zh: 'Yusr 车位 2'
+        }
+      },
+      {
+        id: 'yusr_3',
+        label: {
+          ar: 'موقف يُسر 3',
+          en: 'Yusr Bay 3',
+          tr: 'Yusr Park 3',
+          ur: 'یُسر پارکنگ 3',
+          zh: 'Yusr 车位 3'
+        }
+      }
+    ];
 
     const deliverySpotOptions = [
       {
@@ -623,6 +666,7 @@
         bagTitle: 'الحقيبة الدوائية والفاتورة',
         bagSubtitle: 'تُصرف وتُسلّم مباشرة إلى نافذة مركبتك',
         emptyBag: 'الحقيبة الدوائية فارغة حالياً، اختر الأدوية أو أدخل رقم الوصفة.',
+        parkingSpotTitle: 'رقم موقف أو مسار الانتظار الذكي:',
         deliverySpotTitle: 'مكان تسليم الطلب في السيارة:',
         carInfoTitle: 'بيانات المركبة لتسليم الدواء للنافذة',
         platePh: 'رقم اللوحة (مثال: أ ب ج 1234)',
@@ -675,6 +719,7 @@
         bagTitle: 'Medical Bag & Invoice',
         bagSubtitle: 'Dispensed & delivered straight to your car window',
         emptyBag: 'Your medical bag is empty. Add items or enter an RX number.',
+        parkingSpotTitle: 'Smart Parking / Waiting Bay No.:',
         deliverySpotTitle: 'Where to deliver the order in the car:',
         carInfoTitle: 'Vehicle Info for Window Delivery',
         platePh: 'Plate Number (e.g. ABC 1234)',
@@ -727,6 +772,7 @@
         bagTitle: 'İlaç Çantası ve Fatura',
         bagSubtitle: 'Doğrudan aracınızın camına teslim edilir',
         emptyBag: 'İlaç çantanız boş, ürün seçin veya reçete numarası girin.',
+        parkingSpotTitle: 'Akıllı Park / Bekleme Alanı No:',
         deliverySpotTitle: 'Araçta sipariş teslim yeri:',
         carInfoTitle: 'Teslimat İçin Araç Bilgileri',
         platePh: 'Plaka Numarası',
@@ -779,6 +825,7 @@
         bagTitle: 'طبی بیگ اور بل',
         bagSubtitle: 'براہِ راست آپ کی گاڑی کی کھڑکی پر ترسیل',
         emptyBag: 'طبی بیگ خالی ہے، ادویات منتخب کریں یا نسخہ نمبر درج کریں۔',
+        parkingSpotTitle: 'اسمارٹ پارکنگ / انتظار کا نمبر:',
         deliverySpotTitle: 'گاڑی میں آرڈر پہنچانے کی جگہ:',
         carInfoTitle: 'ترسیل کے لیے گاڑی کی تفصیلات',
         platePh: 'نمبر پلیٹ درج کریں',
@@ -831,6 +878,7 @@
         bagTitle: '我的药袋与账单',
         bagSubtitle: '药师审核后直接送达您的车窗',
         emptyBag: '药袋目前为空，请添加药品或输入处方号。',
+        parkingSpotTitle: '智能停车 / 等待车位号：',
         deliverySpotTitle: '车内订单交付位置：',
         carInfoTitle: '接药车辆信息',
         platePh: '车牌号码',
@@ -1655,6 +1703,40 @@
       }, 60);
     }
 
+    function renderParkingSpotOptions() {
+      const container = document.getElementById('parkingSpotOptions');
+      if (!container) return;
+
+      container.innerHTML = parkingSpotOptions.map(opt => {
+        const active = opt.id === selectedParkingSpot;
+        return `
+          <button
+            type="button"
+            onclick="selectParkingSpot('${opt.id}')"
+            class="px-2.5 py-2 rounded-xl border text-[11px] font-black transition text-center cursor-pointer ${
+              active
+                ? 'bg-cyan-500 border-cyan-400 text-slate-950 shadow-sm'
+                : 'bg-slate-900/90 border-slate-700 hover:border-cyan-500/40 text-slate-200'
+            }"
+          >
+            ${opt.label[currentLang] || opt.label.ar}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectParkingSpot(spotId) {
+      selectedParkingSpot = spotId;
+      renderParkingSpotOptions();
+      const found = parkingSpotOptions.find(o => o.id === spotId);
+      if (found) speakText(found.label[currentLang] || found.label.ar);
+    }
+
+    function getSelectedParkingSpotText() {
+      const found = parkingSpotOptions.find(o => o.id === selectedParkingSpot);
+      return found ? (found.label[currentLang] || found.label.ar) : '';
+    }
+
     function renderDeliverySpotOptions() {
       const container = document.getElementById('deliverySpotOptions');
       if (!container) return;
@@ -1811,6 +1893,7 @@
 
             <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
               <div class="flex flex-wrap items-center gap-2 text-slate-400">
+                ${ord.parking ? `<span class="bg-amber-400/15 text-amber-300 border border-amber-400/30 px-2.5 py-0.5 rounded-lg">🅿️ ${ord.parking}</span>` : ''}
                 ${ord.spot ? `<span class="bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 px-2.5 py-0.5 rounded-lg">📍 ${ord.spot}</span>` : ''}
                 ${ord.rx ? `<span class="bg-slate-800 text-cyan-300 px-2.5 py-0.5 rounded-lg">RX: ${ord.rx}</span>` : ''}
                 ${ord.car ? `<span class="bg-slate-800 text-slate-200 px-2.5 py-0.5 rounded-lg">🚗 ${ord.car}</span>` : ''}
@@ -1983,6 +2066,7 @@
 
       document.getElementById('bagTitle').textContent = L.bagTitle;
       document.getElementById('bagSubtitle').textContent = L.bagSubtitle;
+      document.getElementById('parkingSpotTitle').textContent = L.parkingSpotTitle;
       document.getElementById('deliverySpotTitle').textContent = L.deliverySpotTitle;
       document.getElementById('carInfoTitle').textContent = L.carInfoTitle;
       document.getElementById('carPlateInput').placeholder = L.platePh;
@@ -1993,6 +2077,7 @@
       document.getElementById('btnSubmitOrder').textContent = L.btnSubmit;
 
       renderAssistModes();
+      renderParkingSpotOptions();
       renderDeliverySpotOptions();
       renderCategories();
       renderMedications();
@@ -2472,6 +2557,7 @@
       const rxVal = document.getElementById('rxInput').value.trim();
       const plateVal = (document.getElementById('carPlateInput')?.value || '').trim();
       const colorVal = (document.getElementById('carColorInput')?.value || '').trim();
+      const parkingText = getSelectedParkingSpotText();
       const spotText = getSelectedDeliverySpotText();
 
       if (cart.length === 0 && !rxVal) {
@@ -2503,6 +2589,7 @@
         total,
         rx: rxVal,
         car: [plateVal, colorVal].filter(Boolean).join(' - '),
+        parking: parkingText,
         spot: spotText
       };
 
