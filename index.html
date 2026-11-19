@@ -1505,6 +1505,108 @@
       }
     ];
 
+    let availableVoices = [];
+    let speechQueueTimer = null;
+
+    function loadVoicesList() {
+      if (!('speechSynthesis' in window)) return [];
+      const list = window.speechSynthesis.getVoices() || [];
+      if (list.length > 0) availableVoices = list;
+      return availableVoices;
+    }
+
+    if ('speechSynthesis' in window) {
+      loadVoicesList();
+      window.speechSynthesis.onvoiceschanged = () => {
+        loadVoicesList();
+      };
+    }
+
+    function pickBestVoiceForLang(langCode) {
+      const voices = loadVoicesList();
+      if (!voices.length) return null;
+
+      const localeMap = {
+        ar: ['ar-SA', 'ar-AE', 'ar-EG', 'ar'],
+        en: ['en-US', 'en-GB', 'en'],
+        tr: ['tr-TR', 'tr'],
+        ur: ['ur-PK', 'ur-IN', 'ur'],
+        zh: ['zh-CN', 'zh-SG', 'zh-HK', 'zh-TW', 'zh']
+      };
+
+      const candidates = localeMap[langCode] || ['ar-SA', 'ar'];
+
+      for (const loc of candidates) {
+        const exact = voices.find(v => (v.lang || '').toLowerCase() === loc.toLowerCase());
+        if (exact) return exact;
+      }
+
+      const prefix = (candidates[0] || 'ar').split('-')[0].toLowerCase();
+      return voices.find(v => (v.lang || '').toLowerCase().startsWith(prefix)) || null;
+    }
+
+    function sanitizeSpokenText(rawText) {
+      return String(rawText || '')
+        .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}\u{2705}\u{274C}\u{23F3}\u{1F680}-\u{1F6FF}]/gu, ' ')
+        .replace(/\|/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function speakText(text) {
+      if (!ttsEnabled || !('speechSynthesis' in window)) return;
+      const cleaned = sanitizeSpokenText(text);
+      if (!cleaned) return;
+
+      clearTimeout(speechQueueTimer);
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {}
+
+      const langMap = {
+        ar: 'ar-SA',
+        en: 'en-US',
+        tr: 'tr-TR',
+        ur: 'ur-PK',
+        zh: 'zh-CN'
+      };
+      const targetLang = langMap[currentLang] || 'ar-SA';
+      const chosenVoice = pickBestVoiceForLang(currentLang);
+
+      const chunks = cleaned.match(/[^.!?،؛。\n]{1,140}(?:[.!?،؛。\n]|$)/g) || [cleaned];
+
+      function speakChunk(index) {
+        if (!ttsEnabled || index >= chunks.length) return;
+        const part = chunks[index].trim();
+        if (!part) {
+          speakChunk(index + 1);
+          return;
+        }
+
+        const utter = new SpeechSynthesisUtterance(part);
+        utter.lang = chosenVoice ? chosenVoice.lang : targetLang;
+        if (chosenVoice) utter.voice = chosenVoice;
+        utter.rate = currentLang === 'ar' || currentLang === 'ur' ? 0.96 : 1.0;
+        utter.pitch = 1.0;
+        utter.volume = 1.0;
+
+        utter.onend = () => {
+          speakChunk(index + 1);
+        };
+        utter.onerror = () => {
+          speakChunk(index + 1);
+        };
+
+        try {
+          window.speechSynthesis.speak(utter);
+        } catch (e) {}
+      }
+
+      speechQueueTimer = setTimeout(() => {
+        speakChunk(0);
+      }, 60);
+    }
+
     function switchPageView(viewName) {
       activePageView = viewName === 'orders' ? 'orders' : 'shop';
       const shopEl = document.getElementById('shopView');
@@ -1717,16 +1819,6 @@
       }, 650);
     });
 
-    function speakText(text) {
-      if (!ttsEnabled || !('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      const langMap = { ar: 'ar-SA', en: 'en-US', tr: 'tr-TR', ur: 'ur-PK', zh: 'zh-CN' };
-      u.lang = langMap[currentLang] || 'ar-SA';
-      u.rate = 1;
-      window.speechSynthesis.speak(u);
-    }
-
     function openLangModal() {
       document.getElementById('langModal').classList.remove('hidden');
     }
@@ -1830,7 +1922,16 @@
       ttsEnabled = !ttsEnabled;
       const dot = document.getElementById('ttsDot');
       dot.className = ttsEnabled ? 'w-2 h-2 rounded-full bg-emerald-400' : 'w-2 h-2 rounded-full bg-rose-500';
+      if (!ttsEnabled) {
+        clearTimeout(speechQueueTimer);
+        if ('speechSynthesis' in window) {
+          try { window.speechSynthesis.cancel(); } catch (e) {}
+        }
+      }
       applyLanguage(currentLang);
+      if (ttsEnabled) {
+        speakText(i18n[currentLang].ttsOn);
+      }
     }
 
     function cycleFont() {
