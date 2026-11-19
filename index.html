@@ -319,39 +319,45 @@
         </div>
       </div>
 
-      <!-- شريط التنقل وأدوات الوصول وزر السلة -->
-      <div class="flex flex-wrap items-center gap-2">
-        <button onclick="switchPageView('shop')" id="btnNavShop" class="bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow">
-          💊 <span id="btnNavShopText">الصيدلية</span>
-        </button>
-        <button onclick="switchPageView('orders')" id="btnNavOrders" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer">
-          📦 <span id="btnNavOrdersText">طلباتها</span>
-          <span id="ordersTotalBadge" class="bg-amber-400 text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-full">0</span>
-        </button>
-        <button onclick="openCartDrawer()" id="btnOpenCart" class="bg-gradient-to-r from-cyan-400 to-teal-300 hover:from-cyan-300 hover:to-teal-200 text-slate-950 px-4 py-1.5 rounded-xl text-xs font-black flex items-center gap-2 transition cursor-pointer shadow-md shadow-cyan-500/25">
-          <span class="text-base leading-none">🛒</span>
-          <span id="btnCartLabel">السلة</span>
-          <span id="bagCountBadge" class="bg-slate-950 text-cyan-300 text-xs font-black px-2 py-0.5 rounded-full min-w-[22px] text-center">0</span>
-        </button>
-        <button onclick="toggleSimpleMode()" id="btnSimple" class="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow">
-          ✨ <span id="btnSimpleText">التبسيط: إخفاء الثانوية</span>
-        </button>
-        <button onclick="cycleFont()" id="btnFont" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer">
-          🔠 <span id="btnFontText">حجم الخط: 100%</span>
-        </button>
-        <button onclick="openLangModal()" class="secondary-element bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer">
-          🌐 <span id="btnLangText">اللغة (Language)</span>
-        </button>
-        <button onclick="toggleTTS()" id="btnTTS" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
-          <span id="ttsDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span id="btnTTSText">القارئ الصوتي: مفعل</span>
-        </button>
-        <button onclick="toggleTheme()" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-          <span id="btnThemeText">🌙 الوضع الداكن</span>
-        </button>
-        <button onclick="toggleHighContrast()" id="btnContrast" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
-          🌓 <span id="btnContrastText">تباين عالٍ</span>
-        </button>
+      <!-- شريط التنقل وأدوات الوصول (السلة أقصى اليسار وبجوارها على اليمين طلباتي) -->
+      <div class="flex-1 flex flex-wrap items-center justify-between gap-2 min-w-[280px]">
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="switchPageView('shop')" id="btnNavShop" class="bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow">
+            💊 <span id="btnNavShopText">الصيدلية</span>
+          </button>
+          <button onclick="toggleSimpleMode()" id="btnSimple" class="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow">
+            ✨ <span id="btnSimpleText">التبسيط: إخفاء الثانوية</span>
+          </button>
+          <button onclick="cycleFont()" id="btnFont" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition cursor-pointer">
+            🔠 <span id="btnFontText">حجم الخط: 100%</span>
+          </button>
+          <button onclick="openLangModal()" class="secondary-element bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer">
+            🌐 <span id="btnLangText">اللغة (Language)</span>
+          </button>
+          <button onclick="toggleTTS()" id="btnTTS" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
+            <span id="ttsDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="btnTTSText">القارئ الصوتي: مفعل</span>
+          </button>
+          <button onclick="toggleTheme()" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+            <span id="btnThemeText">🌙 الوضع الداكن</span>
+          </button>
+          <button onclick="toggleHighContrast()" id="btnContrast" class="secondary-element bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer">
+            🌓 <span id="btnContrastText">تباين عالٍ</span>
+          </button>
+        </div>
+
+        <!-- في RTL: الأول يظهر يميناً (طلباتي) والثاني يظهر يساراً (السلة) -->
+        <div class="flex items-center gap-2 ms-auto">
+          <button onclick="switchPageView('orders')" id="btnNavOrders" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer">
+            📦 <span id="btnNavOrdersText">طلباتي</span>
+            <span id="ordersTotalBadge" class="bg-amber-400 text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-full">0</span>
+          </button>
+          <button onclick="openCartDrawer()" id="btnOpenCart" class="bg-gradient-to-r from-cyan-400 to-teal-300 hover:from-cyan-300 hover:to-teal-200 text-slate-950 px-4 py-1.5 rounded-xl text-xs font-black flex items-center gap-2 transition cursor-pointer shadow-md shadow-cyan-500/25">
+            <span class="text-base leading-none">🛒</span>
+            <span id="btnCartLabel">السلة</span>
+            <span id="bagCountBadge" class="bg-slate-950 text-cyan-300 text-xs font-black px-2 py-0.5 rounded-full min-w-[22px] text-center">0</span>
+          </button>
+        </div>
       </div>
 
     </div>
@@ -403,12 +409,12 @@
 
   </main>
 
-  <!-- 4B. واجهة طلباتها (الطلبات المكتملة، الملغاة، وقيد التجهيز) -->
+  <!-- 4B. واجهة طلباتي (الطلبات المكتملة، الملغاة، وقيد التجهيز) -->
   <section id="ordersView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
     <div class="clinical-card bg-slate-900 border border-cyan-500/30 rounded-3xl p-5 sm:p-6 shadow-xl space-y-5">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
         <div>
-          <h1 id="ordersPageTitle" class="text-xl sm:text-2xl font-black text-cyan-400">طلباتها</h1>
+          <h1 id="ordersPageTitle" class="text-xl sm:text-2xl font-black text-cyan-400">طلباتي</h1>
           <p id="ordersPageSubtitle" class="secondary-element text-xs text-muted-clinical text-slate-400 font-bold mt-1">متابعة الطلبات قيد التجهيز والطلبات المكتملة والملغاة</p>
         </div>
         <button onclick="switchPageView('shop')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-2xl transition cursor-pointer self-start sm:self-auto">
@@ -542,7 +548,7 @@
         brandTitle: 'صيدلية يُسْر',
         brandTagline: 'منصة المسار الصيدلاني الذكي للمركبات',
         btnNavShop: 'الصيدلية',
-        btnNavOrders: 'طلباتها',
+        btnNavOrders: 'طلباتي',
         btnCartLabel: 'السلة',
         simpleOn: 'التبسيط: مفعل (الأساسية فقط)',
         simpleOff: 'التبسيط: إخفاء الثانوية',
@@ -561,7 +567,7 @@
         assistLabel: 'اختر نمط الخدمة المناسبة لك عند نافذة الصيدلية:',
         catSidebarTitle: 'أقسام الصيدلية',
         searchPlaceholder: 'ابحث عن اسم الدواء أو المستلزم الطبي...',
-        ordersPageTitle: 'طلباتها',
+        ordersPageTitle: 'طلباتي',
         ordersPageSubtitle: 'متابعة الطلبات قيد التجهيز والطلبات المكتملة والملغاة',
         btnBackToShop: 'العودة إلى الصيدلية',
         lblPreparingTab: 'الطلبات قيد التجهيز',
@@ -593,7 +599,7 @@
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Smart Accessible Drive-Thru Pharmacy',
         btnNavShop: 'Pharmacy',
-        btnNavOrders: 'Her Orders',
+        btnNavOrders: 'My Orders',
         btnCartLabel: 'Cart',
         simpleOn: 'Simplify: ON (Core Only)',
         simpleOff: 'Simplify: Hide Secondary',
@@ -612,7 +618,7 @@
         assistLabel: 'Select your preferred assistance mode at the pharmacy window:',
         catSidebarTitle: 'Pharmacy Departments',
         searchPlaceholder: 'Search medication or medical supply...',
-        ordersPageTitle: 'Her Orders',
+        ordersPageTitle: 'My Orders',
         ordersPageSubtitle: 'Track orders in preparation, completed orders, and cancelled orders',
         btnBackToShop: 'Back to Pharmacy',
         lblPreparingTab: 'Orders in Preparation',
@@ -644,7 +650,7 @@
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Akıllı Arabaya Servis Eczane Platformu',
         btnNavShop: 'Eczane',
-        btnNavOrders: 'Siparişleri',
+        btnNavOrders: 'Siparişlerim',
         btnCartLabel: 'Sepet',
         simpleOn: 'Sade Mod: AÇIK (Temel)',
         simpleOff: 'Sade Mod: İkincilleri Gizle',
@@ -663,7 +669,7 @@
         assistLabel: 'Eczane penceresinde size uygun destek modunu seçin:',
         catSidebarTitle: 'Eczane Bölümleri',
         searchPlaceholder: 'İlaç veya tıbbi malzeme ara...',
-        ordersPageTitle: 'Siparişleri',
+        ordersPageTitle: 'Siparişlerim',
         ordersPageSubtitle: 'Hazırlanan, tamamlanan ve iptal edilen siparişler',
         btnBackToShop: 'Eczaneye Dön',
         lblPreparingTab: 'Hazırlanan Siparişler',
@@ -695,7 +701,7 @@
         brandTitle: 'یُسر فارمیسی',
         brandTagline: 'گاڑیوں کے لیے اسمارٹ فارمیسی پلیٹ فارم',
         btnNavShop: 'فارمیسی',
-        btnNavOrders: 'ان کے آرڈرز',
+        btnNavOrders: 'میرے آرڈرز',
         btnCartLabel: 'ٹوکری',
         simpleOn: 'سادہ موڈ: فعال (صرف بنیادی)',
         simpleOff: 'سادہ موڈ: اضافی چھپائیں',
@@ -714,7 +720,7 @@
         assistLabel: 'فارمیسی ونڈو پر اپنی سہولت کا طریقہ منتخب کریں:',
         catSidebarTitle: 'فارمیسی کے شعبے',
         searchPlaceholder: 'دوا یا طبی سامان تلاش کریں...',
-        ordersPageTitle: 'ان کے آرڈرز',
+        ordersPageTitle: 'میرے آرڈرز',
         ordersPageSubtitle: 'تیار ہونے والے، مکمل اور منسوخ شدہ آرڈرز',
         btnBackToShop: 'فارمیسی پر واپس جائیں',
         lblPreparingTab: 'تیار ہونے والے آرڈرز',
@@ -746,7 +752,7 @@
         brandTitle: 'Yusr Pharmacy',
         brandTagline: '智慧无障碍汽车穿梭药房',
         btnNavShop: '药房',
-        btnNavOrders: '她的订单',
+        btnNavOrders: '我的订单',
         btnCartLabel: '购物车',
         simpleOn: '极简模式：已开启',
         simpleOff: '极简模式：隐藏次要项',
@@ -765,7 +771,7 @@
         assistLabel: '请选择您在药房窗口需要的无障碍辅助方式：',
         catSidebarTitle: '药房科室分类',
         searchPlaceholder: '搜索药品或医疗器械名称...',
-        ordersPageTitle: '她的订单',
+        ordersPageTitle: '我的订单',
         ordersPageSubtitle: '查看准备中、已完成和已取消的订单',
         btnBackToShop: '返回药房',
         lblPreparingTab: '准备中的订单',
