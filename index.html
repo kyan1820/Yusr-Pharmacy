@@ -94,7 +94,10 @@
       transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.32s ease;
     }
     #confirmActionBackdrop.confirm-open #confirmActionCard {
-      /* انتقال سلس عند فتح واجهة المسار الذكي */
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
     @keyframes lanePanelSlideUp {
       0% {
         opacity: 0;
@@ -107,9 +110,6 @@
     }
     .lane-panel-enter {
       animation: lanePanelSlideUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    }
-      opacity: 1;
-      transform: translateY(0) scale(1);
     }
 
     /* وضع التبسيط: إخفاء العناصر والأزرار الثانوية وإبقاء الأساسية */
@@ -136,7 +136,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* كشف عربي ناعم ومتماسك من اليمين إلى اليسار بدون تشويه أو تقطيع */
     .smooth-rtl-gradual-reveal {
       display: inline-block;
       clip-path: inset(0 0 0 100%);
@@ -157,7 +156,6 @@
       }
     }
 
-    /* ظهور حروف الجملة الإنجليزية حرفاً بحرف */
     .smooth-ltr-char {
       display: inline-block;
       opacity: 0;
@@ -206,7 +204,7 @@
       color: #475569;
     }
 
-    /* وضع التباين العالي المعتمد على وضوح التباين الداكن */
+    /* وضع التباين العالي */
     body.high-contrast-mode {
       background-color: #020617 !important;
       color: #f8fafc !important;
@@ -245,7 +243,7 @@
       background: linear-gradient(to left, #1d4ed8, #0284c7) !important;
     }
 
-    /* أزرار الأقسام: أبيض بنص أزرق، وعند الضغط تتلون بالأزرق تدريجياً من اليمين لليسار */
+    /* أزرار الأقسام */
     .cat-main-btn {
       position: relative;
       overflow: hidden;
@@ -293,7 +291,6 @@
       to { width: 100%; }
     }
 
-    /* ظهور الأقسام الفرعية حبة حبة بسرعة وسلاسة */
     @keyframes subCatCascadeIn {
       0% {
         opacity: 0;
@@ -393,7 +390,7 @@
         </div>
       </div>
 
-      <!-- الوسط: باقي الأزرار -->
+      <!-- الوسط: أزرار الوصول والتبسيط -->
       <div class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mx-auto">
         <button onclick="switchPageView('shop')" id="btnNavShop" class="bg-blue-600 text-white px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow whitespace-nowrap">
           💊 <span id="btnNavShopText">الصيدلية</span>
@@ -419,8 +416,12 @@
         </button>
       </div>
 
-      <!-- أقصى اليسار: طلباتي ثم السلة -->
+      <!-- أقصى اليسار: شاشة الصيدلي (مستقلة)، طلباتي، المسار، والسلة -->
       <div class="flex items-center gap-2 shrink-0">
+        <button onclick="switchPageView('staff')" id="btnNavStaff" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border border-cyan-400/50 text-white px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow-md whitespace-nowrap">
+          🧑‍⚕️ <span id="btnNavStaffText">شاشة الصيدلي</span>
+          <span id="staffNavQueueBadge" class="bg-cyan-300 text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-full">1</span>
+        </button>
         <button onclick="switchPageView('orders')" id="btnNavOrders" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap">
           📦 <span id="btnNavOrdersText">طلباتي</span>
           <span id="ordersTotalBadge" class="bg-amber-400 text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-full">0</span>
@@ -483,11 +484,11 @@
     </section>
 
   </main>
-<!-- 4A. واجهة المسار الذكي بعد اعتماد الطلب (تصميم ومواقع مختلفة) -->
+
+  <!-- 4A. واجهة المسار الذكي بعد اعتماد الطلب -->
   <section id="smartLaneView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 lane-panel-enter">
     <div class="clinical-card bg-slate-900 border-2 border-cyan-500/35 rounded-3xl p-5 sm:p-6 shadow-xl space-y-6">
 
-      <!-- شريط علوي: رقم الطلب وأزرار الإجراءات في اليمين وعنوان المسار في اليسار -->
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div class="flex flex-wrap items-center gap-2.5 shrink-0">
           <div class="bg-slate-950 border border-cyan-500/40 rounded-2xl px-4 py-2 text-center">
@@ -511,10 +512,8 @@
         </div>
       </div>
 
-      <!-- قسم مقسّم: رسائل الصيدلي في عمود ومراحل التقدم في العمود الآخر -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
-        <!-- العمود الأول: رسائل المسار المباشرة -->
         <div class="lg:col-span-5 clinical-subcard bg-slate-950 border border-cyan-500/30 rounded-3xl p-4 flex flex-col justify-between gap-3 min-h-[320px]">
           <div class="space-y-3">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
@@ -539,7 +538,6 @@
           </div>
         </div>
 
-        <!-- العمود الثاني: نسبة التقدم وبانر الحالة ومراحل المسار الأربع -->
         <div class="lg:col-span-7 space-y-4">
           <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-2.5">
             <div class="flex items-center justify-between gap-2">
@@ -561,7 +559,6 @@
 
       </div>
 
-      <!-- قسم سفلي: أزرار التواصل السريع مع الصيدلي -->
       <div class="clinical-subcard bg-slate-950/80 border border-slate-800 rounded-3xl p-4 sm:p-5 space-y-3">
         <div>
           <h2 id="laneQuickTitle" class="text-sm font-black text-cyan-400">إشارات التواصل السريع مع الصيدلي</h2>
@@ -572,6 +569,7 @@
 
     </div>
   </section>
+
   <section id="directTrackView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6">
     <div class="clinical-card bg-slate-900 border-2 border-teal-400/40 rounded-3xl p-6 shadow-xl space-y-5">
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
@@ -606,7 +604,8 @@
       </button>
     </div>
   </section>
-  <!-- 4B. واجهة طلباتي (الطلبات المكتملة، الملغاة، وقيد التجهيز) -->
+
+  <!-- 4B. واجهة طلباتي -->
   <section id="ordersView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
     <div class="clinical-card bg-slate-900 border border-cyan-500/30 rounded-3xl p-5 sm:p-6 shadow-xl space-y-5">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
@@ -619,7 +618,6 @@
         </button>
       </div>
 
-      <!-- تبويبات حالات الطلبات -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <button onclick="setOrderFilter('preparing')" id="tabPreparing" class="p-3.5 rounded-2xl border-2 border-amber-400 bg-amber-400/15 text-start transition cursor-pointer flex items-center justify-between">
           <span class="text-xs sm:text-sm font-black">⏳ <span id="lblPreparingTab">الطلبات قيد التجهيز</span></span>
@@ -635,12 +633,100 @@
         </button>
       </div>
 
-      <!-- قائمة الطلبات حسب الحالة المختارة -->
       <div id="ordersListContainer" class="space-y-3"></div>
     </div>
   </section>
 
-  <!-- 5. نافذة / درج السلة والفاتورة (تفتح وتقفل بسلاسة عند الضغط على زر السلة) -->
+  <!-- 4C. شاشة الصيدلي / الموظف المستقلة (بتصميم وتوزيع أماكن مختلف عن الصورة وبنفس ألوان الصيدلية) -->
+  <section id="staffView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 lane-panel-enter">
+    <div class="clinical-card bg-slate-900 border-2 border-blue-500/40 rounded-3xl p-5 sm:p-6 shadow-xl space-y-6">
+
+      <!-- رأس شاشة الصيدلي المستقلة (العنوان في اليمين، ومؤشر الطابور والعودة في اليسار) -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div class="space-y-1.5">
+          <span id="staffRoleBadge" class="inline-flex items-center gap-1.5 bg-blue-500/15 border border-blue-400/40 text-blue-400 px-3.5 py-1 rounded-full text-xs font-black">
+            🧑‍⚕️ شاشة الصيدلي وطاقم الصرف — المسار الذكي (وضع هادئ للموظف)
+          </span>
+          <h1 id="staffPageTitle" class="text-xl sm:text-2xl font-black">مركز إدارة وصرف طلبات "يُسْر" للمركبات</h1>
+          <p id="staffPageSubtitle" class="text-xs text-slate-400 font-bold">مراجعة الوصفات والأدوية، اعتماد أوقات التجهيز، والتواصل المباشر مع نافذة المركبة</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+          <div class="bg-cyan-500/15 border border-cyan-400/50 text-cyan-300 px-4 py-2 rounded-2xl text-xs font-black flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span id="staffActiveCountLabel">الطلبات النشطة بالانتظار:</span>
+            <span id="staffActiveCountNum" class="bg-cyan-400 text-slate-950 px-2.5 py-0.5 rounded-full font-black">1</span>
+          </div>
+          <button onclick="switchPageView('shop')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-4 py-2 rounded-2xl text-xs font-black transition cursor-pointer">
+            ← <span id="btnStaffBackShop">العودة لواجهة الصيدلية</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- شريط طابور الطلبات النشطة حالياً -->
+      <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-2.5">
+        <div id="staffQueueHeader" class="text-xs font-black text-cyan-400">
+          طابور الطلبات النشطة حالياً (اضغط على رقم الطلب للتبديل والتحكم به):
+        </div>
+        <div id="staffOrdersQueueBar" class="flex flex-wrap items-center gap-2.5"></div>
+      </div>
+
+      <!-- الشبكة الرئيسية المعكوسة عن الصورة: المحادثة والتنبيهات في اليمين (5 أعمدة)، وتفاصيل الطلب والتحكم في اليسار (7 أعمدة) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+        <!-- العمود الأيمن: إشارات السائق والمحادثة والردود السريعة وإشعارات التسليم -->
+        <div class="lg:col-span-5 clinical-subcard bg-slate-950 border border-cyan-500/35 rounded-3xl p-4 sm:p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h2 id="staffChatBoxTitle" class="text-sm font-black text-cyan-400">💬 إشارات السائق والمحادثة المباشرة</h2>
+            <span id="staffChatLiveStatus" class="bg-blue-500/20 text-blue-300 border border-blue-400/40 text-[11px] font-black px-2.5 py-0.5 rounded-full">متصل بالمسار</span>
+          </div>
+
+          <!-- سجل الرسائل والإشارات الواردة من المركبة -->
+          <div id="staffMessagesLog" class="space-y-2 max-h-48 overflow-y-auto pe-1 text-xs font-bold"></div>
+
+          <!-- حقل كتابة رد مخصص للعميل -->
+          <div class="flex items-center gap-2 pt-2 border-t border-slate-800">
+            <input
+              id="staffCustomReplyInput"
+              type="text"
+              onkeydown="if(event.key==='Enter') sendStaffCustomReply()"
+              placeholder="اكتب رداً مخصصاً للعميل..."
+              class="clinical-input flex-1 bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs font-bold outline-none"
+            />
+            <button onclick="sendStaffCustomReply()" id="btnStaffSendReply" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-4 py-2 rounded-xl transition cursor-pointer shrink-0">
+              إرسال
+            </button>
+          </div>
+
+          <!-- ردود جاهزة سريعة من الصيدلي -->
+          <div class="space-y-2 pt-2 border-t border-slate-800">
+            <div id="staffQuickRepliesLabel" class="text-xs font-black text-cyan-400">⚡ ردود جاهزة سريعة على محادثة العميل:</div>
+            <div id="staffQuickRepliesList" class="space-y-1.5"></div>
+          </div>
+
+          <!-- إشعارات حالة التسليم السريعة للمركبة -->
+          <div class="space-y-2 pt-2 border-t border-slate-800">
+            <div id="staffHandoverAlertsLabel" class="text-xs font-black text-blue-400">🔔 إشعارات حالة التسليم السريعة:</div>
+            <button onclick="triggerStaffDeliveryAlert('coming_to_car')" id="btnStaffComingToCar" class="w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black text-xs py-2.5 px-4 rounded-xl transition cursor-pointer shadow">
+              🚗 إشعار العميل: الصيدلي قادم لسيارتك
+            </button>
+            <button onclick="triggerStaffDeliveryAlert('order_ready_av')" id="btnStaffOrderReadyAV" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs py-2.5 px-4 rounded-xl transition cursor-pointer shadow">
+              💡 إشعار ضوئي وصوتي: الطلب جاهز للاستلام
+            </button>
+          </div>
+        </div>
+
+        <!-- العمود الأيسر: بطاقة التحكم بالطلب، وقت التجهيز، الإرشادات، المنتجات، ومراحل الصرف -->
+        <div id="staffOrderDetailPanel" class="lg:col-span-7 clinical-subcard bg-slate-950 border border-blue-500/35 rounded-3xl p-4 sm:p-5 space-y-4">
+          <!-- يُملأ ديناميكياً عبر renderStaffView() -->
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 5. نافذة / درج السلة والفاتورة -->
   <div id="cartDrawerBackdrop" onclick="closeCartDrawer()" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex justify-end">
     <aside id="cartDrawerPanel" onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-s border-cyan-500/40 w-full max-w-md h-full p-5 sm:p-6 shadow-2xl flex flex-col justify-between gap-4 overflow-y-auto">
       <div class="space-y-4">
@@ -659,13 +745,11 @@
 
         <div id="cartItemsContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
 
-        <!-- رقم موقف أو مسار الانتظار الذكي (فوق مكان التسليم) -->
         <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2">
           <div id="parkingSpotTitle" class="text-xs font-black text-cyan-300">رقم موقف أو مسار الانتظار الذكي:</div>
           <div id="parkingSpotOptions" class="grid grid-cols-3 gap-2"></div>
         </div>
 
-        <!-- مكان تسليم الطلب في السيارة داخل الفاتورة -->
         <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2">
           <div id="deliverySpotTitle" class="text-xs font-black text-cyan-300">مكان تسليم الطلب في السيارة:</div>
           <div id="deliverySpotOptions" class="space-y-1.5"></div>
@@ -679,7 +763,6 @@
           </div>
         </div>
 
-        <!-- خانة كود الخصم وعرض الكوبونات والعروض المتاحة فوق الفاتورة -->
         <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
           <label for="promoCodeInput" id="lblPromoTitle" class="block text-xs font-black text-cyan-300">كود الخصم (حروف إنجليزية كابيتل فقط):</label>
           <div class="flex items-center gap-2">
@@ -780,19 +863,16 @@
         </button>
       </div>
 
-      <!-- 1. نمط الخدمة -->
       <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2 text-xs">
         <span id="invLblServiceMode" class="font-black text-cyan-300">نمط الخدمة:</span>
         <span id="invValServiceMode" class="font-black"></span>
       </div>
 
-      <!-- 2. رقم الموقف -->
       <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2 text-xs">
         <span id="invLblParking" class="font-black text-cyan-300">رقم الموقف:</span>
         <span id="invValParking" class="font-black"></span>
       </div>
 
-      <!-- 3. نوع المركبة وتحتها رقم اللوحة -->
       <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3 space-y-1.5 text-xs">
         <div class="flex items-center justify-between gap-2">
           <span id="invLblCarType" class="font-black text-cyan-300">نوع المركبة:</span>
@@ -804,19 +884,16 @@
         </div>
       </div>
 
-      <!-- 4. طريقة الاستلام -->
       <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-2 text-xs">
         <span id="invLblReceiveMethod" class="font-black text-cyan-300">طريقة الاستلام:</span>
         <span id="invValReceiveMethod" class="font-black"></span>
       </div>
 
-      <!-- 5. تفاصيل المنتجات (اسم المنتج، كميته، وسعره شامل الضريبة) -->
       <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3 space-y-2 text-xs">
         <div id="invLblItemsDetails" class="font-black text-cyan-300">تفاصيل المنتجات:</div>
         <div id="invValItemsList" class="space-y-1.5"></div>
       </div>
 
-      <!-- 6. المجموع الفرعي، إجمالي الخصومات، ضريبة القيمة المضافة (15%)، والإجمالي النهائي -->
       <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-1.5 text-xs font-bold">
         <div class="flex justify-between">
           <span id="invLblSubtotal" class="text-slate-400">المجموع الفرعي (غير شامل الضريبة):</span>
@@ -836,13 +913,11 @@
         </div>
       </div>
 
-      <!-- 7. اختر طريقة الدفع -->
       <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2">
         <div id="invLblPaymentMethod" class="text-xs font-black text-cyan-300">اختر طريقة الدفع:</div>
         <div id="invPaymentOptions" class="grid grid-cols-2 gap-2"></div>
       </div>
 
-      <!-- زرا اعتماد الطلب وتعديل السلة -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
         <button onclick="openApprovalTimerModal()" id="btnApproveInvoiceOrder" class="bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black py-3 rounded-2xl text-xs sm:text-sm shadow-lg shadow-cyan-500/20 transition cursor-pointer">
           اعتماد الطلب
@@ -854,7 +929,7 @@
     </div>
   </div>
 
-  <!-- 7. نافذة المؤقت التنازلي لاعتماد الطلب (بتصميم سيان/أزرق طبي مختلف عن الصورة) -->
+  <!-- 7. نافذة المؤقت التنازلي لاعتماد الطلب -->
   <div id="timerModalBackdrop" onclick="closeApprovalTimerModal()" class="fixed inset-0 z-[76] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div id="timerModalCard" onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-2 border-cyan-400/60 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl space-y-4">
       <div class="inline-flex items-center gap-2 bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 px-4 py-1 rounded-full text-xs font-black">
@@ -888,7 +963,7 @@
     </div>
   </div>
 
-  <!-- 8. نافذة التأكيد أثناء المؤقت (بتصميم سيان/أزرق مختلف عن الصورة) -->
+  <!-- 8. نافذة التأكيد أثناء المؤقت -->
   <div id="confirmActionBackdrop" onclick="cancelConfirmAction()" class="fixed inset-0 z-[80] bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
     <div id="confirmActionCard" onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-2 border-blue-500 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl space-y-4">
       <div class="inline-flex items-center gap-2 bg-blue-500/15 border border-blue-400/40 text-blue-300 px-4 py-1 rounded-full text-xs font-black">
@@ -939,6 +1014,7 @@
     let skipConfirmDialogOnceOrMore = false;
     let laneProgressPct = 0;
     let laneMessages = [];
+    let selectedStaffOrderId = 'ORD-1041';
 
     const laneStagesData = [
       {
@@ -1037,6 +1113,14 @@
         desc: { ar: 'تجهيز جهاز الدفع لإتمام العملية عند السيارة', en: 'Prepare payment terminal for car window', tr: 'Araç camında ödeme için POS hazırlayın', ur: 'گاڑی کی کھڑکی پر ادائیگی کے لیے مشین لائیں', zh: '请准备支付终端在车窗完成支付' }
       }
     ];
+
+    const staffQuickRepliesData = [
+      'رد الصيدلي: أهلاً بك، تم رصد وصول مركبتك للمسار',
+      'رد الصيدلي: خُذ وقتك بالكامل دون أي استعجال',
+      'رد الصيدلي: سنتواصل معك كتابياً وبإشارة اليد فقط',
+      'رد الصيدلي: الصيدلي قادم إليك بجهاز الدفع والحقيبة الآن'
+    ];
+
     const promoDiscountsMap = {
       ADEL: 0.5,
       KAYAN: 0.25
@@ -1053,19 +1137,31 @@
       {
         id: 'ORD-1041',
         status: 'preparing',
+        staffAccepted: false,
+        prepMinutes: 10,
+        stagePct: 0,
+        assistMode: 'mobility',
+        paymentMethod: 'مدى (Mada)',
         createdAt: 'اليوم • 10:25 م',
         itemsSummary: 'بانادول إكسترا (24 قرص) × 1',
+        detailedItems: [{ name: 'بانادول إكسترا (24 قرص)', qty: 1, price: 14 }],
         total: 16.1,
         rx: 'RX-9042',
-        car: 'أ ب ج 1234',
+        car: 'سيارة العميل (أ ب ج 1234)',
         parking: 'موقف يُسر 1',
         spot: 'تسليم عبر نافذة السائق بحامل ممتد'
       },
       {
         id: 'ORD-1038',
         status: 'completed',
+        staffAccepted: true,
+        prepMinutes: 5,
+        stagePct: 100,
+        assistMode: 'elderly',
+        paymentMethod: 'أبل باي (Apple Pay)',
         createdAt: 'أمس • 08:15 م',
         itemsSummary: 'فيتامين سي 1000 ملجم + زنك فوار × 1',
+        detailedItems: [{ name: 'فيتامين سي 1000 ملجم + زنك فوار', qty: 1, price: 42 }],
         total: 48.3,
         rx: '',
         car: 'سيدان أبيض',
@@ -1075,8 +1171,14 @@
       {
         id: 'ORD-1032',
         status: 'cancelled',
+        staffAccepted: false,
+        prepMinutes: 10,
+        stagePct: 0,
+        assistMode: 'deaf',
+        paymentMethod: 'فيزا (Visa)',
         createdAt: 'قبل يومين • 06:40 م',
         itemsSummary: 'قطرات ترطيب العين (الدموع الاصطناعية) × 1',
+        detailedItems: [{ name: 'قطرات ترطيب العين (الدموع الاصطناعية)', qty: 1, price: 28 }],
         total: 32.2,
         rx: '',
         car: '',
@@ -1087,59 +1189,16 @@
     let splashDismissed = false;
 
     const paymentMethodOptions = [
-      {
-        id: 'mada',
-        icon: '💳',
-        label: { ar: 'مدى', en: 'Mada', tr: 'Mada', ur: 'مدی', zh: 'Mada' }
-      },
-      {
-        id: 'apple_pay',
-        icon: '',
-        label: { ar: 'أبل باي', en: 'Apple Pay', tr: 'Apple Pay', ur: 'ایپل پے', zh: 'Apple Pay' }
-      },
-      {
-        id: 'visa',
-        icon: '💎',
-        label: { ar: 'فيزا', en: 'Visa', tr: 'Visa', ur: 'ویزا', zh: 'Visa' }
-      },
-      {
-        id: 'cash',
-        icon: '💵',
-        label: { ar: 'نقدي (كاش)', en: 'Cash', tr: 'Nakit (Cash)', ur: 'نقد (کیش)', zh: '现金 (Cash)' }
-      }
+      { id: 'mada', icon: '💳', label: { ar: 'مدى', en: 'Mada', tr: 'Mada', ur: 'مدی', zh: 'Mada' } },
+      { id: 'apple_pay', icon: '', label: { ar: 'أبل باي', en: 'Apple Pay', tr: 'Apple Pay', ur: 'ایپل پے', zh: 'Apple Pay' } },
+      { id: 'visa', icon: '💎', label: { ar: 'فيزا', en: 'Visa', tr: 'Visa', ur: 'ویزا', zh: 'Visa' } },
+      { id: 'cash', icon: '💵', label: { ar: 'نقدي (كاش)', en: 'Cash', tr: 'Nakit (Cash)', ur: 'نقد (کیش)', zh: '现金 (Cash)' } }
     ];
 
     const parkingSpotOptions = [
-      {
-        id: 'yusr_1',
-        label: {
-          ar: 'موقف يُسر 1',
-          en: 'Yusr Bay 1',
-          tr: 'Yusr Park 1',
-          ur: 'یُسر پارکنگ 1',
-          zh: 'Yusr 车位 1'
-        }
-      },
-      {
-        id: 'yusr_2',
-        label: {
-          ar: 'موقف يُسر 2',
-          en: 'Yusr Bay 2',
-          tr: 'Yusr Park 2',
-          ur: 'یُسر پارکنگ 2',
-          zh: 'Yusr 车位 2'
-        }
-      },
-      {
-        id: 'yusr_3',
-        label: {
-          ar: 'موقف يُسر 3',
-          en: 'Yusr Bay 3',
-          tr: 'Yusr Park 3',
-          ur: 'یُسر پارکنگ 3',
-          zh: 'Yusr 车位 3'
-        }
-      }
+      { id: 'yusr_1', label: { ar: 'موقف يُسر 1', en: 'Yusr Bay 1', tr: 'Yusr Park 1', ur: 'یُسر پارکنگ 1', zh: 'Yusr 车位 1' } },
+      { id: 'yusr_2', label: { ar: 'موقف يُسر 2', en: 'Yusr Bay 2', tr: 'Yusr Park 2', ur: 'یُسر پارکنگ 2', zh: 'Yusr 车位 2' } },
+      { id: 'yusr_3', label: { ar: 'موقف يُسر 3', en: 'Yusr Bay 3', tr: 'Yusr Park 3', ur: 'یُسر پارکنگ 3', zh: 'Yusr 车位 3' } }
     ];
 
     const deliverySpotOptions = [
@@ -1181,6 +1240,7 @@
         brandTitle: 'صيدلية يُسْر',
         brandTagline: 'منصة المسار الصيدلاني الذكي للمركبات',
         btnNavShop: 'الصيدلية',
+        btnNavStaff: 'شاشة الصيدلي',
         btnNavOrders: 'طلباتي',
         btnCartLabel: 'السلة',
         simpleOn: 'التبسيط: مفعل (الأساسية فقط)',
@@ -1290,6 +1350,7 @@
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Smart Accessible Drive-Thru Pharmacy',
         btnNavShop: 'Pharmacy',
+        btnNavStaff: 'Pharmacist Screen',
         btnNavOrders: 'My Orders',
         btnCartLabel: 'Cart',
         simpleOn: 'Simplify: ON (Core Only)',
@@ -1399,6 +1460,7 @@
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Akıllı Arabaya Servis Eczane Platformu',
         btnNavShop: 'Eczane',
+        btnNavStaff: 'Eczacı Ekranı',
         btnNavOrders: 'Siparişlerim',
         btnCartLabel: 'Sepet',
         simpleOn: 'Sade Mod: AÇIK (Temel)',
@@ -1508,6 +1570,7 @@
         brandTitle: 'یُسر فارمیسی',
         brandTagline: 'گاڑیوں کے لیے اسمارٹ فارمیسی پلیٹ فارم',
         btnNavShop: 'فارمیسی',
+        btnNavStaff: 'فارماسسٹ اسکرین',
         btnNavOrders: 'میرے آرڈرز',
         btnCartLabel: 'ٹوکری',
         simpleOn: 'سادہ موڈ: فعال (صرف بنیادی)',
@@ -1617,6 +1680,7 @@
         brandTitle: 'Yusr Pharmacy',
         brandTagline: '智慧无障碍汽车穿梭药房',
         btnNavShop: '药房',
+        btnNavStaff: '药师工作台',
         btnNavOrders: '我的订单',
         btnCartLabel: '购物车',
         simpleOn: '极简模式：已开启',
@@ -1751,683 +1815,125 @@
     ];
 
     const categories = [
+      { id: 'rx', icon: '📋', name: { ar: 'الأدوية الموصوفة', en: 'Prescription Medications', tr: 'Reçeteli İlaçlar', ur: 'نسخہ شدہ ادویات', zh: '处方药' } },
       {
-        id: 'rx',
-        icon: '📋',
-        name: {
-          ar: 'الأدوية الموصوفة',
-          en: 'Prescription Medications',
-          tr: 'Reçeteli İlaçlar',
-          ur: 'نسخہ شدہ ادویات',
-          zh: '处方药'
-        }
-      },
-      {
-        id: 'otc',
-        icon: '💊',
-        name: {
-          ar: 'الأدوية غير الموصوفة',
-          en: 'Non-Prescription Medications (OTC)',
-          tr: 'Reçetesiz İlaçlar (OTC)',
-          ur: 'غیر نسخہ شدہ ادویات (OTC)',
-          zh: '非处方药 (OTC)'
-        },
+        id: 'otc', icon: '💊',
+        name: { ar: 'الأدوية غير الموصوفة', en: 'Non-Prescription Medications (OTC)', tr: 'Reçetesiz İlaçlar (OTC)', ur: 'غیر نسخہ شدہ ادویات (OTC)', zh: '非处方药 (OTC)' },
         children: [
-          {
-            id: 'otc_pain',
-            name: {
-              ar: 'مسكنات الألم وخافضات الحرارة',
-              en: 'Pain Relievers & Fever Reducers',
-              tr: 'Ağrı Kesiciler ve Ateş Düşürücüler',
-              ur: 'درد کش اور بخار کم کرنے والی ادویات',
-              zh: '止痛药与退烧药'
-            }
-          },
-          {
-            id: 'otc_cold',
-            name: {
-              ar: 'أدوية البرد والإنفلونزا والحساسية',
-              en: 'Cold, Flu & Allergy Medications',
-              tr: 'Soğuk Algınlığı, Grip ve Alerji İlaçları',
-              ur: 'نزلہ، زکام، فلو اور الرجی کی ادویات',
-              zh: '感冒、流感与抗过敏药物'
-            }
-          },
-          {
-            id: 'otc_gi',
-            name: {
-              ar: 'صحة الجهاز الهضمي',
-              en: 'Digestive Health',
-              tr: 'Sindirim Sistemi Sağlığı',
-              ur: 'نظامِ ہاضمہ کی صحت',
-              zh: '消化系统健康'
-            }
-          }
+          { id: 'otc_pain', name: { ar: 'مسكنات الألم وخافضات الحرارة', en: 'Pain Relievers & Fever Reducers', tr: 'Ağrı Kesiciler ve Ateş Düşürücüler', ur: 'درد کش اور بخار کم کرنے والی ادویات', zh: '止痛药与退烧药' } },
+          { id: 'otc_cold', name: { ar: 'أدوية البرد والإنفلونزا والحساسية', en: 'Cold, Flu & Allergy Medications', tr: 'Soğuk Algınlığı, Grip ve Alerji İlaçları', ur: 'نزلہ، زکام، فلو اور الرجی کی ادویات', zh: '感冒、流感与抗过敏药物' } },
+          { id: 'otc_gi', name: { ar: 'صحة الجهاز الهضمي', en: 'Digestive Health', tr: 'Sindirim Sistemi Sağlığı', ur: 'نظامِ ہاضمہ کی صحت', zh: '消化系统健康' } }
         ]
       },
       {
-        id: 'vitamins',
-        icon: '🧬',
-        name: {
-          ar: 'الفيتامينات والمكملات الغذائية',
-          en: 'Vitamins & Dietary Supplements',
-          tr: 'Vitaminler ve Gıda Takviyeleri',
-          ur: 'وٹامنز اور غذائی سپلیمنٹس',
-          zh: '维生素与膳食补充剂'
-        },
+        id: 'vitamins', icon: '🧬',
+        name: { ar: 'الفيتامينات والمكملات الغذائية', en: 'Vitamins & Dietary Supplements', tr: 'Vitaminler ve Gıda Takviyeleri', ur: 'وٹامنز اور غذائی سپلیمنٹس', zh: '维生素与膳食补充剂' },
         children: [
-          {
-            id: 'vit_multi',
-            name: {
-              ar: 'الفيتامينات المتعددة',
-              en: 'Multivitamins',
-              tr: 'Multivitaminler',
-              ur: 'ملٹی وٹامنز',
-              zh: '复合维生素'
-            }
-          },
-          {
-            id: 'vit_single',
-            name: {
-              ar: 'المكملات الفردية',
-              en: 'Single Supplements',
-              tr: 'Tekli Takviyeler',
-              ur: 'انفرادی سپلیمنٹس',
-              zh: '单一营养补充剂'
-            }
-          },
-          {
-            id: 'vit_herbal',
-            name: {
-              ar: 'المكملات العشبية والطبيعية',
-              en: 'Herbal & Natural Supplements',
-              tr: 'Bitkisel ve Doğal Takviyeler',
-              ur: 'جڑی بوٹیوں اور قدرتی سپلیمنٹس',
-              zh: '草本与天然补充剂'
-            }
-          }
+          { id: 'vit_multi', name: { ar: 'الفيتامينات المتعددة', en: 'Multivitamins', tr: 'Multivitaminler', ur: 'ملٹی وٹامنز', zh: '复合维生素' } },
+          { id: 'vit_single', name: { ar: 'المكملات الفردية', en: 'Single Supplements', tr: 'Tekli Takviyeler', ur: 'انفرادی سپلیمنٹس', zh: '单一营养补充剂' } },
+          { id: 'vit_herbal', name: { ar: 'المكملات العشبية والطبيعية', en: 'Herbal & Natural Supplements', tr: 'Bitkisel ve Doğal Takviyeler', ur: 'جڑی بوٹیوں اور قدرتی سپلیمنٹس', zh: '草本与天然补充剂' } }
         ]
       },
       {
-        id: 'skin',
-        icon: '🧴',
-        name: {
-          ar: 'العناية بالبشرة والجلد',
-          en: 'Skin & Dermatological Care',
-          tr: 'Cilt ve Dermatolojik Bakım',
-          ur: 'جلد اور رنگت کی دیکھ بھال',
-          zh: '皮肤与肌肤护理'
-        },
+        id: 'skin', icon: '🧴',
+        name: { ar: 'العناية بالبشرة والجلد', en: 'Skin & Dermatological Care', tr: 'Cilt ve Dermatolojik Bakım', ur: 'جلد اور رنگت کی دیکھ بھال', zh: '皮肤与肌肤护理' },
         children: [
-          {
-            id: 'skin_face',
-            name: {
-              ar: 'العناية بالوجه',
-              en: 'Facial Care',
-              tr: 'Yüz Bakımı',
-              ur: 'چہرے کی دیکھ بھال',
-              zh: '面部护理'
-            }
-          },
-          {
-            id: 'skin_sun',
-            name: {
-              ar: 'الوقاية من الشمس',
-              en: 'Sun Protection',
-              tr: 'Güneşten Korunma',
-              ur: 'دھوپ سے بچاؤ',
-              zh: '防晒护理'
-            }
-          },
-          {
-            id: 'skin_body',
-            name: {
-              ar: 'العناية بالجسم',
-              en: 'Body Care',
-              tr: 'Vücut Bakımı',
-              ur: 'جسم کی دیکھ بھال',
-              zh: '身体护理'
-            }
-          }
+          { id: 'skin_face', name: { ar: 'العناية بالوجه', en: 'Facial Care', tr: 'Yüz Bakımı', ur: 'چہرے کی دیکھ بھال', zh: '面部护理' } },
+          { id: 'skin_sun', name: { ar: 'الوقاية من الشمس', en: 'Sun Protection', tr: 'Güneşten Korunma', ur: 'دھوپ سے بچاؤ', zh: '防晒护理' } },
+          { id: 'skin_body', name: { ar: 'العناية بالجسم', en: 'Body Care', tr: 'Vücut Bakımı', ur: 'جسم کی دیکھ بھال', zh: '身体护理' } }
         ]
       },
       {
-        id: 'hair',
-        icon: '💆',
-        name: {
-          ar: 'العناية بالشعر',
-          en: 'Hair Care',
-          tr: 'Saç Bakımı',
-          ur: 'بالوں کی دیکھ بھال',
-          zh: '头发护理'
-        },
+        id: 'hair', icon: '💆',
+        name: { ar: 'العناية بالشعر', en: 'Hair Care', tr: 'Saç Bakımı', ur: 'بالوں کی دیکھ بھال', zh: '头发护理' },
         children: [
-          {
-            id: 'hair_shampoo',
-            name: {
-              ar: 'الشامبو والبلسم العلاجي',
-              en: 'Medicated Shampoo & Conditioner',
-              tr: 'Tedavi Edici Şampuan ve Saç Kremi',
-              ur: 'طبی شیمپو اور کنڈیشنر',
-              zh: '药用洗发水与护发素'
-            }
-          },
-          {
-            id: 'hair_loss',
-            name: {
-              ar: 'علاجات التساقط والتقوية',
-              en: 'Hair Loss & Strengthening Treatments',
-              tr: 'Dökülme Önleyici ve Güçlendirici Bakımlar',
-              ur: 'بال گرنے سے روکنے اور مضبوطی کے علاج',
-              zh: '防脱与强韧护理'
-            }
-          },
-          {
-            id: 'hair_dye',
-            name: {
-              ar: 'صبغات الشعر',
-              en: 'Hair Dyes',
-              tr: 'Saç Boyaları',
-              ur: 'بالوں کے رنگ',
-              zh: '染发产品'
-            }
-          }
+          { id: 'hair_shampoo', name: { ar: 'الشامبو والبلسم العلاجي', en: 'Medicated Shampoo & Conditioner', tr: 'Tedavi Edici Şampuan ve Saç Kremi', ur: 'طبی شیمپو اور کنڈیشنر', zh: '药用洗发水与护发素' } },
+          { id: 'hair_loss', name: { ar: 'علاجات التساقط والتقوية', en: 'Hair Loss & Strengthening Treatments', tr: 'Dökülme Önleyici ve Güçlendirici Bakımlar', ur: 'بال گرنے سے روکنے اور مضبوطی کے علاج', zh: '防脱与强韧护理' } },
+          { id: 'hair_dye', name: { ar: 'صبغات الشعر', en: 'Hair Dyes', tr: 'Saç Boyaları', ur: 'بالوں کے رنگ', zh: '染发产品' } }
         ]
       },
       {
-        id: 'baby_mom',
-        icon: '🍼',
-        name: {
-          ar: 'العناية بالطفل والأم',
-          en: 'Baby & Mother Care',
-          tr: 'Bebek ve Anne Bakımı',
-          ur: 'بچے اور ماں کی دیکھ بھال',
-          zh: '母婴护理'
-        },
+        id: 'baby_mom', icon: '🍼',
+        name: { ar: 'العناية بالطفل والأم', en: 'Baby & Mother Care', tr: 'Bebek ve Anne Bakımı', ur: 'بچے اور ماں کی دیکھ بھال', zh: '母婴护理' },
         children: [
-          {
-            id: 'baby_milk',
-            name: {
-              ar: 'حليب الأطفال وأغذيتهم',
-              en: 'Infant Formula & Baby Food',
-              tr: 'Bebek Mamaları ve Ek Gıdalar',
-              ur: 'بچوں کا دودھ اور غذائیں',
-              zh: '婴儿奶粉与辅食'
-            }
-          },
-          {
-            id: 'baby_daily',
-            name: {
-              ar: 'مستلزمات العناية اليومية',
-              en: 'Daily Care Essentials',
-              tr: 'Günlük Bakım Ürünleri',
-              ur: 'روزمرہ نگہداشت کا سامان',
-              zh: '日常护理用品'
-            }
-          },
-          {
-            id: 'baby_feeding',
-            name: {
-              ar: 'أدوات الرضاعة',
-              en: 'Feeding Accessories',
-              tr: 'Beslenme ve Biberon Gereçleri',
-              ur: 'دودھ پلانے کے آلات',
-              zh: '喂养器具'
-            }
-          },
-          {
-            id: 'mom_care',
-            name: {
-              ar: 'مستلزمات الأمومة',
-              en: 'Maternity Essentials',
-              tr: 'Annelik Ürünleri',
-              ur: 'زچگی اور ماں کا سامان',
-              zh: '孕产妈妈用品'
-            }
-          }
+          { id: 'baby_milk', name: { ar: 'حليب الأطفال وأغذيتهم', en: 'Infant Formula & Baby Food', tr: 'Bebek Mamaları ve Ek Gıdalar', ur: 'بچوں کا دودھ اور غذائیں', zh: '婴儿奶粉与辅食' } },
+          { id: 'baby_daily', name: { ar: 'مستلزمات العناية اليومية', en: 'Daily Care Essentials', tr: 'Günlük Bakım Ürünleri', ur: 'روزمرہ نگہداشت کا سامان', zh: '日常护理用品' } },
+          { id: 'baby_feeding', name: { ar: 'أدوات الرضاعة', en: 'Feeding Accessories', tr: 'Beslenme ve Biberon Gereçleri', ur: 'دودھ پلانے کے آلات', zh: '喂养器具' } },
+          { id: 'mom_care', name: { ar: 'مستلزمات الأمومة', en: 'Maternity Essentials', tr: 'Annelik Ürünleri', ur: 'زچگی اور ماں کا سامان', zh: '孕产妈妈用品' } }
         ]
       },
       {
-        id: 'personal_care',
-        icon: '🧼',
-        name: {
-          ar: 'العناية الشخصية والنظافة اليومية',
-          en: 'Personal Care & Daily Hygiene',
-          tr: 'Kişisel Bakım ve Günlük Hijyen',
-          ur: 'ذاتی نگہداشت اور روزمرہ صفائی',
-          zh: '个人护理与日常卫生'
-        },
+        id: 'personal_care', icon: '🧼',
+        name: { ar: 'العناية الشخصية والنظافة اليومية', en: 'Personal Care & Daily Hygiene', tr: 'Kişisel Bakım ve Günlük Hijyen', ur: 'ذاتی نگہداشت اور روزمرہ صفائی', zh: '个人护理与日常卫生' },
         children: [
-          {
-            id: 'hygiene_oral',
-            name: {
-              ar: 'العناية بالفم والأسنان',
-              en: 'Oral & Dental Care',
-              tr: 'Ağız ve Diş Bakımı',
-              ur: 'منہ اور دانتوں کی دیکھ بھال',
-              zh: '口腔与牙齿护理'
-            }
-          },
-          {
-            id: 'hygiene_body',
-            name: {
-              ar: 'النظافة الشخصية',
-              en: 'Personal Hygiene',
-              tr: 'Kişisel Hijyen',
-              ur: 'ذاتی صفائی',
-              zh: '个人卫生清洁'
-            }
-          },
-          {
-            id: 'hygiene_men',
-            name: {
-              ar: 'العناية بالرجال',
-              en: "Men's Care",
-              tr: 'Erkek Bakımı',
-              ur: 'مردانہ نگہداشت',
-              zh: '男士护理'
-            }
-          }
+          { id: 'hygiene_oral', name: { ar: 'العناية بالفم والأسنان', en: 'Oral & Dental Care', tr: 'Ağız ve Diş Bakımı', ur: 'منہ اور دانتوں کی دیکھ بھال', zh: '口腔与牙齿护理' } },
+          { id: 'hygiene_body', name: { ar: 'النظافة الشخصية', en: 'Personal Hygiene', tr: 'Kişisel Hijyen', ur: 'ذاتی صفائی', zh: '个人卫生清洁' } },
+          { id: 'hygiene_men', name: { ar: 'العناية بالرجال', en: "Men's Care", tr: 'Erkek Bakımı', ur: 'مردانہ نگہداشت', zh: '男士护理' } }
         ]
       },
       {
-        id: 'medical_devices',
-        icon: '🩺',
-        name: {
-          ar: 'الأجهزة الطبية والرقابة الصحية المنزلية',
-          en: 'Medical Devices & Home Health Monitoring',
-          tr: 'Tıbbi Cihazlar ve Evde Sağlık Takibi',
-          ur: 'طبی آلات اور گھریلو صحت کی نگرانی',
-          zh: '医疗器械与居家健康监测'
-        },
+        id: 'medical_devices', icon: '🩺',
+        name: { ar: 'الأجهزة الطبية والرقابة الصحية المنزلية', en: 'Medical Devices & Home Health Monitoring', tr: 'Tıbbi Cihazlar ve Evde Sağlık Takibi', ur: 'طبی آلات اور گھریلو صحت کی نگرانی', zh: '医疗器械与居家健康监测' },
         children: [
-          {
-            id: 'dev_bp',
-            name: {
-              ar: 'أجهزة قياس ضغط الدم',
-              en: 'Blood Pressure Monitors',
-              tr: 'Tansiyon Ölçüm Cihazları',
-              ur: 'بلڈ پریشر مانیٹرز',
-              zh: '血压监测仪'
-            }
-          },
-          {
-            id: 'dev_glucose',
-            name: {
-              ar: 'أجهزة قياس سكر الدم وشرائط الفحص',
-              en: 'Blood Glucose Meters & Test Strips',
-              tr: 'Şeker Ölçüm Cihazları ve Stripleri',
-              ur: 'بلڈ شوگر میٹرز اور ٹیسٹ اسٹرپس',
-              zh: '血糖仪与试纸'
-            }
-          },
-          {
-            id: 'dev_temp_scale',
-            name: {
-              ar: 'موازين الحرارة الرقمية وموازين الوزن',
-              en: 'Digital Thermometers & Scales',
-              tr: 'Dijital Termometreler ve Basküller',
-              ur: 'ڈیجیٹل تھرمامیٹرز اور وزن کی مشینیں',
-              zh: '电子体温计与体重秤'
-            }
-          },
-          {
-            id: 'dev_nebulizer',
-            name: {
-              ar: 'أجهزة الاستنشاق (Nebulizers) وكمامات الحماية',
-              en: 'Nebulizers & Protective Masks',
-              tr: 'Nebülizatörler ve Koruyucu Maskeler',
-              ur: 'نیبولائزر اور حفاظتی ماسک',
-              zh: '雾化器与防护口罩'
-            }
-          }
+          { id: 'dev_bp', name: { ar: 'أجهزة قياس ضغط الدم', en: 'Blood Pressure Monitors', tr: 'Tansiyon Ölçüm Cihazları', ur: 'بلڈ پریشر مانیٹرز', zh: '血压监测仪' } },
+          { id: 'dev_glucose', name: { ar: 'أجهزة قياس سكر الدم وشرائط الفحص', en: 'Blood Glucose Meters & Test Strips', tr: 'Şeker Ölçüm Cihazları ve Stripleri', ur: 'بلڈ شوگر میٹرز اور ٹیسٹ اسٹرپس', zh: '血糖仪与试纸' } },
+          { id: 'dev_temp_scale', name: { ar: 'موازين الحرارة الرقمية وموازين الوزن', en: 'Digital Thermometers & Scales', tr: 'Dijital Termometreler ve Basküller', ur: 'ڈیجیٹل تھرمامیٹرز اور وزن کی مشینیں', zh: '电子体温计与体重秤' } },
+          { id: 'dev_nebulizer', name: { ar: 'أجهزة الاستنشاق (Nebulizers) وكمامات الحماية', en: 'Nebulizers & Protective Masks', tr: 'Nebülizatörler ve Koruyucu Maskeler', ur: 'نیبولائزر اور حفاظتی ماسک', zh: '雾化器与防护口罩' } }
         ]
       },
       {
-        id: 'sports_nutrition',
-        icon: '🏋️',
-        name: {
-          ar: 'التغذية الرياضية والرشاقة',
-          en: 'Sports Nutrition & Fitness',
-          tr: 'Sporcu Beslenmesi ve Form',
-          ur: 'ورزشی غذا اور فٹنس',
-          zh: '运动营养与塑形'
-        },
+        id: 'sports_nutrition', icon: '🏋️',
+        name: { ar: 'التغذية الرياضية والرشاقة', en: 'Sports Nutrition & Fitness', tr: 'Sporcu Beslenmesi ve Form', ur: 'ورزشی غذا اور فٹنس', zh: '运动营养与塑形' },
         children: [
-          {
-            id: 'sport_protein',
-            name: {
-              ar: 'بروتينات التضخيم والتنشيف (Whey Protein)',
-              en: 'Bulking & Cutting Proteins (Whey Protein)',
-              tr: 'Hacim ve Definisyon Proteinleri (Whey Protein)',
-              ur: 'مسل بلڈنگ اور کٹنگ پروٹینز (Whey Protein)',
-              zh: '增肌与减脂蛋白粉 (Whey Protein)'
-            }
-          },
-          {
-            id: 'sport_amino',
-            name: {
-              ar: 'الأحماض الأمينية ومشروبات الطاقة',
-              en: 'Amino Acids & Energy Drinks',
-              tr: 'Amino Asitler ve Enerji İçecekleri',
-              ur: 'امائنو ایسڈز اور انرجی ڈرنکس',
-              zh: '氨基酸与能量饮品'
-            }
-          },
-          {
-            id: 'sport_weight',
-            name: {
-              ar: 'بدائل الوجبات، السناكات الصحية، ومنتجات المساعدة على إنقاص الوزن',
-              en: 'Meal Replacements, Healthy Snacks & Weight Loss Aids',
-              tr: 'Öğün Yerine Geçenler, Sağlıklı Atıştırmalıklar ve Kilo Yönetimi',
-              ur: 'کھانے کے متبادل، ہیلدی اسنیکس اور وزن کم کرنے کی مصنوعات',
-              zh: '代餐、健康零食与体重管理产品'
-            }
-          }
+          { id: 'sport_protein', name: { ar: 'بروتينات التضخيم والتنشيف (Whey Protein)', en: 'Bulking & Cutting Proteins (Whey Protein)', tr: 'Hacim ve Definisyon Proteinleri (Whey Protein)', ur: 'مسل بلڈنگ اور کٹنگ پروٹینز (Whey Protein)', zh: '增肌与减脂蛋白粉 (Whey Protein)' } },
+          { id: 'sport_amino', name: { ar: 'الأحماض الأمينية ومشروبات الطاقة', en: 'Amino Acids & Energy Drinks', tr: 'Amino Asitler ve Enerji İçecekleri', ur: 'امائنو ایسڈز اور انرجی ڈرنکس', zh: '氨基酸与能量饮品' } },
+          { id: 'sport_weight', name: { ar: 'بدائل الوجبات، السناكات الصحية، ومنتجات المساعدة على إنقاص الوزن', en: 'Meal Replacements, Healthy Snacks & Weight Loss Aids', tr: 'Öğün Yerine Geçenler, Sağlıklı Atıştırmalıklar ve Kilo Yönetimi', ur: 'کھانے کے متبادل، ہیلدی اسنیکس اور وزن کم کرنے کی مصنوعات', zh: '代餐、健康零食与体重管理产品' } }
         ]
       },
       {
-        id: 'eye_ear',
-        icon: '👁️',
-        name: {
-          ar: 'العناية بالعيون والأذنين',
-          en: 'Eye & Ear Care',
-          tr: 'Göz ve Kulak Bakımı',
-          ur: 'آنکھوں اور کانوں کی دیکھ بھال',
-          zh: '眼部与耳部护理'
-        },
+        id: 'eye_ear', icon: '👁️',
+        name: { ar: 'العناية بالعيون والأذنين', en: 'Eye & Ear Care', tr: 'Göz ve Kulak Bakımı', ur: 'آنکھوں اور کانوں کی دیکھ بھال', zh: '眼部与耳部护理' },
         children: [
-          {
-            id: 'eye_drops',
-            name: {
-              ar: 'قطرات ترطيب العين (الدموع الاصطناعية)',
-              en: 'Lubricating Eye Drops (Artificial Tears)',
-              tr: 'Nemlendirici Göz Damlaları (Yapay Gözyaşı)',
-              ur: 'آنکھوں کو تر رکھنے والے قطرے (مصنوعی آنسو)',
-              zh: '人工泪液润眼滴眼液'
-            }
-          },
-          {
-            id: 'eye_lens',
-            name: {
-              ar: 'محاليل العدسات اللاصقة وحافظاتها',
-              en: 'Contact Lens Solutions & Cases',
-              tr: 'Kontakt Lens Solüsyonları ve Kapları',
-              ur: 'کانٹیکٹ لینز کے محلول اور کیسز',
-              zh: '隐形眼镜护理液与镜盒'
-            }
-          },
-          {
-            id: 'ear_care',
-            name: {
-              ar: 'بخاخات تنظيف الأذن وسدادات أذن',
-              en: 'Ear Cleaning Sprays & Earplugs',
-              tr: 'Kulak Temizleme Spreyleri ve Kulak Tıkaçları',
-              ur: 'کان صاف کرنے والے اسپرے اور ایئر پلگ',
-              zh: '耳道清洁喷雾与耳塞'
-            }
-          }
+          { id: 'eye_drops', name: { ar: 'قطرات ترطيب العين (الدموع الاصطناعية)', en: 'Lubricating Eye Drops (Artificial Tears)', tr: 'Nemlendirici Göz Damlaları (Yapay Gözyaşı)', ur: 'آنکھوں کو تر رکھنے والے قطرے (مصنوعی آنسو)', zh: '人工泪液润眼滴眼液' } },
+          { id: 'eye_lens', name: { ar: 'محاليل العدسات اللاصقة وحافظاتها', en: 'Contact Lens Solutions & Cases', tr: 'Kontakt Lens Solüsyonları ve Kapları', ur: 'کانٹیکٹ لینز کے محلول اور کیسز', zh: '隐形眼镜护理液与镜盒' } },
+          { id: 'ear_care', name: { ar: 'بخاخات تنظيف الأذن وسدادات أذن', en: 'Ear Cleaning Sprays & Earplugs', tr: 'Kulak Temizleme Spreyleri ve Kulak Tıkaçları', ur: 'کان صاف کرنے والے اسپرے اور ایئر پلگ', zh: '耳道清洁喷雾与耳塞' } }
         ]
       }
     ];
 
     const medications = [
-      {
-        id: 'med1',
-        cat: 'otc_pain',
-        price: 14,
-        badge: 'OTC',
-        name: { ar: 'بانادول إكسترا (24 قرص)', en: 'Panadol Extra (24 Tabs)', tr: 'Panadol Extra (24 Tablet)', ur: 'پیناڈول ایکسٹرا (24 گولیاں)', zh: '必理通强效止痛片 (24片)' },
-        dosage: { ar: 'قرص إلى قرصين كل 6 ساعات بعد الأكل', en: '1-2 tablets every 6 hours after meals', tr: 'Tok karnına 6 saatte bir 1-2 tablet', ur: 'کھانے کے بعد ہر 6 گھنٹے میں 1 سے 2 گولیاں', zh: '饭后每6小时服用1至2片' }
-      },
-      {
-        id: 'med2',
-        cat: 'otc_pain',
-        price: 19,
-        badge: 'OTC',
-        name: { ar: 'بروفين 400 ملجم مسكن ومضاد التهاب', en: 'Brufen 400mg Ibuprofen', tr: 'Brufen 400mg Ağrı Kesici', ur: 'بروفین 400 ملی گرام', zh: '布洛芬缓释片 400mg' },
-        dosage: { ar: 'قرص واحد بعد الوجبات عند اللزوم', en: '1 tablet after meals as needed', tr: 'Yemek sonrası ihtiyaç halinde 1 tablet', ur: 'کھانے کے بعد ضرورت کے مطابق ایک گولی', zh: '饭后按需服用1片' }
-      },
-      {
-        id: 'med3',
-        cat: 'otc_cold',
-        price: 26,
-        badge: 'OTC',
-        name: { ar: 'كلاريتين مضاد للحساسية (10 ملجم)', en: 'Claritin Allergy 10mg (Non-Drowsy)', tr: 'Claritin Alerji Tableti 10mg', ur: 'کلیریٹین الرجی ٹیبلٹ 10mg', zh: '开瑞坦氯雷他定抗过敏片 10mg' },
-        dosage: { ar: 'قرص واحد مرة واحدة يومياً', en: '1 tablet once daily', tr: 'Günde bir kez 1 tablet', ur: 'روزانہ دن میں ایک بار ایک گولی', zh: '每日一次，每次1片' }
-      },
-      {
-        id: 'med4',
-        cat: 'otc_cold',
-        price: 32,
-        badge: 'OTC',
-        name: { ar: 'بخاخ أوتريفين لتخفيف احتقان الأنف', en: 'Otrivin Nasal Decongestant Spray', tr: 'Otrivin Burun Spreyi', ur: 'اوٹریون ناک کا اسپرے', zh: '奥特斯鼻腔喷雾剂' },
-        dosage: { ar: 'بخة في كل فتحة أنف مرتين يومياً (حتى 5 أيام)', en: '1 spray per nostril twice daily (max 5 days)', tr: 'Günde 2 kez her burun deliğine 1 sıkım (en fazla 5 gün)', ur: 'دن میں دو بار ہر نتھنے میں ایک اسپرے', zh: '每日两次，每侧鼻孔1喷（不超过5天）' }
-      },
-      {
-        id: 'med_gi1',
-        cat: 'otc_gi',
-        price: 24,
-        badge: 'OTC',
-        name: { ar: 'شراب ومعلق جافيسكون للحموضة والارتجاع', en: 'Gaviscon Heartburn & Reflux Suspension', tr: 'Gaviscon Mide Ekşimesi Süspansiyonu', ur: 'گیویسکون تیزابیت اور ریفلکس شربت', zh: '嘉胃斯康抗酸护胃混悬液' },
-        dosage: { ar: '10 إلى 20 مل بعد الوجبات وعند النوم', en: '10-20ml after meals and at bedtime', tr: 'Yemeklerden sonra ve yatarken 10-20 ml', ur: 'کھانے کے بعد اور سوتے وقت 10 سے 20 ملی لیٹر', zh: '餐后及睡前服用10至20毫升' }
-      },
-      {
-        id: 'med_gi2',
-        cat: 'otc_gi',
-        price: 29,
-        badge: 'OTC',
-        name: { ar: 'مضادات التقلصات والانتفاخ للمعدة والقولون', en: 'Antispasmodic & Bloating Relief Tablets', tr: 'Mide ve Gaz Giderici Tabletler', ur: 'پیٹ کے درد اور گیس سے آرام کی گولیاں', zh: '缓解胃肠痉挛与胀气胶囊' },
-        dosage: { ar: 'قرص واحد قبل الأكل ثلاث مرات يومياً', en: '1 tablet before meals 3 times daily', tr: 'Günde 3 kez yemeklerden önce 1 tablet', ur: 'دن میں تین بار کھانے سے پہلے ایک گولی', zh: '每日3次，每次餐前1片' }
-      },
-      {
-        id: 'med_vit_multi1',
-        cat: 'vit_multi',
-        price: 74,
-        badge: 'Vitamins',
-        name: { ar: 'سنتروم فيتامينات ومعادن متعددة متكاملة', en: 'Centrum Complete Multivitamin & Minerals', tr: 'Centrum Komple Multivitamin ve Mineral', ur: 'سینٹرم مکمل ملٹی وٹامن اور منرلز', zh: '善存复合维生素与矿物质片' },
-        dosage: { ar: 'قرص واحد يومياً مع وجبة الإفطار', en: '1 tablet daily with breakfast', tr: 'Kahvaltı ile birlikte günde 1 tablet', ur: 'ناشتے کے ساتھ روزانہ ایک گولی', zh: '每日随早餐服用1片' }
-      },
-      {
-        id: 'med8',
-        cat: 'vit_single',
-        price: 42,
-        badge: 'Supplement',
-        name: { ar: 'فيتامين سي 1000 ملجم + زنك فوار', en: 'Vitamin C 1000mg + Zinc Effervescent', tr: 'Vitamin C 1000mg + Çinko Efervesan', ur: 'وٹامن سی 1000mg + زنک فوار گولیاں', zh: '维生素C 1000mg + 锌泡腾片' },
-        dosage: { ar: 'قرص فوار واحد يذاب في كوب ماء يومياً', en: 'Dissolve 1 tablet in a glass of water daily', tr: 'Günde 1 tablet bir bardak suda eritilir', ur: 'روزانہ ایک گلاس پانی میں ایک گولی حل کریں', zh: '每日1片，溶解于一杯水中饮用' }
-      },
-      {
-        id: 'med_vit_herbal1',
-        cat: 'vit_herbal',
-        price: 58,
-        badge: 'Herbal',
-        name: { ar: 'خلاصة الجينسنغ والزنجبيل الطبيعية للدعم اليومي', en: 'Natural Ginseng & Ginger Herbal Extract', tr: 'Doğal Ginseng ve Zencefil Bitkisel Özü', ur: 'قدرتی جنسینگ اور ادرک کا ہربل سپلیمنٹ', zh: '天然人参姜黄草本提取胶囊' },
-        dosage: { ar: 'كبسولة واحدة صباحاً بعد الطعام', en: '1 capsule in the morning after food', tr: 'Sabah yemekten sonra 1 kapsül', ur: 'صبح کھانے کے بعد ایک کیپسول', zh: '每日早晨饭后服用1粒' }
-      },
-      {
-        id: 'med_skin_face1',
-        cat: 'skin_face',
-        price: 68,
-        badge: 'Derma Care',
-        name: { ar: 'غسول ومرطب يومي للبشرة بالسيراميد', en: 'Ceramide Daily Facial Cleanser & Moisturizer', tr: 'Seramidli Günlük Yüz Temizleyici ve Nemlendirici', ur: 'سیرامائیڈ چہرے کا روزانہ کلینزر اور موئسچرائزر', zh: '神经酰胺每日温和洁面与保湿乳' },
-        dosage: { ar: 'يُستخدم صباحاً ومساءً على بشرة نظيفة', en: 'Use morning and evening on clean skin', tr: 'Temiz cilde sabah ve akşam uygulayın', ur: 'صاف جلد پر صبح و شام استعمال کریں', zh: '早晚洁面后涂抹于面部' }
-      },
-      {
-        id: 'med_skin_sun1',
-        cat: 'skin_sun',
-        price: 89,
-        badge: 'SPF 50+',
-        name: { ar: 'واقي شمس طبي غير مرئي SPF 50+', en: 'Invisible Broad-Spectrum Sunblock SPF 50+', tr: 'Görünmez Geniş Spektrumlu Güneş Kremi SPF 50+', ur: 'SPF 50+ سن بلاک لوشن', zh: '高倍广谱隐形防晒霜 SPF 50+' },
-        dosage: { ar: 'يُوضع قبل التعرض للشمس بـ 15 دقيقة ويجدد كل ساعتين', en: 'Apply 15 mins before sun exposure; reapply every 2 hrs', tr: 'Güneşe çıkmadan 15 dk önce sürün, 2 saatte bir yenileyin', ur: 'دھوپ میں نکلنے سے 15 منٹ پہلے لگائیں', zh: '外出前15分钟涂抹，每2小时补涂一次' }
-      },
-      {
-        id: 'med_skin_body1',
-        cat: 'skin_body',
-        price: 54,
-        badge: 'Body Care',
-        name: { ar: 'لوشن مرطب مكثف للجسم للبشرة الجافة', en: 'Intensive Body Moisturizing Lotion for Dry Skin', tr: 'Kuru Ciltler İçin Yoğun Vücut Nemlendirici Losyon', ur: 'خشک جلد کے لیے جسم کا موئسچرائزنگ لوشن', zh: '干性肌深层滋润身体乳' },
-        dosage: { ar: 'يُدلك بلطف على الجسم بعد الاستحمام', en: 'Massage gently onto body after showering', tr: 'Duştan sonra vücuda nazikçe masaj yaparak uygulayın', ur: 'نہانے کے بعد جسم پر نرمی سے لگائیں', zh: '沐浴后取适量轻柔涂抹于全身' }
-      },
-      {
-        id: 'med_hair_shampoo1',
-        cat: 'hair_shampoo',
-        price: 52,
-        badge: 'Hair Care',
-        name: { ar: 'شامبو وبلسم علاجي لطيف خالٍ من الكبريتات', en: 'Sulfate-Free Medicated Shampoo & Conditioner', tr: 'Sülfatsız Tedavi Edici Şampuan ve Saç Kremi', ur: 'سلفیٹ سے پاک طبی شیمپو اور کنڈیشنر', zh: '无硫酸盐温和修护洗发水与护发素' },
-        dosage: { ar: 'يُدلك على فروة الرأس الرطبة ثم يُشطف جيداً', en: 'Massage into wet scalp and rinse thoroughly', tr: 'Islak saç derisine masaj yapın ve iyice durulayın', ur: 'گیلے بالوں پر مساج کریں اور اچھی طرح دھو لیں', zh: '涂抹于湿润头皮轻柔按摩后冲洗干净' }
-      },
-      {
-        id: 'med_hair_loss1',
-        cat: 'hair_loss',
-        price: 96,
-        badge: 'Strengthening',
-        name: { ar: 'سيروم ومحلول مقوٍّ لبصيلات الشعر والحد من التساقط', en: 'Follicle Strengthening & Hair-Fall Serum', tr: 'Saç Kökü Güçlendirici ve Dökülme Karşıtı Serum', ur: 'بالوں کی جڑوں کو مضبوط کرنے والا سیرم', zh: '强韧发根防脱精华液' },
-        dosage: { ar: 'يُوضع على مناطق الضعف في فروة الرأس يومياً', en: 'Apply daily to thinning areas of the scalp', tr: 'Saç derisindeki seyrek bölgelere günlük uygulayın', ur: 'بالوں کی جڑوں پر روزانہ لگائیں', zh: '每日涂抹于需要强韧的头皮部位' }
-      },
-      {
-        id: 'med_hair_dye1',
-        cat: 'hair_dye',
-        price: 44,
-        badge: 'Color Care',
-        name: { ar: 'صبغة شعر لطيفة ومغذية بدون أمونيا', en: 'Ammonia-Free Nourishing Hair Dye', tr: 'Amonyaksız Besleyici Saç Boyası', ur: 'امونیا کے بغیر بالوں کا رنگ', zh: '无氨温和滋养染发霜' },
-        dosage: { ar: 'يُتبع دليل الاستخدام المرفق مع إجراء اختبار تحسس مسبق', en: 'Follow enclosed leaflet; perform patch test first', tr: 'Kutu içindeki talimatı izleyin, önce alerji testi yapın', ur: 'استعمال سے پہلے پیچ ٹیسٹ کریں اور ہدایات پر عمل کریں', zh: '请按说明书操作，使用前先做皮肤测试' }
-      },
-      {
-        id: 'med_baby_milk1',
-        cat: 'baby_milk',
-        price: 85,
-        badge: 'Baby Nutrition',
-        name: { ar: 'حليب أطفال مدعّم وأغذية تكميلية للرضع', en: 'Fortified Infant Formula & Baby Nutrition', tr: 'Takviyeli Bebek Sütü ve Ek Besinler', ur: 'بچوں کا غذائیت بخش دودھ اور خوراک', zh: '强化营养婴儿配方奶粉与辅食' },
-        dosage: { ar: 'يُحضّر حسب العمر والكمية المحددة على العبوة أو الطبيب', en: 'Prepare according to age guide or pediatrician advice', tr: 'Yaşa uygun ölçüde veya doktor tavsiyesine göre hazırlayın', ur: 'عمر کے مطابق یا ڈاکٹر کے مشورے سے تیار کریں', zh: '按月龄比例冲调或遵医嘱喂养' }
-      },
-      {
-        id: 'med_baby_daily1',
-        cat: 'baby_daily',
-        price: 38,
-        badge: 'Baby Care',
-        name: { ar: 'مناديل مبللة وكريم حماية يومي لبشرة الطفل', en: 'Gentle Baby Wipes & Daily Barrier Cream', tr: 'Hassas Bebek Mendili ve Günlük Koruyucu Krem', ur: 'بچوں کے نرم وائپس اور حفاظتی کریم', zh: '婴儿柔湿巾与日常舒缓护臀霜' },
-        dosage: { ar: 'للاستخدام اليومي عند كل تغيير لتهدئة البشرة', en: 'Use daily at every change to soothe skin', tr: 'Her alt değiştirmede cildi yatıştırmak için kullanın', ur: 'ہر تبدیلی کے وقت جلد کو محفوظ رکھنے کے لیے لگائیں', zh: '每次更换时使用，保持肌肤干爽舒适' }
-      },
-      {
-        id: 'med_baby_feed1',
-        cat: 'baby_feeding',
-        price: 49,
-        badge: 'Feeding',
-        name: { ar: 'رضّاعة طبية مضادة للمغص وحلمات سيليكون', en: 'Anti-Colic Baby Bottle & Silicone Teats', tr: 'Gaz Önleyici Biberon ve Silikon Emzikler', ur: 'اینٹی کولک فیڈر اور سلیکون نپلز', zh: '防胀气婴儿奶瓶与软硅胶奶嘴' },
-        dosage: { ar: 'تُعقّم جيداً قبل الاستخدام الأول وبعد كل رضعة', en: 'Sterilize thoroughly before first use and after each feed', tr: 'İlk kullanımdan önce ve her beslemeden sonra sterilize edin', ur: 'ہر استعمال سے پہلے اور بعد میں اچھی طرح جراثیم سے پاک کریں', zh: '首次使用前及每次喂养后彻底消毒' }
-      },
-      {
-        id: 'med_mom_care1',
-        cat: 'mom_care',
-        price: 62,
-        badge: 'Maternity',
-        name: { ar: 'مستلزمات العناية للأم أثناء الحمل والرضاعة', en: 'Maternity & Nursing Care Essentials', tr: 'Hamilelik ve Emzirme Dönemi Anne Bakım Ürünleri', ur: 'حمل اور دودھ پلانے کے دوران ماں کی نگہداشت', zh: '孕期与哺乳期妈妈护理用品' },
-        dosage: { ar: 'يُستخدم حسب الحاجة اليومية للعناية والراحة', en: 'Use as needed for daily maternal care and comfort', tr: 'Günlük konfor ve bakım için gerektiği şekilde kullanın', ur: 'روزمرہ آرام اور نگہداشت کے لیے ضرورت کے مطابق استعمال کریں', zh: '按日常孕产护理需要随时使用' }
-      },
-      {
-        id: 'med_hyg_oral1',
-        cat: 'hygiene_oral',
-        price: 23,
-        badge: 'Oral Care',
-        name: { ar: 'معجون أسنان وغسول فم لحماية اللثة والأسنان', en: 'Gum & Enamel Protection Toothpaste & Rinse', tr: 'Diş Eti ve Mine Koruyucu Macun ve Gargara', ur: 'مسوڑھوں اور دانتوں کی حفاظت کے لیے ٹوتھ پیسٹ', zh: '护龈固齿牙膏与清新漱口水' },
-        dosage: { ar: 'يُستخدم مرتين يومياً صباحاً ومساءً', en: 'Use twice daily, morning and evening', tr: 'Sabah ve akşam olmak üzere günde iki kez kullanın', ur: 'دن میں دو بار صبح اور شام استعمال کریں', zh: '每日早晚各刷牙/漱口一次' }
-      },
-      {
-        id: 'med_hyg_body1',
-        cat: 'hygiene_body',
-        price: 27,
-        badge: 'Hygiene',
-        name: { ar: 'غسول يومي لطيف ومعقم لليدين والجسم', en: 'Gentle Daily Body & Hand Hygiene Wash', tr: 'Günlük Nazik El ve Vücut Temizleme Jeli', ur: 'ہاتھوں اور جسم کی صفائی کے لیے روزانہ واش', zh: '温和日常手部与身体清洁洗护液' },
-        dosage: { ar: 'للاستخدام اليومي للحفاظ على النظافة والانتعاش', en: 'For daily use to maintain cleanliness and freshness', tr: 'Temizlik ve ferahlık için günlük kullanıma uygundur', ur: 'روزانہ صفائی اور تازگی کے لیے استعمال کریں', zh: '日常清洁使用，保持清爽卫生' }
-      },
-      {
-        id: 'med_hyg_men1',
-        cat: 'hygiene_men',
-        price: 36,
-        badge: 'Men Care',
-        name: { ar: 'بلسم ما بعد الحلاقة ومجموعة العناية اليومية للرجال', en: 'Aftershave Soothing Balm & Men Daily Care', tr: 'Tıraş Sonrası Yatıştırıcı Balsam ve Erkek Bakımı', ur: 'شیو کے بعد سکون بخش بام اور مردانہ نگہداشت', zh: '须后舒缓润肤露与男士日常护理套装' },
-        dosage: { ar: 'يُوضع بعد الحلاقة لتهدئة البشرة ومنع التحسس', en: 'Apply after shaving to soothe skin and prevent irritation', tr: 'Tıraştan sonra cildi yatıştırmak için uygulayın', ur: 'شیو کے بعد جلد کو سکون دینے کے لیے لگائیں', zh: '剃须后涂抹以舒缓肌肤不适' }
-      },
-      {
-        id: 'med6',
-        cat: 'dev_bp',
-        price: 145,
-        badge: 'Device',
-        name: { ar: 'جهاز أومرون الرقمي لقياس ضغط الدم من الذراع', en: 'Omron Digital Arm Blood Pressure Monitor', tr: 'Omron Dijital Koldan Tansiyon Aleti', ur: 'اومرون ڈیجیٹل بلڈ پریشر مانیٹر', zh: '欧姆龙上臂式电子血压计' },
-        dosage: { ar: 'قياس بضغطة زر واحدة مع ذاكرة قراءات', en: 'One-touch measurement with memory log', tr: 'Tek tuşla hafızalı tansiyon ölçümü', ur: 'ایک بٹن سے بلڈ پریشر کی درست پیمائش', zh: '一键精准测量，自带读数记忆功能' }
-      },
-      {
-        id: 'med5',
-        cat: 'dev_glucose',
-        price: 65,
-        badge: 'Med Supply',
-        name: { ar: 'شرائط وجهاز قياس سكر الدم المنزلي', en: 'Home Blood Glucose Meter & Test Strips', tr: 'Ev Tipi Kan Şekeri Ölçüm Cihazı ve Stripleri', ur: 'گھریلو بلڈ شوگر میٹر اور ٹیسٹ اسٹرپس', zh: '家用血糖监测仪与配套试纸' },
-        dosage: { ar: 'للفحص اليومي لمستوى السكر في الدم بالمنزل', en: 'For daily home blood glucose monitoring', tr: 'Günlük evde kan şekeri ölçümü için', ur: 'گھر پر روزانہ شوگر چیک کرنے کے لیے', zh: '用于日常居家血糖监测' }
-      },
-      {
-        id: 'med_dev_temp1',
-        cat: 'dev_temp_scale',
-        price: 55,
-        badge: 'Device',
-        name: { ar: 'ميزان حرارة رقمي وميزان إلكتروني للوزن', en: 'Digital Thermometer & Electronic Body Scale', tr: 'Dijital Ateş Ölçer ve Elektronik Baskül', ur: 'ڈیجیٹل تھرمامیٹر اور وزن کی مشین', zh: '电子体温计与高精度体重秤' },
-        dosage: { ar: 'قراءة سريعة وواضحة للمتابعة الصحية المنزلية', en: 'Fast and clear readings for home health tracking', tr: 'Evde sağlık takibi için hızlı ve net ölçüm', ur: 'گھر پر صحت کی نگرانی کے لیے تیز اور درست ریڈنگ', zh: '快速清晰读数，方便居家健康监测' }
-      },
-      {
-        id: 'med7',
-        cat: 'dev_nebulizer',
-        price: 120,
-        badge: 'Medical',
-        name: { ar: 'جهاز استنشاق البخار (Nebulizer) وكمامات حماية', en: 'Nebulizer Inhalation Device & Protective Masks', tr: 'Nebülizatör Buhar Cihazı ve Koruyucu Maskeler', ur: 'نیبولائزر مشین اور حفاظتی ماسک', zh: '医用雾化吸入器与防护口罩' },
-        dosage: { ar: 'لجلسات الاستنشاق الموصوفة والحماية اليومية', en: 'For prescribed inhalation therapy & daily protection', tr: 'Reçeteli buhar tedavisi ve günlük koruma için', ur: 'نسخہ شدہ سانس کے علاج اور روزمرہ تحفظ کے لیے', zh: '用于雾化吸入护理与日常呼吸防护' }
-      },
-      {
-        id: 'med_sport_prot1',
-        cat: 'sport_protein',
-        price: 185,
-        badge: 'Whey Protein',
-        name: { ar: 'واي بروتين (Whey Protein) لدعم الكتلة العضلية', en: 'Whey Protein Formula for Lean Muscle Support', tr: 'Kas Gelişimi İçin Whey Protein Tozu', ur: 'مسلز کی مضبوطی کے لیے وے پروٹین', zh: '乳清蛋白粉 (Whey Protein) 增肌塑形' },
-        dosage: { ar: 'مكيال واحد بعد التمرين أو حسب الاحتياج اليومي', en: '1 scoop post-workout or as daily protein goal requires', tr: 'Antrenman sonrası 1 ölçek veya günlük ihtiyaca göre', ur: 'ورزش کے بعد ایک اسکوپ یا روزانہ ضرورت کے مطابق', zh: '训练后1勺或按每日蛋白质需求饮用' }
-      },
-      {
-        id: 'med_sport_amino1',
-        cat: 'sport_amino',
-        price: 92,
-        badge: 'Amino & Energy',
-        name: { ar: 'أحماض أمينية (BCAA) ومشروب طاقة رياضي', en: 'BCAA Amino Acids & Sports Energy Drink', tr: 'BCAA Amino Asitler ve Sporcu Enerji İçeceği', ur: 'بی سی اے اے امائنو ایسڈز اور انرجی ڈرنک', zh: 'BCAA支链氨基酸与运动能量饮品' },
-        dosage: { ar: 'يُتناول قبل أو أثناء التمرين لدعم التحمل', en: 'Take before or during workout to support endurance', tr: 'Dayanıklılığı desteklemek için antrenman öncesi veya sırasında', ur: 'ورزش سے پہلے یا دوران طاقت کے لیے لیں', zh: '运动前或运动中饮用，助力耐力表现' }
-      },
-      {
-        id: 'med_sport_weight1',
-        cat: 'sport_weight',
-        price: 67,
-        badge: 'Fitness',
-        name: { ar: 'بدائل وجبات، سناكات صحية، ومنتجات إنقاص الوزن', en: 'Meal Replacements, Healthy Snacks & Weight Aids', tr: 'Öğün Alternatifleri, Sağlıklı Atıştırmalıklar ve Form', ur: 'کھانے کے متبادل، ہیلدی اسنیکس اور وزن کنٹرول', zh: '代餐奶昔、健康零食与体重管理产品' },
-        dosage: { ar: 'تُدمج ضمن نظام غذائي متوازن وحركة منتظمة', en: 'Use as part of a balanced diet and active routine', tr: 'Dengeli beslenme ve aktif yaşam ile birlikte kullanın', ur: 'متوازن غذا اور باقاعدہ ورزش کے ساتھ استعمال کریں', zh: '配合均衡饮食与规律运动使用' }
-      },
-      {
-        id: 'med_eye_drops1',
-        cat: 'eye_drops',
-        price: 28,
-        badge: 'Eye Care',
-        name: { ar: 'قطرات ترطيب العين (الدموع الاصطناعية)', en: 'Lubricating Eye Drops (Artificial Tears)', tr: 'Nemlendirici Göz Damlası (Yapay Gözyaşı)', ur: 'آنکھوں کو تر رکھنے والے قطرے (مصنوعی آنسو)', zh: '人工泪液保湿滴眼液' },
-        dosage: { ar: 'نقطة إلى نقطتين في كل عين عند الحاجة أو الجفاف', en: '1-2 drops per eye as needed for dryness', tr: 'Kuruluk halinde her göze 1-2 damla damlatın', ur: 'خشکی کی صورت میں ہر آنکھ میں 1 سے 2 قطرے ڈالیں', zh: '眼干或按需每眼滴入1至2滴' }
-      },
-      {
-        id: 'med_eye_lens1',
-        cat: 'eye_lens',
-        price: 35,
-        badge: 'Lens Care',
-        name: { ar: 'محلول تعقيم وحفظ العدسات اللاصقة مع حافظة', en: 'Contact Lens Solution & Sterile Case', tr: 'Kontakt Lens Solüsyonu ve Saklama Kabı', ur: 'کانٹیکٹ لینز کا محلول اور کیس', zh: '隐形眼镜多功能护理液与便携镜盒' },
-        dosage: { ar: 'تُغمر العدسات في محلول جديد بعد كل إزالة', en: 'Soak lenses in fresh solution after each removal', tr: 'Her çıkarmadan sonra lensleri taze solüsyonda bekletin', ur: 'لینز اتارنے کے بعد نئے محلول میں محفوظ رکھیں', zh: '每次摘下后浸泡于新鲜护理液中' }
-      },
-      {
-        id: 'med_ear_care1',
-        cat: 'ear_care',
-        price: 34,
-        badge: 'Ear Care',
-        name: { ar: 'بخاخ تنظيف الأذن وسدادات أذن مريحة', en: 'Ear Cleaning Spray & Comfort Earplugs', tr: 'Kulak Temizleme Spreyi ve Rahat Kulak Tıkacı', ur: 'کان صاف کرنے کا اسپرے اور ایئر پلگ', zh: '耳道清洁喷雾与舒适隔音耳塞' },
-        dosage: { ar: 'يُستخدم البخاخ بلطف والسدادات عند الضوضاء أو النوم', en: 'Use spray gently; wear earplugs for noise or sleep', tr: 'Spreyi nazikçe uygulayın; tıkaçları gürültü veya uyku için takın', ur: 'اسپرے نرمی سے استعمال کریں اور شور میں ایئر پلگ لگائیں', zh: '温和喷入清洁；睡眠或嘈杂环境可佩戴耳塞' }
-      }
+      { id: 'med1', cat: 'otc_pain', price: 14, badge: 'OTC', name: { ar: 'بانادول إكسترا (24 قرص)', en: 'Panadol Extra (24 Tabs)', tr: 'Panadol Extra (24 Tablet)', ur: 'پیناڈول ایکسٹرا (24 گولیاں)', zh: '必理通强效止痛片 (24片)' }, dosage: { ar: 'قرص إلى قرصين كل 6 ساعات بعد الأكل', en: '1-2 tablets every 6 hours after meals', tr: 'Tok karnına 6 saatte bir 1-2 tablet', ur: 'کھانے کے بعد ہر 6 گھنٹے میں 1 سے 2 گولیاں', zh: '饭后每6小时服用1至2片' } },
+      { id: 'med2', cat: 'otc_pain', price: 19, badge: 'OTC', name: { ar: 'بروفين 400 ملجم مسكن ومضاد التهاب', en: 'Brufen 400mg Ibuprofen', tr: 'Brufen 400mg Ağrı Kesici', ur: 'بروفین 400 ملی گرام', zh: '布洛芬缓释片 400mg' }, dosage: { ar: 'قرص واحد بعد الوجبات عند اللزوم', en: '1 tablet after meals as needed', tr: 'Yemek sonrası ihtiyaç halinde 1 tablet', ur: 'کھانے کے بعد ضرورت کے مطابق ایک گولی', zh: '饭后按需服用1片' } },
+      { id: 'med3', cat: 'otc_cold', price: 26, badge: 'OTC', name: { ar: 'كلاريتين مضاد للحساسية (10 ملجم)', en: 'Claritin Allergy 10mg (Non-Drowsy)', tr: 'Claritin Alerji Tableti 10mg', ur: 'کلیریٹین الرجی ٹیبلٹ 10mg', zh: '开瑞坦氯雷他定抗过敏片 10mg' }, dosage: { ar: 'قرص واحد مرة واحدة يومياً', en: '1 tablet once daily', tr: 'Günde bir kez 1 tablet', ur: 'روزانہ دن میں ایک بار ایک گولی', zh: '每日一次，每次1片' } },
+      { id: 'med4', cat: 'otc_cold', price: 32, badge: 'OTC', name: { ar: 'بخاخ أوتريفين لتخفيف احتقان الأنف', en: 'Otrivin Nasal Decongestant Spray', tr: 'Otrivin Burun Spreyi', ur: 'اوٹریون ناک کا اسپرے', zh: '奥特斯鼻腔喷雾剂' }, dosage: { ar: 'بخة في كل فتحة أنف مرتين يومياً (حتى 5 أيام)', en: '1 spray per nostril twice daily (max 5 days)', tr: 'Günde 2 kez her burun deliğine 1 sıkım (en fazla 5 gün)', ur: 'دن میں دو بار ہر نتھنے میں ایک اسپرے', zh: '每日两次，每侧鼻孔1喷（不超过5天）' } },
+      { id: 'med_gi1', cat: 'otc_gi', price: 24, badge: 'OTC', name: { ar: 'شراب ومعلق جافيسكون للحموضة والارتجاع', en: 'Gaviscon Heartburn & Reflux Suspension', tr: 'Gaviscon Mide Ekşimesi Süspansiyonu', ur: 'گیویسکون تیزابیت اور ریفلکس شربت', zh: '嘉胃斯康抗酸护胃混悬液' }, dosage: { ar: '10 إلى 20 مل بعد الوجبات وعند النوم', en: '10-20ml after meals and at bedtime', tr: 'Yemeklerden sonra ve yatarken 10-20 ml', ur: 'کھانے کے بعد اور سوتے وقت 10 سے 20 ملی لیٹر', zh: '餐后及睡前服用10至20毫升' } },
+      { id: 'med_gi2', cat: 'otc_gi', price: 29, badge: 'OTC', name: { ar: 'مضادات التقلصات والانتفاخ للمعدة والقولون', en: 'Antispasmodic & Bloating Relief Tablets', tr: 'Mide ve Gaz Giderici Tabletler', ur: 'پیٹ کے درد اور گیس سے آرام کی گولیاں', zh: '缓解胃肠痉挛与胀气胶囊' }, dosage: { ar: 'قرص واحد قبل الأكل ثلاث مرات يومياً', en: '1 tablet before meals 3 times daily', tr: 'Günde 3 kez yemeklerden önce 1 tablet', ur: 'دن میں تین بار کھانے سے پہلے ایک گولی', zh: '每日3次，每次餐前1片' } },
+      { id: 'med_vit_multi1', cat: 'vit_multi', price: 74, badge: 'Vitamins', name: { ar: 'سنتروم فيتامينات ومعادن متعددة متكاملة', en: 'Centrum Complete Multivitamin & Minerals', tr: 'Centrum Komple Multivitamin ve Mineral', ur: 'سینٹرم مکمل ملٹی وٹامن اور منرلز', zh: '善存复合维生素与矿物质片' }, dosage: { ar: 'قرص واحد يومياً مع وجبة الإفطار', en: '1 tablet daily with breakfast', tr: 'Kahvaltı ile birlikte günde 1 tablet', ur: 'ناشتے کے ساتھ روزانہ ایک گولی', zh: '每日随早餐服用1片' } },
+      { id: 'med8', cat: 'vit_single', price: 42, badge: 'Supplement', name: { ar: 'فيتامين سي 1000 ملجم + زنك فوار', en: 'Vitamin C 1000mg + Zinc Effervescent', tr: 'Vitamin C 1000mg + Çinko Efervesan', ur: 'وٹامن سی 1000mg + زنک فوار گولیاں', zh: '维生素C 1000mg + 锌泡腾片' }, dosage: { ar: 'قرص فوار واحد يذاب في كوب ماء يومياً', en: 'Dissolve 1 tablet in a glass of water daily', tr: 'Günde 1 tablet bir bardak suda eritilir', ur: 'روزانہ ایک گلاس پانی میں ایک گولی حل کریں', zh: '每日1片，溶解于一杯水中饮用' } },
+      { id: 'med_vit_herbal1', cat: 'vit_herbal', price: 58, badge: 'Herbal', name: { ar: 'خلاصة الجينسنغ والزنجبيل الطبيعية للدعم اليومي', en: 'Natural Ginseng & Ginger Herbal Extract', tr: 'Doğal Ginseng ve Zencefil Bitkisel Özü', ur: 'قدرتی جنسینگ اور ادرک کا ہربل سپلیمنٹ', zh: '天然人参姜黄草本提取胶囊' }, dosage: { ar: 'كبسولة واحدة صباحاً بعد الطعام', en: '1 capsule in the morning after food', tr: 'Sabah yemekten sonra 1 kapsül', ur: 'صبح کھانے کے بعد ایک کیپسول', zh: '每日早晨饭后服用1粒' } },
+      { id: 'med_skin_face1', cat: 'skin_face', price: 68, badge: 'Derma Care', name: { ar: 'غسول ومرطب يومي للبشرة بالسيراميد', en: 'Ceramide Daily Facial Cleanser & Moisturizer', tr: 'Seramidli Günlük Yüz Temizleyici ve Nemlendirici', ur: 'سیرامائیڈ چہرے کا روزانہ کلینزر اور موئسچرائزر', zh: '神经酰胺每日温和洁面与保湿乳' }, dosage: { ar: 'يُستخدم صباحاً ومساءً على بشرة نظيفة', en: 'Use morning and evening on clean skin', tr: 'Temiz cilde sabah ve akşam uygulayın', ur: 'صاف جلد پر صبح و شام استعمال کریں', zh: '早晚洁面后涂抹于面部' } },
+      { id: 'med_skin_sun1', cat: 'skin_sun', price: 89, badge: 'SPF 50+', name: { ar: 'واقي شمس طبي غير مرئي SPF 50+', en: 'Invisible Broad-Spectrum Sunblock SPF 50+', tr: 'Görünmez Geniş Spektrumlu Güneş Kremi SPF 50+', ur: 'SPF 50+ سن بلاک لوشن', zh: '高倍广谱隐形防晒霜 SPF 50+' }, dosage: { ar: 'يُوضع قبل التعرض للشمس بـ 15 دقيقة ويجدد كل ساعتين', en: 'Apply 15 mins before sun exposure; reapply every 2 hrs', tr: 'Güneşe çıkmadan 15 dk önce sürün, 2 saatte bir yenileyin', ur: 'دھوپ میں نکلنے سے 15 منٹ پہلے لگائیں', zh: '外出前15分钟涂抹，每2小时补涂一次' } },
+      { id: 'med_skin_body1', cat: 'skin_body', price: 54, badge: 'Body Care', name: { ar: 'لوشن مرطب مكثف للجسم للبشرة الجافة', en: 'Intensive Body Moisturizing Lotion for Dry Skin', tr: 'Kuru Ciltler İçin Yoğun Vücut Nemlendirici Losyon', ur: 'خشک جلد کے لیے جسم کا موئسچرائزنگ لوشن', zh: '干性肌深层滋润身体乳' }, dosage: { ar: 'يُدلك بلطف على الجسم بعد الاستحمام', en: 'Massage gently onto body after showering', tr: 'Duştan sonra vücuda nazikçe masaj yaparak uygulayın', ur: 'نہانے کے بعد جسم پر نرمی سے لگائیں', zh: '沐浴后取适量轻柔涂抹于全身' } },
+      { id: 'med_hair_shampoo1', cat: 'hair_shampoo', price: 52, badge: 'Hair Care', name: { ar: 'شامبو وبلسم علاجي لطيف خالٍ من الكبريتات', en: 'Sulfate-Free Medicated Shampoo & Conditioner', tr: 'Sülfatsız Tedavi Edici Şampuan ve Saç Kremi', ur: 'سلفیٹ سے پاک طبی شیمپو اور کنڈیشنر', zh: '无硫酸盐温和修护洗发水与护发素' }, dosage: { ar: 'يُدلك على فروة الرأس الرطبة ثم يُشطف جيداً', en: 'Massage into wet scalp and rinse thoroughly', tr: 'Islak saç derisine masaj yapın ve iyice durulayın', ur: 'گیلے بالوں پر مساج کریں اور اچھی طرح دھو لیں', zh: '涂抹于湿润头皮轻柔按摩后冲洗干净' } },
+      { id: 'med_hair_loss1', cat: 'hair_loss', price: 96, badge: 'Strengthening', name: { ar: 'سيروم ومحلول مقوٍّ لبصيلات الشعر والحد من التساقط', en: 'Follicle Strengthening & Hair-Fall Serum', tr: 'Saç Kökü Güçlendirici ve Dökülme Karşıtı Serum', ur: 'بالوں کی جڑوں کو مضبوط کرنے والا سیرم', zh: '强韧发根防脱精华液' }, dosage: { ar: 'يُوضع على مناطق الضعف في فروة الرأس يومياً', en: 'Apply daily to thinning areas of the scalp', tr: 'Saç derisindeki seyrek bölgelere günlük uygulayın', ur: 'بالوں کی جڑوں پر روزانہ لگائیں', zh: '每日涂抹于需要强韧的头皮部位' } },
+      { id: 'med_hair_dye1', cat: 'hair_dye', price: 44, badge: 'Color Care', name: { ar: 'صبغة شعر لطيفة ومغذية بدون أمونيا', en: 'Ammonia-Free Nourishing Hair Dye', tr: 'Amonyaksız Besleyici Saç Boyası', ur: 'امونیا کے بغیر بالوں کا رنگ', zh: '无氨温和滋养染发霜' }, dosage: { ar: 'يُتبع دليل الاستخدام المرفق مع إجراء اختبار تحسس مسبق', en: 'Follow enclosed leaflet; perform patch test first', tr: 'Kutu içindeki talimatı izleyin, önce alerji testi yapın', ur: 'استعمال سے پہلے پیچ ٹیسٹ کریں اور ہدایات پر عمل کریں', zh: '请按说明书操作，使用前先做皮肤测试' } },
+      { id: 'med_baby_milk1', cat: 'baby_milk', price: 85, badge: 'Baby Nutrition', name: { ar: 'حليب أطفال مدعّم وأغذية تكميلية للرضع', en: 'Fortified Infant Formula & Baby Nutrition', tr: 'Takviyeli Bebek Sütü ve Ek Besinler', ur: 'بچوں کا غذائیت بخش دودھ اور خوراک', zh: '强化营养婴儿配方奶粉与辅食' }, dosage: { ar: 'يُحضّر حسب العمر والكمية المحددة على العبوة أو الطبيب', en: 'Prepare according to age guide or pediatrician advice', tr: 'Yaşa uygun ölçüde veya doktor tavsiyesine göre hazırlayın', ur: 'عمر کے مطابق یا ڈاکٹر کے مشورے سے تیار کریں', zh: '按月龄比例冲调或遵医嘱喂养' } },
+      { id: 'med_baby_daily1', cat: 'baby_daily', price: 38, badge: 'Baby Care', name: { ar: 'مناديل مبللة وكريم حماية يومي لبشرة الطفل', en: 'Gentle Baby Wipes & Daily Barrier Cream', tr: 'Hassas Bebek Mendili ve Günlük Koruyucu Krem', ur: 'بچوں کے نرم وائپس اور حفاظتی کریم', zh: '婴儿柔湿巾与日常舒缓护臀霜' }, dosage: { ar: 'للاستخدام اليومي عند كل تغيير لتهدئة البشرة', en: 'Use daily at every change to soothe skin', tr: 'Her alt değiştirmede cildi yatıştırmak için kullanın', ur: 'ہر تبدیلی کے وقت جلد کو محفوظ رکھنے کے لیے لگائیں', zh: '每次更换时使用，保持肌肤干爽舒适' } },
+      { id: 'med_baby_feed1', cat: 'baby_feeding', price: 49, badge: 'Feeding', name: { ar: 'رضّاعة طبية مضادة للمغص وحلمات سيليكون', en: 'Anti-Colic Baby Bottle & Silicone Teats', tr: 'Gaz Önleyici Biberon ve Silikon Emzikler', ur: 'اینٹی کولک فیڈر اور سلیکون نپلز', zh: '防胀气婴儿奶瓶与软硅胶奶嘴' }, dosage: { ar: 'تُعقّم جيداً قبل الاستخدام الأول وبعد كل رضعة', en: 'Sterilize thoroughly before first use and after each feed', tr: 'İlk kullanımdan önce ve her beslemeden sonra sterilize edin', ur: 'ہر استعمال سے پہلے اور بعد میں اچھی طرح جراثیم سے پاک کریں', zh: '首次使用前及每次喂养后彻底消毒' } },
+      { id: 'med_mom_care1', cat: 'mom_care', price: 62, badge: 'Maternity', name: { ar: 'مستلزمات العناية للأم أثناء الحمل والرضاعة', en: 'Maternity & Nursing Care Essentials', tr: 'Hamilelik ve Emzirme Dönemi Anne Bakım Ürünleri', ur: 'حمل اور دودھ پلانے کے دوران ماں کی نگہداشت', zh: '孕期与哺乳期妈妈护理用品' }, dosage: { ar: 'يُستخدم حسب الحاجة اليومية للعناية والراحة', en: 'Use as needed for daily maternal care and comfort', tr: 'Günlük konfor ve bakım için gerektiği şekilde kullanın', ur: 'روزمرہ آرام اور نگہداشت کے لیے ضرورت کے مطابق استعمال کریں', zh: '按日常孕产护理需要随时使用' } },
+      { id: 'med_hyg_oral1', cat: 'hygiene_oral', price: 23, badge: 'Oral Care', name: { ar: 'معجون أسنان وغسول فم لحماية اللثة والأسنان', en: 'Gum & Enamel Protection Toothpaste & Rinse', tr: 'Diş Eti ve Mine Koruyucu Macun ve Gargara', ur: 'مسوڑھوں اور دانتوں کی حفاظت کے لیے ٹوتھ پیسٹ', zh: '护龈固齿牙膏与清新漱口水' }, dosage: { ar: 'يُستخدم مرتين يومياً صباحاً ومساءً', en: 'Use twice daily, morning and evening', tr: 'Sabah ve akşam olmak üzere günde iki kez kullanın', ur: 'دن میں دو بار صبح اور شام استعمال کریں', zh: '每日早晚各刷牙/漱口一次' } },
+      { id: 'med_hyg_body1', cat: 'hygiene_body', price: 27, badge: 'Hygiene', name: { ar: 'غسول يومي لطيف ومعقم لليدين والجسم', en: 'Gentle Daily Body & Hand Hygiene Wash', tr: 'Günlük Nazik El ve Vücut Temizleme Jeli', ur: 'ہاتھوں اور جسم کی صفائی کے لیے روزانہ واش', zh: '温和日常手部与身体清洁洗护液' }, dosage: { ar: 'للاستخدام اليومي للحفاظ على النظافة والانتعاش', en: 'For daily use to maintain cleanliness and freshness', tr: 'Temizlik ve ferahlık için günlük kullanıma uygundur', ur: 'روزانہ صفائی اور تازگی کے لیے استعمال کریں', zh: '日常清洁使用，保持清爽卫生' } },
+      { id: 'med_hyg_men1', cat: 'hygiene_men', price: 36, badge: 'Men Care', name: { ar: 'بلسم ما بعد الحلاقة ومجموعة العناية اليومية للرجال', en: 'Aftershave Soothing Balm & Men Daily Care', tr: 'Tıraş Sonrası Yatıştırıcı Balsam ve Erkek Bakımı', ur: 'شیو کے بعد سکون بخش بام اور مردانہ نگہداشت', zh: '须后舒缓润肤露与男士日常护理套装' }, dosage: { ar: 'يُوضع بعد الحلاقة لتهدئة البشرة ومنع التحسس', en: 'Apply after shaving to soothe skin and prevent irritation', tr: 'Tıraştan sonra cildi yatıştırmak için uygulayın', ur: 'شیو کے بعد جلد کو سکون دینے کے لیے لگائیں', zh: '剃须后涂抹以舒缓肌肤不适' } },
+      { id: 'med6', cat: 'dev_bp', price: 145, badge: 'Device', name: { ar: 'جهاز أومرون الرقمي لقياس ضغط الدم من الذراع', en: 'Omron Digital Arm Blood Pressure Monitor', tr: 'Omron Dijital Koldan Tansiyon Aleti', ur: 'اومرون ڈیجیٹل بلڈ پریشر مانیٹر', zh: '欧姆龙上臂式电子血压计' }, dosage: { ar: 'قياس بضغطة زر واحدة مع ذاكرة قراءات', en: 'One-touch measurement with memory log', tr: 'Tek tuşla hafızalı tansiyon ölçümü', ur: 'ایک بٹن سے بلڈ پریشر کی درست پیمائش', zh: '一键精准测量，自带读数记忆功能' } },
+      { id: 'med5', cat: 'dev_glucose', price: 65, badge: 'Med Supply', name: { ar: 'شرائط وجهاز قياس سكر الدم المنزلي', en: 'Home Blood Glucose Meter & Test Strips', tr: 'Ev Tipi Kan Şekeri Ölçüm Cihazı ve Stripleri', ur: 'گھریلو بلڈ شوگر میٹر اور ٹیسٹ اسٹرپس', zh: '家用血糖监测仪与配套试纸' }, dosage: { ar: 'للفحص اليومي لمستوى السكر في الدم بالمنزل', en: 'For daily home blood glucose monitoring', tr: 'Günlük evde kan şekeri ölçümü için', ur: 'گھر پر روزانہ شوگر چیک کرنے کے لیے', zh: '用于日常居家血糖监测' } },
+      { id: 'med_dev_temp1', cat: 'dev_temp_scale', price: 55, badge: 'Device', name: { ar: 'ميزان حرارة رقمي وميزان إلكتروني للوزن', en: 'Digital Thermometer & Electronic Body Scale', tr: 'Dijital Ateş Ölçer ve Elektronik Baskül', ur: 'ڈیجیٹل تھرمامیٹر اور وزن کی مشین', zh: '电子体温计与高精度体重秤' }, dosage: { ar: 'قراءة سريعة وواضحة للمتابعة الصحية المنزلية', en: 'Fast and clear readings for home health tracking', tr: 'Evde sağlık takibi için hızlı ve net ölçüm', ur: 'گھر پر صحت کی نگرانی کے لیے تیز اور درست ریڈنگ', zh: '快速清晰读数，方便居家健康监测' } },
+      { id: 'med7', cat: 'dev_nebulizer', price: 120, badge: 'Medical', name: { ar: 'جهاز استنشاق البخار (Nebulizer) وكمامات حماية', en: 'Nebulizer Inhalation Device & Protective Masks', tr: 'Nebülizatör Buhar Cihazı ve Koruyucu Maskeler', ur: 'نیبولائزر مشین اور حفاظتی ماسک', zh: '医用雾化吸入器与防护口罩' }, dosage: { ar: 'لجلسات الاستنشاق الموصوفة والحماية اليومية', en: 'For prescribed inhalation therapy & daily protection', tr: 'Reçeteli buhar tedavisi ve günlük koruma için', ur: 'نسخہ شدہ سانس کے علاج اور روزمرہ تحفظ کے لیے', zh: '用于雾化吸入护理与日常呼吸防护' } },
+      { id: 'med_sport_prot1', cat: 'sport_protein', price: 185, badge: 'Whey Protein', name: { ar: 'واي بروتين (Whey Protein) لدعم الكتلة العضلية', en: 'Whey Protein Formula for Lean Muscle Support', tr: 'Kas Gelişimi İçin Whey Protein Tozu', ur: 'مسلز کی مضبوطی کے لیے وے پروٹین', zh: '乳清蛋白粉 (Whey Protein) 增肌塑形' }, dosage: { ar: 'مكيال واحد بعد التمرين أو حسب الاحتياج اليومي', en: '1 scoop post-workout or as daily protein goal requires', tr: 'Antrenman sonrası 1 ölçek veya günlük ihtiyaca göre', ur: 'ورزش کے بعد ایک اسکوپ یا روزانہ ضرورت کے مطابق', zh: '训练后1勺或按每日蛋白质需求饮用' } },
+      { id: 'med_sport_amino1', cat: 'sport_amino', price: 92, badge: 'Amino & Energy', name: { ar: 'أحماض أمينية (BCAA) ومشروب طاقة رياضي', en: 'BCAA Amino Acids & Sports Energy Drink', tr: 'BCAA Amino Asitler ve Sporcu Enerji İçeceği', ur: 'بی سی اے اے امائنو ایسڈز اور انرجی ڈرنک', zh: 'BCAA支链氨基酸与运动能量饮品' }, dosage: { ar: 'يُتناول قبل أو أثناء التمرين لدعم التحمل', en: 'Take before or during workout to support endurance', tr: 'Dayanıklılığı desteklemek için antrenman öncesi veya sırasında', ur: 'ورزش سے پہلے یا دوران طاقت کے لیے لیں', zh: '运动前或运动中饮用，助力耐力表现' } },
+      { id: 'med_sport_weight1', cat: 'sport_weight', price: 67, badge: 'Fitness', name: { ar: 'بدائل وجبات، سناكات صحية، ومنتجات إنقاص الوزن', en: 'Meal Replacements, Healthy Snacks & Weight Aids', tr: 'Öğün Yerine Geçenler, Sağlıklı Atıştırmalıklar ve Form', ur: 'کھانے کے متبادل، ہیلدی اسنیکس اور وزن کنٹرول', zh: '代餐奶昔、健康零食与体重管理产品' }, dosage: { ar: 'تُدمج ضمن نظام غذائي متوازن وحركة منتظمة', en: 'Use as part of a balanced diet and active routine', tr: 'Dengeli beslenme ve aktif yaşam ile birlikte kullanın', ur: 'متوازن غذا اور باقاعدہ ورزش کے ساتھ استعمال کریں', zh: '配合均衡饮食与规律运动使用' } },
+      { id: 'med_eye_drops1', cat: 'eye_drops', price: 28, badge: 'Eye Care', name: { ar: 'قطرات ترطيب العين (الدموع الاصطناعية)', en: 'Lubricating Eye Drops (Artificial Tears)', tr: 'Nemlendirici Göz Damlası (Yapay Gözyaşı)', ur: 'آنکھوں کو تر رکھنے والے قطرے (مصنوعی آنسو)', zh: '人工泪液保湿滴眼液' }, dosage: { ar: 'نقطة إلى نقطتين في كل عين عند الحاجة أو الجفاف', en: '1-2 drops per eye as needed for dryness', tr: 'Kuruluk halinde her göze 1-2 damla damlatın', ur: 'خشکی کی صورت میں ہر آنکھ میں 1 سے 2 قطرے ڈالیں', zh: '眼干或按需每眼滴入1至2滴' } },
+      { id: 'med_eye_lens1', cat: 'eye_lens', price: 35, badge: 'Lens Care', name: { ar: 'محلول تعقيم وحفظ العدسات اللاصقة مع حافظة', en: 'Contact Lens Solution & Sterile Case', tr: 'Kontakt Lens Solüsyonu ve Saklama Kabı', ur: 'کانٹیکٹ لینز کا محلول اور کیس', zh: '隐形眼镜多功能护理液与便携镜盒' }, dosage: { ar: 'تُغمر العدسات في محلول جديد بعد كل إزالة', en: 'Soak lenses in fresh solution after each removal', tr: 'Her çıkarmadan sonra lensleri taze solüsyonda bekletin', ur: 'لینز اتارنے کے بعد نئے محلول میں محفوظ رکھیں', zh: '每次摘下后浸泡于新鲜护理液中' } },
+      { id: 'med_ear_care1', cat: 'ear_care', price: 34, badge: 'Ear Care', name: { ar: 'بخاخ تنظيف الأذن وسدادات أذن مريحة', en: 'Ear Cleaning Spray & Comfort Earplugs', tr: 'Kulak Temizleme Spreyi ve Rahat Kulak Tıkacı', ur: 'کان صاف کرنے کا اسپرے اور ایئر پلگ', zh: '耳道清洁喷雾与舒适隔音耳塞' }, dosage: { ar: 'يُستخدم البخاخ بلطف والسدادات عند الضوضاء أو النوم', en: 'Use spray gently; wear earplugs for noise or sleep', tr: 'Spreyi nazikçe uygulayın; tıkaçları gürültü veya uyku için takın', ur: 'اسپرے نرمی سے استعمال کریں اور شور میں ایئر پلگ لگائیں', zh: '温和喷入清洁；睡眠或嘈杂环境可佩戴耳塞' } }
     ];
 
     let availableVoices = [];
@@ -2535,6 +2041,11 @@
     function getSelectedAssistModeText() {
       const modeObj = assistModes.find(m => m.id === selectedAssistMode);
       return modeObj ? (modeObj.title[currentLang] || modeObj.title.ar) : i18n[currentLang].notSpecified;
+    }
+
+    function getSelectedPaymentMethodText() {
+      const found = paymentMethodOptions.find(p => p.id === selectedPaymentMethod);
+      return found ? (found.label[currentLang] || found.label.ar) : 'مدى';
     }
 
     function formatCountdown(sec) {
@@ -2660,8 +2171,12 @@
       closeApprovalTimerModal();
       laneProgressPct = 0;
       laneMessages = [];
+      if (latestCreatedInvoice && latestCreatedInvoice.id) {
+        selectedStaffOrderId = latestCreatedInvoice.id;
+      }
       const msg = i18n[currentLang].orderApprovedToast;
       switchPageView('smart_lane');
+      renderStaffView();
       showToast(msg);
       speakText(msg);
     }
@@ -2735,9 +2250,9 @@
           chatLog.innerHTML = `<div class="bg-slate-900 border border-slate-800 text-slate-400 rounded-2xl p-3 text-center">${L.laneChatPlaceholder}</div>`;
         } else {
           chatLog.innerHTML = laneMessages.map(m => `
-            <div class="bg-slate-900 border border-cyan-500/30 rounded-2xl px-3 py-2 space-y-0.5">
-              <div class="text-[10px] text-cyan-400 font-black">${m.time}</div>
-              <div class="text-xs font-extrabold text-slate-100">${m.text}</div>
+            <div class="bg-slate-900 border ${m.sender === 'staff' ? 'border-blue-400/50 bg-blue-950/30' : 'border-cyan-500/30'} rounded-2xl px-3 py-2 space-y-0.5">
+              <div class="text-[10px] ${m.sender === 'staff' ? 'text-blue-400' : 'text-cyan-400'} font-black">${m.time}</div>
+              <div class="text-xs font-extrabold">${m.text}</div>
             </div>
           `).join('');
           chatLog.scrollTop = chatLog.scrollHeight;
@@ -2754,20 +2269,21 @@
       }
     }
 
-    function appendLaneMessage(text) {
+    function appendLaneMessage(text, sender = 'customer') {
       const trimmed = String(text || '').trim();
       if (!trimmed) return;
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      laneMessages.push({ text: trimmed, time: timeStr });
+      laneMessages.push({ text: trimmed, time: timeStr, sender });
       renderSmartLaneView();
+      renderStaffView();
       speakText(trimmed);
     }
 
     function sendQuickLaneSignal(signalId) {
       const sig = laneQuickSignals.find(s => s.id === signalId);
       if (!sig) return;
-      appendLaneMessage(sig.title[currentLang] || sig.title.ar);
+      appendLaneMessage(`🚗 إشارة المركبة: ${sig.title[currentLang] || sig.title.ar}`, 'customer');
     }
 
     function sendLaneChatMessage() {
@@ -2776,7 +2292,364 @@
       const val = inputEl.value.trim();
       if (!val) return;
       inputEl.value = '';
-      appendLaneMessage(val);
+      appendLaneMessage(`🚗 رسالة العميل: ${val}`, 'customer');
+    }
+
+    /* ================= منطق شاشة الصيدلي / الموظف المستقلة ================= */
+    function getStaffCareGuidance(assistModeId) {
+      const map = {
+        mobility: '• العميل يستخدم مسار الإعاقة الحركية: استخدم صينية التسليم الممتدة حتى نافذة السائق أو ضع الحقيبة الدوائية في المكان المحدد دون إجهاد العميل.',
+        deaf: '• العميل من فئة الصم وضعاف السمع: اعتمد البطاقات الكتابية الواضحة والتنبيهات الضوئية لشرح مواعيد الجرعات دون صوت.',
+        visual: '• العميل من ذوي الإعاقة البصرية: فعّل ملصقات الجرعات البارزة واشرح طريقة الاستخدام صوتياً بوضوح وتأنٍ.',
+        elderly: '• العميل من كبار السن: يفضّل حضور الصيدلي إلى نافذة المركبة لشرح الجرعات والتعارضات الدوائية بهدوء.'
+      };
+      return map[assistModeId] || map.mobility;
+    }
+
+    function renderStaffView() {
+      const preparingOrders = ordersHistory.filter(o => o.status === 'preparing');
+      const activeQueueCount = preparingOrders.length;
+
+      const badgeNav = document.getElementById('staffNavQueueBadge');
+      const badgeHeader = document.getElementById('staffActiveCountNum');
+      if (badgeNav) badgeNav.textContent = activeQueueCount;
+      if (badgeHeader) badgeHeader.textContent = activeQueueCount;
+
+      if (!preparingOrders.some(o => o.id === selectedStaffOrderId)) {
+        selectedStaffOrderId = preparingOrders[0] ? preparingOrders[0].id : '';
+      }
+
+      // 1. شريط طابور الطلبات النشطة
+      const queueBar = document.getElementById('staffOrdersQueueBar');
+      if (queueBar) {
+        if (preparingOrders.length === 0) {
+          queueBar.innerHTML = `<div class="text-xs text-slate-400 font-bold py-1">لا توجد طلبات نشطة بانتظار الصرف حالياً.</div>`;
+        } else {
+          queueBar.innerHTML = preparingOrders.map((ord, index) => {
+            const isSelected = ord.id === selectedStaffOrderId;
+            const statusTag = ord.staffAccepted
+              ? `قيد التجهيز (${ord.stagePct || 25}%)`
+              : 'بانتظار القبول';
+            return `
+              <button
+                type="button"
+                onclick="selectStaffOrder('${ord.id}')"
+                class="px-4 py-2 rounded-2xl border-2 text-xs font-black transition cursor-pointer flex items-center gap-2 ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 border-cyan-300 text-white shadow-md'
+                    : 'bg-slate-900 border-slate-700 hover:border-cyan-400 text-slate-200'
+                }"
+              >
+                <span>#${index + 1}</span>
+                <span dir="ltr">#${ord.id}</span>
+                <span class="bg-slate-950/80 text-cyan-300 px-2.5 py-0.5 rounded-full text-[11px]">${ord.parking || 'موقف يُسر 1'}</span>
+                <span class="bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full text-[11px]">${statusTag}</span>
+              </button>
+            `;
+          }).join('');
+        }
+      }
+
+      // 2. سجل المحادثة والإشارات في شاشة الصيدلي
+      const staffLogEl = document.getElementById('staffMessagesLog');
+      if (staffLogEl) {
+        if (laneMessages.length === 0) {
+          staffLogEl.innerHTML = `<div class="bg-slate-900 border border-slate-800 text-slate-400 rounded-2xl p-3.5 text-center">بانتظار إشارات من شاشة مركبة العميل لهذا الطلب...</div>`;
+        } else {
+          staffLogEl.innerHTML = laneMessages.map(m => `
+            <div class="bg-slate-900 border ${m.sender === 'staff' ? 'border-blue-400/50 bg-blue-950/30' : 'border-cyan-500/40'} rounded-2xl px-3 py-2 space-y-0.5">
+              <div class="text-[10px] ${m.sender === 'staff' ? 'text-blue-400' : 'text-cyan-400'} font-black">${m.time}</div>
+              <div class="text-xs font-extrabold">${m.text}</div>
+            </div>
+          `).join('');
+          staffLogEl.scrollTop = staffLogEl.scrollHeight;
+        }
+      }
+
+      // 3. قائمة الردود السريعة للصيدلي
+      const quickListEl = document.getElementById('staffQuickRepliesList');
+      if (quickListEl) {
+        quickListEl.innerHTML = staffQuickRepliesData.map((txt, idx) => `
+          <button
+            type="button"
+            onclick="sendStaffQuickReply(${idx})"
+            class="w-full text-start bg-slate-900 hover:bg-cyan-500/15 border border-slate-700 hover:border-cyan-400 rounded-xl px-3 py-2 text-xs font-extrabold transition cursor-pointer"
+          >
+            ${txt}
+          </button>
+        `).join('');
+      }
+
+      // 4. بطاقة تفاصيل الطلب والتحكم بمراحل التجهيز (العمود الأيسر)
+      const detailPanel = document.getElementById('staffOrderDetailPanel');
+      if (!detailPanel) return;
+
+      const currentOrder = preparingOrders.find(o => o.id === selectedStaffOrderId);
+      if (!currentOrder) {
+        detailPanel.innerHTML = `
+          <div class="py-12 text-center space-y-2">
+            <div class="text-3xl">✅</div>
+            <div class="text-sm font-black text-cyan-400">جميع الطلبات الحالية مكتملة!</div>
+            <div class="text-xs text-slate-400 font-bold">سيظهر أي طلب دوائي جديد فور إرساله من شاشة العميل.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const itemsList = (currentOrder.detailedItems && currentOrder.detailedItems.length > 0)
+        ? currentOrder.detailedItems
+        : [{ name: currentOrder.itemsSummary, qty: 1, price: currentOrder.total }];
+
+      const currentPct = currentOrder.stagePct || 0;
+      const stageButtons = [
+        { pct: 25, label: '1. استلام الوصفة (25%)' },
+        { pct: 50, label: '2. تحضير الأدوية (50%)' },
+        { pct: 75, label: '3. وصول للمسار (75%)' },
+        { pct: 100, label: '4. تسليم للمركبة (100%)' }
+      ];
+
+      detailPanel.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div class="flex items-center gap-2.5">
+            <span dir="ltr" class="text-xl sm:text-2xl font-black text-cyan-400">#${currentOrder.id}</span>
+            <span class="${currentOrder.staffAccepted ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/50' : 'bg-amber-400/20 text-amber-300 border-amber-400/50'} border text-xs font-black px-3 py-1 rounded-full">
+              ${currentOrder.staffAccepted ? '✓ معتمد وقيد التجهيز' : '⏳ بانتظار قبولك وتحديد وقت التجهيز'}
+            </span>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 bg-slate-900 border border-cyan-500/30 rounded-2xl p-2">
+            <label for="staffPrepTimeSelect" class="text-xs font-black text-cyan-300 px-1">⏱️ وقت التجهيز:</label>
+            <select
+              id="staffPrepTimeSelect"
+              onchange="setStaffPrepMinutes('${currentOrder.id}', this.value)"
+              class="clinical-input bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-black outline-none"
+            >
+              <option value="5" ${currentOrder.prepMinutes == 5 ? 'selected' : ''}>5 دقائق</option>
+              <option value="10" ${currentOrder.prepMinutes == 10 ? 'selected' : ''}>10 دقائق</option>
+              <option value="15" ${currentOrder.prepMinutes == 15 ? 'selected' : ''}>15 دقيقة</option>
+            </select>
+            <button
+              type="button"
+              onclick="acceptStaffOrder('${currentOrder.id}')"
+              class="bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer shadow"
+            >
+              ✓ قبول الطلب وإصدار الفاتورة
+            </button>
+            <button
+              type="button"
+              onclick="deleteStaffOrder('${currentOrder.id}')"
+              class="bg-rose-600 hover:bg-rose-500 text-white font-black text-xs px-3 py-1.5 rounded-xl transition cursor-pointer"
+            >
+              ✕ حذف الطلب
+            </button>
+          </div>
+        </div>
+
+        <!-- بطاقة بيانات المركبة والمسار وطريقة التسليم والدفع -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 text-xs">
+          <div>
+            <div class="text-slate-400 font-bold">بيانات المركبة:</div>
+            <div class="font-black mt-0.5">${currentOrder.car || 'سيارة العميل (بدون لوحة مدخلة)'}</div>
+          </div>
+          <div>
+            <div class="text-slate-400 font-bold">المسار / الموقف:</div>
+            <div class="font-black text-cyan-400 mt-0.5">${currentOrder.parking || 'موقف يُسر 1'}</div>
+          </div>
+          <div>
+            <div class="text-slate-400 font-bold">طريقة التسليم والدفع:</div>
+            <div class="font-black text-teal-400 mt-0.5">${currentOrder.spot || 'تسليم عبر نافذة السائق'} (${currentOrder.paymentMethod || 'مدى'})</div>
+          </div>
+        </div>
+
+        <!-- إرشادات التعامل الخاصة بالعميل -->
+        <div class="space-y-1.5">
+          <div class="text-xs font-black text-cyan-300">🩺 إرشادات التعامل الصيدلاني الخاصة بهذا العميل:</div>
+          <div class="bg-blue-500/15 border border-blue-400/40 text-blue-300 rounded-2xl px-4 py-3 text-xs font-extrabold leading-relaxed">
+            ${getStaffCareGuidance(currentOrder.assistMode)}
+          </div>
+        </div>
+
+        <!-- الأصناف والوصفات المطلوبة -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black text-cyan-300">💊 الأصناف والوصفات المطلوبة:</span>
+            ${currentOrder.rx ? `<span class="bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 text-[11px] font-black px-2.5 py-0.5 rounded-full">وصفة: ${currentOrder.rx}</span>` : ''}
+          </div>
+          <div class="space-y-2">
+            ${itemsList.map(item => `
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs">
+                <span class="font-black">${item.qty}x ${item.name}</span>
+                <span class="bg-teal-500/20 text-teal-300 border border-teal-400/40 text-[11px] font-black px-2.5 py-0.5 rounded-full">تغليف مُيسّر سهل الفتح</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- تحكم الصيدلي في مرحلة الطلب المحدد -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
+          <div class="text-xs font-black text-cyan-400">
+            تحكم الصيدلي في مرحلة الطلب المحدد (يرفع النسبة المئوية وينطق الصوت عند العميل تلقائياً):
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            ${stageButtons.map(btn => {
+              const active = currentPct === btn.pct;
+              const passed = currentPct > btn.pct;
+              return `
+                <button
+                  type="button"
+                  onclick="updateStaffOrderStage('${currentOrder.id}', ${btn.pct})"
+                  class="py-2.5 px-2 rounded-xl border text-xs font-black transition cursor-pointer text-center ${
+                    active
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 border-cyan-300 text-white shadow'
+                      : passed
+                        ? 'bg-teal-500/20 border-teal-400/50 text-teal-300'
+                        : 'bg-slate-950 border-slate-700 hover:border-cyan-400 text-slate-300'
+                  }"
+                >
+                  ${btn.label}
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectStaffOrder(orderId) {
+      selectedStaffOrderId = orderId;
+      renderStaffView();
+    }
+
+    function setStaffPrepMinutes(orderId, mins) {
+      const ord = ordersHistory.find(o => o.id === orderId);
+      if (ord) ord.prepMinutes = Number(mins) || 10;
+    }
+
+    function acceptStaffOrder(orderId) {
+      const ord = ordersHistory.find(o => o.id === orderId);
+      if (!ord) return;
+      ord.staffAccepted = true;
+      if (!ord.stagePct || ord.stagePct < 25) ord.stagePct = 25;
+      laneProgressPct = ord.stagePct;
+      const msg = `تم قبول طلبك (#${ord.id}) من الصيدلي — وقت التجهيز المتوقع ${ord.prepMinutes} دقائق`;
+      appendLaneMessage(`🧑‍⚕️ ${msg}`, 'staff');
+      renderSmartLaneView();
+      renderStaffView();
+      showToast('تم قبول الطلب وإبلاغ العميل في المسار الذكي!');
+    }
+
+    function deleteStaffOrder(orderId) {
+      updateOrderStatus(orderId, 'cancelled');
+      renderStaffView();
+      showToast('تم إلغاء الطلب وحذفه من طابور الانتظار.');
+    }
+
+    function updateStaffOrderStage(orderId, pct) {
+      const ord = ordersHistory.find(o => o.id === orderId);
+      if (!ord) return;
+      ord.staffAccepted = true;
+      ord.stagePct = pct;
+      laneProgressPct = pct;
+
+      const stageObj = laneStagesData.find(s => s.pct === pct);
+      const stageTitle = stageObj ? (stageObj.title[currentLang] || stageObj.title.ar) : '';
+
+      if (pct === 100) {
+        ord.status = 'completed';
+        renderOrdersView();
+      }
+
+      renderSmartLaneView();
+      renderStaffView();
+      if (stageTitle) {
+        speakText(stageTitle);
+        showToast(`تم تحديث مرحلة الطلب إلى ${pct}% — ${stageTitle}`);
+      }
+    }
+
+    function sendStaffQuickReply(idx) {
+      const reply = staffQuickRepliesData[idx];
+      if (!reply) return;
+      appendLaneMessage(`🧑‍⚕️ ${reply}`, 'staff');
+      showToast('تم إرسال الرد السريع إلى شاشة العميل.');
+    }
+
+    function sendStaffCustomReply() {
+      const inp = document.getElementById('staffCustomReplyInput');
+      if (!inp) return;
+      const val = inp.value.trim();
+      if (!val) return;
+      inp.value = '';
+      appendLaneMessage(`🧑‍⚕️ رد الصيدلي: ${val}`, 'staff');
+      showToast('تم إرسال الرسالة إلى شاشة العميل.');
+    }
+
+    function triggerStaffDeliveryAlert(type) {
+      const text = type === 'coming_to_car'
+        ? '🚗 إشعار من الصيدلي: الصيدلي قادم الآن إلى مركبتك لتسليم الدواء!'
+        : '💡 إشعار ضوئي وصوتي: طلبك الدوائي جاهز للاستلام الآن عند النافذة!';
+      appendLaneMessage(text, 'staff');
+      showToast('تم إرسال الإشعار الفوري إلى شاشة المركبة.');
+    }
+
+    /* ================= نافذة الفاتورة ووسائل الدفع ================= */
+    function openInvoiceModal() {
+      const backdrop = document.getElementById('invoiceModalBackdrop');
+      if (!backdrop) return;
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.add('invoice-open');
+      });
+    }
+
+    function closeInvoiceModal() {
+      const backdrop = document.getElementById('invoiceModalBackdrop');
+      if (!backdrop) return;
+      backdrop.classList.remove('invoice-open');
+      setTimeout(() => {
+        if (!backdrop.classList.contains('invoice-open')) {
+          backdrop.classList.add('hidden');
+        }
+      }, 360);
+    }
+
+    function editCartFromInvoice() {
+      closeInvoiceModal();
+      setTimeout(() => {
+        openCartDrawer();
+      }, 220);
+    }
+
+    function renderPaymentOptions() {
+      const container = document.getElementById('invPaymentOptions');
+      if (!container) return;
+      container.innerHTML = paymentMethodOptions.map(opt => {
+        const active = opt.id === selectedPaymentMethod;
+        return `
+          <button
+            type="button"
+            onclick="selectPaymentMethod('${opt.id}')"
+            class="px-3 py-2.5 rounded-xl border text-xs font-black transition flex items-center justify-between gap-2 cursor-pointer ${
+              active
+                ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300 shadow-sm'
+                : 'bg-slate-900 border-slate-700 hover:border-cyan-500/40 text-slate-200'
+            }"
+          >
+            <span>${opt.icon} ${opt.label[currentLang] || opt.label.ar}</span>
+            <span class="text-xs">${active ? '✓' : '○'}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectPaymentMethod(methodId) {
+      selectedPaymentMethod = methodId;
+      if (latestCreatedInvoice && latestCreatedInvoice.id) {
+        const ord = ordersHistory.find(o => o.id === latestCreatedInvoice.id);
+        if (ord) ord.paymentMethod = getSelectedPaymentMethodText();
+      }
+      renderPaymentOptions();
+      renderStaffView();
     }
 
     function openLatestInvoiceFromLane() {
@@ -2790,7 +2663,7 @@
           carType: sample && sample.car ? sample.car : '',
           plateNo: '',
           deliverySpotText: (sample && sample.spot) || getSelectedDeliverySpotText(),
-          items: [],
+          items: (sample && sample.detailedItems) || [],
           rx: sample ? sample.rx : '',
           subtotal: sample ? Number((sample.total / 1.15).toFixed(2)) : 0,
           discounts: 0,
@@ -2800,17 +2673,6 @@
       }
       renderInvoiceModalContent();
       openInvoiceModal();
-    }
-
-    function closeInvoiceModal() {
-      const backdrop = document.getElementById('invoiceModalBackdrop');
-      if (!backdrop) return;
-      backdrop.classList.remove('invoice-open');
-      setTimeout(() => {
-        if (!backdrop.classList.contains('invoice-open')) {
-          backdrop.classList.add('hidden');
-        }
-      }, 360);
     }
 
     function renderInvoiceModalContent() {
@@ -3011,13 +2873,32 @@
     const directNavI18n = { ar: 'المسار المباشر', en: 'Direct Track', tr: 'Canlı Takip', ur: 'براہ راست ٹریک', zh: '实时追踪' };
 
     function switchPageView(viewName) {
-      activePageView = ['shop', 'orders', 'smart_lane', 'direct_track'].includes(viewName) ? viewName : 'shop';
-      ['shopView', 'ordersView', 'smartLaneView', 'directTrackView'].forEach(id => {
+      activePageView = ['shop', 'orders', 'smart_lane', 'direct_track', 'staff'].includes(viewName) ? viewName : 'shop';
+      ['shopView', 'ordersView', 'smartLaneView', 'directTrackView', 'staffView'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
       });
-      const map = { shop: 'shopView', orders: 'ordersView', smart_lane: 'smartLaneView', direct_track: 'directTrackView' };
+      const map = {
+        shop: 'shopView',
+        orders: 'ordersView',
+        smart_lane: 'smartLaneView',
+        direct_track: 'directTrackView',
+        staff: 'staffView'
+      };
       document.getElementById(map[activePageView])?.classList.remove('hidden');
+
+      const btnShop = document.getElementById('btnNavShop');
+      const btnStaff = document.getElementById('btnNavStaff');
+      if (btnShop) {
+        btnShop.className = activePageView === 'shop'
+          ? 'bg-blue-600 text-white px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow whitespace-nowrap'
+          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap';
+      }
+      if (btnStaff) {
+        btnStaff.className = activePageView === 'staff'
+          ? 'bg-gradient-to-r from-cyan-400 to-teal-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow-md whitespace-nowrap'
+          : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border border-cyan-400/50 text-white px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow-md whitespace-nowrap';
+      }
 
       const navTxt = document.getElementById('btnNavDirectTrackText');
       if (navTxt) navTxt.textContent = directNavI18n[currentLang] || directNavI18n.ar;
@@ -3025,6 +2906,7 @@
       if (activePageView === 'orders') renderOrdersView();
       if (activePageView === 'smart_lane') renderSmartLaneView();
       if (activePageView === 'direct_track') renderDirectTrackView();
+      if (activePageView === 'staff') renderStaffView();
     }
 
     function renderDirectTrackView() {
@@ -3053,6 +2935,7 @@
       if (!target) return;
       target.status = newStatus;
       renderOrdersView();
+      renderStaffView();
     }
 
     function renderOrdersView() {
@@ -3212,6 +3095,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       document.body.classList.toggle('light-mode', isLightMode);
       applyLanguage('ar');
+      renderStaffView();
       setTimeout(() => {
         if (splashDismissed) return;
         revealArabicGraduallyRTL('splashArHeading', 'أهلاً بك في صيدلية يُسْر', 1600, () => {
@@ -3255,6 +3139,8 @@
       document.getElementById('brandTitle').textContent = L.brandTitle;
       document.getElementById('brandTagline').textContent = L.brandTagline;
       document.getElementById('btnNavShopText').textContent = L.btnNavShop;
+      const staffNavTextEl = document.getElementById('btnNavStaffText');
+      if (staffNavTextEl) staffNavTextEl.textContent = L.btnNavStaff;
       document.getElementById('btnNavOrdersText').textContent = L.btnNavOrders;
       document.getElementById('btnCartLabel').textContent = L.btnCartLabel;
 
@@ -3371,6 +3257,7 @@
       renderOrdersView();
       renderInvoiceModalContent();
       renderSmartLaneView();
+      renderStaffView();
     }
 
     function toggleSimpleMode() {
@@ -3726,20 +3613,8 @@
       }
 
       const modeLabels = {
-        standard: {
-          ar: 'صرف وصفة طبية',
-          en: 'Standard Prescription',
-          tr: 'Standart Reçete',
-          ur: 'عام نسخہ',
-          zh: '常规处方'
-        },
-        consult: {
-          ar: 'وصفة طبية + شرح صيدلي',
-          en: 'Prescription + Pharmacist Guide',
-          tr: 'Reçete + Eczacı Rehberi',
-          ur: 'نسخہ + فارماسسٹ رہنمائی',
-          zh: '处方 + 药师指导'
-        }
+        standard: { ar: 'صرف وصفة طبية', en: 'Standard Prescription', tr: 'Standart Reçete', ur: 'عام نسخہ', zh: '常规处方' },
+        consult: { ar: 'وصفة طبية + شرح صيدلي', en: 'Prescription + Pharmacist Guide', tr: 'Reçete + Eczacı Rehberi', ur: 'نسخہ + فارماسسٹ رہنمائی', zh: '处方 + 药师指导' }
       };
 
       const optLabel = (modeLabels[optionType] && modeLabels[optionType][currentLang]) || modeLabels.standard.ar;
@@ -3889,8 +3764,14 @@
       const newOrder = {
         id: orderId,
         status: 'preparing',
+        staffAccepted: false,
+        prepMinutes: 10,
+        stagePct: 0,
+        assistMode: selectedAssistMode,
+        paymentMethod: getSelectedPaymentMethodText(),
         createdAt,
         itemsSummary: summaryParts.join(' • '),
+        detailedItems: detailedItems.length > 0 ? detailedItems : [{ name: `وصفة طبية (${rxVal})`, qty: 1, price: 0 }],
         total,
         rx: rxVal,
         car: [colorVal, plateVal].filter(Boolean).join(' - '),
@@ -3916,6 +3797,7 @@
       };
 
       ordersHistory.unshift(newOrder);
+      selectedStaffOrderId = orderId;
       cart = [];
       appliedPromoCode = '';
       const promoInput = document.getElementById('promoCodeInput');
@@ -3925,6 +3807,7 @@
 
       renderCart();
       renderOrdersView();
+      renderStaffView();
       renderInvoiceModalContent();
       closeCartDrawer();
       setTimeout(() => {
