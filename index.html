@@ -761,6 +761,34 @@ body.light-mode #staffView .bg-slate-900,
       </div>
 
     </div>
+    <div id="staffOrderBucketsGrid" class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
+          <!-- 1. الطلبات قيد التجهيز -->
+          <div class="clinical-card bg-slate-900 border border-amber-400/40 rounded-3xl p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <h3 class="text-sm font-black text-amber-400">⏳ الطلبات قيد التجهيز</h3>
+              <span id="staffBucketPreparingCount" class="bg-amber-500/20 border border-amber-400 text-amber-300 text-xs font-black px-2.5 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="staffBucketPreparingList" class="space-y-2.5 text-xs"></div>
+          </div>
+
+          <!-- 2. الطلبات المكتملة -->
+          <div class="clinical-card bg-slate-900 border border-emerald-400/40 rounded-3xl p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <h3 class="text-sm font-black text-emerald-400">✅ الطلبات المكتملة</h3>
+              <span id="staffBucketCompletedCount" class="bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-black px-2.5 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="staffBucketCompletedList" class="space-y-2.5 text-xs"></div>
+          </div>
+
+          <!-- 3. الطلبات الملغاة -->
+          <div class="clinical-card bg-slate-900 border border-rose-400/40 rounded-3xl p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <h3 class="text-sm font-black text-rose-400">❌ الطلبات الملغاة</h3>
+              <span id="staffBucketCancelledCount" class="bg-rose-500/20 border border-rose-400 text-rose-300 text-xs font-black px-2.5 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="staffBucketCancelledList" class="space-y-2.5 text-xs"></div>
+          </div>
+        </div>
   </section>
 
   <!-- 5. نافذة / درج السلة والفاتورة -->
@@ -2428,7 +2456,43 @@ body.light-mode #staffView .bg-slate-900,
       };
       return map[assistModeId] || map.mobility;
     }
+function renderStaffOrderBuckets() {
+      const prepListEl = document.getElementById('staffBucketPreparingList');
+      const compListEl = document.getElementById('staffBucketCompletedList');
+      const cancListEl = document.getElementById('staffBucketCancelledList');
+      const prepCountEl = document.getElementById('staffBucketPreparingCount');
+      const compCountEl = document.getElementById('staffBucketCompletedCount');
+      const cancCountEl = document.getElementById('staffBucketCancelledCount');
+      if (!prepListEl || !compListEl || !cancListEl) return;
 
+      const list = Array.isArray(ordersHistory) ? ordersHistory : [];
+      const preparingOrders = list.filter(o => o.status !== 'completed' && o.status !== 'cancelled');
+      const completedOrders = list.filter(o => o.status === 'completed');
+      const cancelledOrders = list.filter(o => o.status === 'cancelled');
+
+      if (prepCountEl) prepCountEl.textContent = String(preparingOrders.length);
+      if (compCountEl) compCountEl.textContent = String(completedOrders.length);
+      if (cancCountEl) cancCountEl.textContent = String(cancelledOrders.length);
+
+      const drawItems = (items, emptyText) => {
+        if (!items.length) {
+          return `<div class="clinical-subcard bg-slate-950/80 border border-slate-800 rounded-2xl p-3.5 text-slate-400 font-bold text-center">${emptyText}</div>`;
+        }
+        return items.map(ord => `
+          <div class="clinical-subcard bg-slate-950/80 border border-slate-800 rounded-2xl p-3.5 space-y-1">
+            <div class="flex items-center justify-between font-black">
+              <span dir="ltr" class="text-cyan-400">#${ord.id || 'ORD'}</span>
+              <span>${ord.bay || 'موقف يُسْر 1'}</span>
+            </div>
+            <div class="text-slate-300 font-semibold">${ord.vehicle || 'مركبة العميل'} — ${ord.stagePct || 25}%</div>
+          </div>
+        `).join('');
+      };
+
+      prepListEl.innerHTML = drawItems(preparingOrders, 'لا توجد طلبات قيد التجهيز حالياً.');
+      compListEl.innerHTML = drawItems(completedOrders, 'لا توجد طلبات مكتملة بعد.');
+      cancListEl.innerHTML = drawItems(cancelledOrders, 'لا توجد طلبات ملغاة.');
+    }
     function renderStaffView() {
       const preparingOrders = ordersHistory.filter(o => o.status === 'preparing');
       const activeQueueCount = preparingOrders.length;
@@ -2632,7 +2696,7 @@ body.light-mode #staffView .bg-slate-900,
       selectedStaffOrderId = orderId;
       renderStaffView();
     }
-
+renderStaffOrderBuckets();
     function setStaffPrepMinutes(orderId, mins) {
       const ord = ordersHistory.find(o => o.id === orderId);
       if (ord) ord.prepMinutes = Number(mins) || 10;
