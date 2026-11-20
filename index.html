@@ -2466,7 +2466,7 @@ function renderStaffOrderBuckets() {
       if (!prepListEl || !compListEl || !cancListEl) return;
 
       const list = Array.isArray(ordersHistory) ? ordersHistory : [];
-      const preparingOrders = list.filter(o => o.staffAccepted === true && o.status !== 'completed' && o.status !== 'cancelled');
+      const preparingOrders = list.filter(o => o.status === 'preparing' && o.staffAccepted === true);
       const completedOrders = list.filter(o => o.status === 'completed');
       const cancelledOrders = list.filter(o => o.status === 'cancelled');
 
@@ -2494,7 +2494,7 @@ function renderStaffOrderBuckets() {
       cancListEl.innerHTML = drawItems(cancelledOrders, 'لا توجد طلبات ملغاة.');
     }
     function renderStaffView() {
-      const preparingOrders = ordersHistory.filter(o => o.status === 'preparing');
+      const pendingQueueOrders = ordersHistory.filter(o => o.status === 'preparing' && !o.staffAccepted);
       const activeQueueCount = preparingOrders.length;
 
       const badgeHeader = document.getElementById('staffActiveCountNum');
