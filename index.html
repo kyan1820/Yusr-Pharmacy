@@ -2312,8 +2312,10 @@ body.light-mode #staffView .bg-slate-900,
 
       const pctEl = document.getElementById('laneProgressPercent');
       const barEl = document.getElementById('laneProgressBar');
+      if (lanePrepRemainingSec <= 0) {
       if (pctEl) pctEl.textContent = `${laneProgressPct}%`;
       if (barEl) barEl.style.width = `${laneProgressPct}%`;
+    }
 
       const bannerEl = document.getElementById('laneStatusBannerText');
       if (bannerEl) {
@@ -2637,6 +2639,7 @@ body.light-mode #staffView .bg-slate-900,
     }
 let lanePrepIntervalId = null;
     let lanePrepRemainingSec = 0;
+    let lanePrepTotalSec = 0;
     let laneExpectedDeliveryTimeStr = '';
 
     function formatExpectedHandoverClock(minutesToAdd) {
@@ -2644,34 +2647,12 @@ let lanePrepIntervalId = null;
       return target.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
     }
 
-    function updateLanePrepBadges() {
-      const timerEl = document.getElementById('lanePrepCountdownBadge');
-      const etaEl = document.getElementById('laneExpectedDeliveryBadge');
-      if (!timerEl || !etaEl) return;
-
-      if (lanePrepRemainingSec > 0 && laneExpectedDeliveryTimeStr) {
-        const mins = Math.floor(lanePrepRemainingSec / 60);
-        const secs = lanePrepRemainingSec % 60;
-        const formattedTimer = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        timerEl.textContent = `⏱️ ${formattedTimer}`;
-        timerEl.classList.remove('hidden');
-
-        etaEl.textContent = `الوقت المتوقع للتسليم: ${laneExpectedDeliveryTimeStr}`;
-        etaEl.classList.remove('hidden');
-      } else {
-        timerEl.classList.add('hidden');
-        etaEl.classList.add('hidden');
-      }
-    }
-    const activeOrd = ordersHistory.find(o => o.id === (latestCreatedInvoice?.id || selectedStaffOrderId));
-      syncLaneProgressWithTimer(activeOrd?.prepMinutes || 5);
-function syncLaneProgressWithTimer(totalMinutes) {
+    function applyLiveTimerProgress() {
       const pctEl = document.getElementById('laneProgressPercent');
       const barEl = document.getElementById('laneProgressBar');
-      const totalSec = Math.max(1, (Number(totalMinutes) || 5) * 60);
-      if (lanePrepRemainingSec > 0 && laneExpectedDeliveryTimeStr) {
-        const elapsedSec = Math.max(0, totalSec - lanePrepRemainingSec);
-        const livePct = Math.min(100, Math.round((elapsedSec / totalSec) * 100));
+      if (lanePrepRemainingSec > 0 && lanePrepTotalSec > 0 && laneExpectedDeliveryTimeStr) {
+        const elapsed = Math.max(0, lanePrepTotalSec - lanePrepRemainingSec);
+        const livePct = Math.min(100, Math.max(0, Math.round((elapsed / lanePrepTotalSec) * 100)));
         if (pctEl) pctEl.textContent = `${livePct}%`;
         if (barEl) barEl.style.width = `${livePct}%`;
       } else if (pctEl && barEl) {
@@ -2679,9 +2660,32 @@ function syncLaneProgressWithTimer(totalMinutes) {
         barEl.style.width = `${laneProgressPct}%`;
       }
     }
+
+    function updateLanePrepBadges() {
+      const timerEl = document.getElementById('lanePrepCountdownBadge');
+      const etaEl = document.getElementById('laneExpectedDeliveryBadge');
+      if (timerEl && etaEl) {
+        if (lanePrepRemainingSec > 0 && laneExpectedDeliveryTimeStr) {
+          const mins = Math.floor(lanePrepRemainingSec / 60);
+          const secs = lanePrepRemainingSec % 60;
+          const formattedTimer = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+          timerEl.textContent = `⏱️ ${formattedTimer}`;
+          timerEl.classList.remove('hidden');
+
+          etaEl.textContent = `الوقت المتوقع للتسليم: ${laneExpectedDeliveryTimeStr}`;
+          etaEl.classList.remove('hidden');
+        } else {
+          timerEl.classList.add('hidden');
+          etaEl.classList.add('hidden');
+        }
+      }
+      applyLiveTimerProgress();
+    }
+
     function startLanePreparationTimer(minutes) {
       const safeMins = Math.max(1, Number(minutes) || 5);
-      lanePrepRemainingSec = safeMins * 60;
+      lanePrepTotalSec = safeMins * 60;
+      lanePrepRemainingSec = lanePrepTotalSec;
       laneExpectedDeliveryTimeStr = formatExpectedHandoverClock(safeMins);
       updateLanePrepBadges();
 
@@ -2693,6 +2697,10 @@ function syncLaneProgressWithTimer(totalMinutes) {
         } else {
           clearInterval(lanePrepIntervalId);
           lanePrepIntervalId = null;
+          const pctEl = document.getElementById('laneProgressPercent');
+          const barEl = document.getElementById('laneProgressBar');
+          if (pctEl) pctEl.textContent = '100%';
+          if (barEl) barEl.style.width = '100%';
         }
       }, 1000);
     }
