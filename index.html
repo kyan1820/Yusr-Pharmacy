@@ -2652,12 +2652,14 @@ let lanePrepIntervalId = null;
       const barEl = document.getElementById('laneProgressBar');
       if (lanePrepRemainingSec > 0 && lanePrepTotalSec > 0 && laneExpectedDeliveryTimeStr) {
         const elapsed = Math.max(0, lanePrepTotalSec - lanePrepRemainingSec);
-        const livePct = Math.min(100, Math.max(0, Math.round((elapsed / lanePrepTotalSec) * 100)));
+        const timerPct = Math.round((elapsed / lanePrepTotalSec) * 100);
+        const livePct = Math.min(100, Math.max(25, timerPct));
         if (pctEl) pctEl.textContent = `${livePct}%`;
         if (barEl) barEl.style.width = `${livePct}%`;
       } else if (pctEl && barEl) {
-        pctEl.textContent = `${laneProgressPct}%`;
-        barEl.style.width = `${laneProgressPct}%`;
+        const fallbackPct = laneProgressPct > 0 ? Math.max(25, laneProgressPct) : 0;
+        pctEl.textContent = `${fallbackPct}%`;
+        barEl.style.width = `${fallbackPct}%`;
       }
     }
 
