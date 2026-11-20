@@ -2647,30 +2647,67 @@ let lanePrepIntervalId = null;
       return target.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
     }
 
-    function applyLiveTimerProgress() {
-      const pctEl = document.getElementById('laneProgressPercent');
-      const barEl = document.getElementById('laneProgressBar');
-      if (lanePrepRemainingSec > 0 && lanePrepTotalSec > 0 && laneExpectedDeliveryTimeStr) {
-        const elapsed = Math.max(0, lanePrepTotalSec - lanePrepRemainingSec);
-        const ratio = Math.min(1, elapsed / lanePrepTotalSec);
-        let livePct = 25;
+    function syncLaneStageCardsAndBanner(currentPct) {
+      const safePct = Math.max(0, Math.min(100, Number(currentPct) || 0));
+      laneProgressPct = safePct;
 
-        if (ratio <= 0.5) {
-          livePct = Math.round(25 + (ratio / 0.5) * 25);
+      const bannerEl = document.getElementById('laneStatusBannerText');
+      if (bannerEl) {
+        const L = i18n[currentLang] || i18n.ar;
+        const activeStage = [...laneStagesData]
+          .sort((a, b) => b.pct - a.pct)
+          .find(s => safePct >= s.pct);
+        const stageTitle = activeStage ? (activeStage.title[currentLang] || activeStage.title.ar) : '';
+        if (safePct === 0 && laneMessages.length === 0) {
+          bannerEl.textContent = L.laneStatusBannerDefault;
         } else {
-          livePct = Math.min(99, Math.round(50 + ((ratio - 0.5) / 0.5) * 50));
+          bannerEl.textContent = `${L.laneStatusBannerPrefix} (${safePct}%)${stageTitle ? ` — ${stageTitle}` : ''}`;
         }
+      }
 
-        if (pctEl) pctEl.textContent = `${livePct}%`;
-        if (barEl) barEl.style.width = `${livePct}%`;
-      } else if (pctEl && barEl) {
-        const isFinished = lanePrepTotalSec > 0 && lanePrepRemainingSec === 0;
-        const fallbackPct = isFinished ? 100 : laneProgressPct;
-        pctEl.textContent = `${fallbackPct}%`;
-        barEl.style.width = `${fallbackPct}%`;
+      const stagesGrid = document.getElementById('laneStagesGrid');
+      if (stagesGrid && typeof laneStagesData !== 'undefined') {
+        stagesGrid.innerHTML = laneStagesData.map(st => {
+          const isReached = safePct >= st.pct;
+          return `
+            <div
+              class="clinical-subcard text-start p-4 rounded-2xl border select-none space-y-1.5 ${
+                isReached
+                  ? 'bg-cyan-500/15 border-cyan-400 shadow-md'
+                  : 'bg-slate-950/80 border-slate-800'
+              }"
+            >
+              <div class="text-[11px] font-black ${isReached ? 'text-cyan-400' : 'text-slate-400'}">${st.stepLabel[currentLang] || st.stepLabel.ar}</div>
+              <div class="text-xs sm:text-sm font-black leading-snug">${st.title[currentLang] || st.title.ar}</div>
+              <div class="text-[11px] text-slate-400 font-semibold leading-relaxed">${st.desc[currentLang] || st.desc.ar}</div>
+            </div>
+          `;
+        }).join('');
       }
     }
 
+    function applyLiveTimerProgress() {
+      const pctEl = document.getElementById('laneProgressPercent');
+      const barEl = document.getElementById('laneProgressBar');
+      let targetPct = laneProgressPct;
+
+      if (lanePrepRemainingSec > 0 && lanePrepTotalSec > 0 && laneExpectedDeliveryTimeStr) {
+        const elapsed = Math.max(0, lanePrepTotalSec - lanePrepRemainingSec);
+        const ratio = Math.min(1, elapsed / lanePrepTotalSec);
+
+        if (ratio <= 0.5) {
+          targetPct = Math.round(25 + (ratio / 0.5) * 25);
+        } else {
+          targetPct = Math.min(99, Math.round(50 + ((ratio - 0.5) / 0.5) * 50));
+        }
+      } else if (lanePrepTotalSec > 0 && lanePrepRemainingSec === 0) {
+        targetPct = 100;
+      }
+
+      if (pctEl) pctEl.textContent = `${targetPct}%`;
+      if (barEl) barEl.style.width = `${targetPct}%`;
+      syncLaneStageCardsAndBanner(targetPct);
+    }
     function updateLanePrepBadges() {
       const timerEl = document.getElementById('lanePrepCountdownBadge');
       const etaEl = document.getElementById('laneExpectedDeliveryBadge');
