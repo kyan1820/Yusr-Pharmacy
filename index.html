@@ -438,9 +438,6 @@
 
       <!-- أقصى اليسار: طلباتي ثم المسار المباشر ثم السلة (بدون زر شاشة الصيدلي) -->
       <div class="flex items-center gap-2 shrink-0">
-        <button onclick="switchPageView('smart_lane')" id="btnNavSmartLane" class="hidden bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow whitespace-nowrap">
-          🧭 <span id="btnNavSmartLaneText">المسار الذكي</span>
-        </button>
         <button onclick="switchPageView('orders')" id="btnNavOrders" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap">
           📦 <span id="btnNavOrdersText">طلباتي</span>
           <span id="ordersTotalBadge" class="bg-amber-400 text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-full">0</span>
@@ -3016,13 +3013,7 @@
       renderOrdersView();
       renderStaffView();
     }
-    
-function syncSmartLaneNavButton() {
-      const btn = document.getElementById('btnNavSmartLane');
-      if (!btn) return;
-      const hasActivePreparingOrder = Array.isArray(ordersHistory) && ordersHistory.some(o => o.status === 'preparing');
-      btn.classList.toggle('hidden', !hasActivePreparingOrder);
-    }
+
     function renderOrdersView() {
       const L = i18n[currentLang];
       const container = document.getElementById('ordersListContainer');
