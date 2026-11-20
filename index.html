@@ -2466,7 +2466,7 @@ function renderStaffOrderBuckets() {
       if (!prepListEl || !compListEl || !cancListEl) return;
 
       const list = Array.isArray(ordersHistory) ? ordersHistory : [];
-      const preparingOrders = list.filter(o => o.status !== 'completed' && o.status !== 'cancelled');
+      const preparingOrders = list.filter(o => o.staffAccepted === true && o.status !== 'completed' && o.status !== 'cancelled');
       const completedOrders = list.filter(o => o.status === 'completed');
       const cancelledOrders = list.filter(o => o.status === 'cancelled');
 
@@ -2828,7 +2828,6 @@ let lanePrepIntervalId = null;
       renderStaffView();
       showToast('تم قبول الطلب وإبلاغ العميل في المسار الذكي!');
     }
-
     function deleteStaffOrder(orderId) {
       updateOrderStatus(orderId, 'cancelled');
       renderStaffView();
