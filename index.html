@@ -2663,7 +2663,22 @@ let lanePrepIntervalId = null;
         etaEl.classList.add('hidden');
       }
     }
-
+    const activeOrd = ordersHistory.find(o => o.id === (latestCreatedInvoice?.id || selectedStaffOrderId));
+      syncLaneProgressWithTimer(activeOrd?.prepMinutes || 5);
+function syncLaneProgressWithTimer(totalMinutes) {
+      const pctEl = document.getElementById('laneProgressPercent');
+      const barEl = document.getElementById('laneProgressBar');
+      const totalSec = Math.max(1, (Number(totalMinutes) || 5) * 60);
+      if (lanePrepRemainingSec > 0 && laneExpectedDeliveryTimeStr) {
+        const elapsedSec = Math.max(0, totalSec - lanePrepRemainingSec);
+        const livePct = Math.min(100, Math.round((elapsedSec / totalSec) * 100));
+        if (pctEl) pctEl.textContent = `${livePct}%`;
+        if (barEl) barEl.style.width = `${livePct}%`;
+      } else if (pctEl && barEl) {
+        pctEl.textContent = `${laneProgressPct}%`;
+        barEl.style.width = `${laneProgressPct}%`;
+      }
+    }
     function startLanePreparationTimer(minutes) {
       const safeMins = Math.max(1, Number(minutes) || 5);
       lanePrepRemainingSec = safeMins * 60;
