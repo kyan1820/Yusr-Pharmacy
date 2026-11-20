@@ -2304,19 +2304,17 @@
         stagesGrid.innerHTML = laneStagesData.map(st => {
           const isReached = laneProgressPct >= st.pct;
           return `
-            <button
-              type="button"
-              onclick="selectLaneStage(${st.pct})"
-              class="clinical-subcard text-start p-4 rounded-2xl border transition cursor-pointer space-y-1.5 ${
+            <div
+              class="clinical-subcard text-start p-4 rounded-2xl border select-none space-y-1.5 ${
                 isReached
                   ? 'bg-cyan-500/15 border-cyan-400 shadow-md'
-                  : 'bg-slate-950/80 border-slate-800 hover:border-cyan-500/40'
+                  : 'bg-slate-950/80 border-slate-800'
               }"
             >
               <div class="text-[11px] font-black ${isReached ? 'text-cyan-400' : 'text-slate-400'}">${st.stepLabel[currentLang] || st.stepLabel.ar}</div>
               <div class="text-xs sm:text-sm font-black leading-snug">${st.title[currentLang] || st.title.ar}</div>
               <div class="text-[11px] text-slate-400 font-semibold leading-relaxed">${st.desc[currentLang] || st.desc.ar}</div>
-            </button>
+            </div>
           `;
         }).join('');
       }
