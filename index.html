@@ -2686,28 +2686,6 @@ let lanePrepIntervalId = null;
         }).join('');
       }
     }
-
-      const stagesGrid = document.getElementById('laneStagesGrid');
-      if (stagesGrid && typeof laneStagesData !== 'undefined') {
-        stagesGrid.innerHTML = laneStagesData.map(st => {
-          const isReached = safePct >= st.pct;
-          return `
-            <div
-              class="clinical-subcard text-start p-4 rounded-2xl border select-none space-y-1.5 ${
-                isReached
-                  ? 'bg-cyan-500/15 border-cyan-400 shadow-md'
-                  : 'bg-slate-950/80 border-slate-800'
-              }"
-            >
-              <div class="text-[11px] font-black ${isReached ? 'text-cyan-400' : 'text-slate-400'}">${st.stepLabel[currentLang] || st.stepLabel.ar}</div>
-              <div class="text-xs sm:text-sm font-black leading-snug">${st.title[currentLang] || st.title.ar}</div>
-              <div class="text-[11px] text-slate-400 font-semibold leading-relaxed">${st.desc[currentLang] || st.desc.ar}</div>
-            </div>
-          `;
-        }).join('');
-      }
-    }
-
     function applyLiveTimerProgress() {
       const pctEl = document.getElementById('laneProgressPercent');
       const barEl = document.getElementById('laneProgressBar');
