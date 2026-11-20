@@ -94,6 +94,20 @@
       transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.32s ease;
     }
     #confirmActionBackdrop.confirm-open #confirmActionCard {
+      /* انتقال سلس عند فتح واجهة المسار الذكي */
+    @keyframes lanePanelSlideUp {
+      0% {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .lane-panel-enter {
+      animation: lanePanelSlideUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
       opacity: 1;
       transform: translateY(0) scale(1);
     }
@@ -466,7 +480,95 @@
     </section>
 
   </main>
+<!-- 4A. واجهة المسار الذكي بعد اعتماد الطلب (تصميم ومواقع مختلفة) -->
+  <section id="smartLaneView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 lane-panel-enter">
+    <div class="clinical-card bg-slate-900 border-2 border-cyan-500/35 rounded-3xl p-5 sm:p-6 shadow-xl space-y-6">
 
+      <!-- شريط علوي: رقم الطلب وأزرار الإجراءات في اليمين وعنوان المسار في اليسار -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+          <div class="bg-slate-950 border border-cyan-500/40 rounded-2xl px-4 py-2 text-center">
+            <div id="laneOrderIdLabel" class="text-[10px] text-slate-400 font-bold">رقم التتبع الحالي</div>
+            <div id="laneActiveOrderCode" dir="ltr" class="text-sm sm:text-base font-black text-cyan-400">#ORD-1041</div>
+          </div>
+          <button onclick="openLatestInvoiceFromLane()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs px-4 py-3 rounded-2xl transition cursor-pointer shadow">
+            🧾 <span id="btnLaneViewInvoice">مراجعة الفاتورة</span>
+          </button>
+          <button onclick="switchPageView('shop')" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs px-4 py-3 rounded-2xl transition cursor-pointer shadow">
+            + <span id="btnLaneNewOrder">طلب جديد</span>
+          </button>
+        </div>
+
+        <div class="space-y-1.5 text-start lg:text-end">
+          <span id="laneLiveBadge" class="inline-flex items-center gap-1.5 bg-cyan-500/15 border border-cyan-400/40 text-cyan-400 px-3.5 py-1 rounded-full text-xs font-black">
+            مراقبة المسار المباشر للمركبات
+          </span>
+          <h1 id="laneMainTitle" class="text-xl sm:text-2xl font-black">لوحة متابعة الطلب في المسار الذكي</h1>
+          <p id="laneSubtitleDesc" class="text-xs text-slate-400 font-bold">تم اعتماد طلبك بنجاح؛ تابع مراحل تجهيز الدواء ووصوله إلى موقفك.</p>
+        </div>
+      </div>
+
+      <!-- قسم مقسّم: رسائل الصيدلي في عمود ومراحل التقدم في العمود الآخر -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+        <!-- العمود الأول: رسائل المسار المباشرة -->
+        <div class="lg:col-span-5 clinical-subcard bg-slate-950 border border-cyan-500/30 rounded-3xl p-4 flex flex-col justify-between gap-3 min-h-[320px]">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+              <h2 id="laneChatTitle" class="text-sm font-black text-cyan-400">رسائل المسار المباشرة</h2>
+              <span id="laneOnlineBadge" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[11px] font-black px-2.5 py-0.5 rounded-full">نشط</span>
+            </div>
+
+            <div id="laneChatLog" class="space-y-2 max-h-52 overflow-y-auto pe-1 text-xs font-bold"></div>
+          </div>
+
+          <div class="flex items-center gap-2 pt-2 border-t border-slate-800">
+            <input
+              id="laneChatInput"
+              type="text"
+              onkeydown="if(event.key==='Enter') sendLaneChatMessage()"
+              placeholder="اكتب رسالتك للصيدلي..."
+              class="clinical-input flex-1 bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs font-bold outline-none"
+            />
+            <button onclick="sendLaneChatMessage()" id="btnLaneSendChat" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition cursor-pointer shrink-0">
+              إرسال
+            </button>
+          </div>
+        </div>
+
+        <!-- العمود الثاني: نسبة التقدم وبانر الحالة ومراحل المسار الأربع -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <span id="lblLaneProgressTitle" class="text-xs font-black text-cyan-300">نسبة إنجاز وتقدم طلبك في المسار:</span>
+              <span id="laneProgressPercent" dir="ltr" class="bg-cyan-500/20 border border-cyan-400 text-cyan-300 text-xs font-black px-3 py-0.5 rounded-full">0%</span>
+            </div>
+            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
+              <div id="laneProgressBar" class="h-full bg-gradient-to-r from-cyan-400 via-teal-400 to-blue-500 transition-all duration-500" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="bg-amber-400/15 border border-amber-400/50 rounded-2xl px-4 py-3 text-xs font-black text-amber-300 flex items-center gap-2">
+            <span>⏳</span>
+            <span id="laneStatusBannerText">طلبك قيد المراجعة في الصيدلية الآن — بانتظار بدء التجهيز (0%)...</span>
+          </div>
+
+          <div id="laneStagesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        </div>
+
+      </div>
+
+      <!-- قسم سفلي: أزرار التواصل السريع مع الصيدلي -->
+      <div class="clinical-subcard bg-slate-950/80 border border-slate-800 rounded-3xl p-4 sm:p-5 space-y-3">
+        <div>
+          <h2 id="laneQuickTitle" class="text-sm font-black text-cyan-400">إشارات التواصل السريع مع الصيدلي</h2>
+          <p id="laneQuickDesc" class="text-xs text-slate-400 font-bold mt-0.5">اختر إشارة فورية لإرسالها إلى فريق الصرف عند المسار:</p>
+        </div>
+        <div id="laneQuickSignalsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+      </div>
+
+    </div>
+  </section>
   <!-- 4B. واجهة طلباتي (الطلبات المكتملة، الملغاة، وقيد التجهيز) -->
   <section id="ordersView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
     <div class="clinical-card bg-slate-900 border border-cyan-500/30 rounded-3xl p-5 sm:p-6 shadow-xl space-y-5">
@@ -798,6 +900,106 @@
     let remainingTimerSeconds = 120;
     let pendingConfirmAction = null;
     let skipConfirmDialogOnceOrMore = false;
+    let laneProgressPct = 0;
+    let laneMessages = [];
+
+    const laneStagesData = [
+      {
+        pct: 25,
+        stepLabel: { ar: 'الخطوة 1 (25%)', en: 'Step 1 (25%)', tr: 'Adım 1 (25%)', ur: 'مرحلہ 1 (25%)', zh: '步骤 1 (25%)' },
+        title: {
+          ar: 'تأكيد الطلب وتخصيص المسار',
+          en: 'Order Verified & Lane Assigned',
+          tr: 'Sipariş Onaylandı ve Hat Atandı',
+          ur: 'آرڈر کی تصدیق اور لین مختص',
+          zh: '订单已确认并分配通道'
+        },
+        desc: {
+          ar: 'تم إرسال نمط المساعدة ونقطة التسليم للصيدلي',
+          en: 'Assistance mode & car spot sent to pharmacist',
+          tr: 'Destek modu ve araç noktası eczacıya iletildi',
+          ur: 'سہولت کا طریقہ اور گاڑی کا مقام فارماسسٹ کو بھیجا گیا',
+          zh: '已将辅助模式与交付位置发送给药师'
+        }
+      },
+      {
+        pct: 50,
+        stepLabel: { ar: 'الخطوة 2 (50%)', en: 'Step 2 (50%)', tr: 'Adım 2 (50%)', ur: 'مرحلہ 2 (50%)', zh: '步骤 2 (50%)' },
+        title: {
+          ar: 'تحضير الأدوية وتجهيز الحقيبة',
+          en: 'Medication Prep & Bag Packing',
+          tr: 'İlaç Hazırlama ve Paketleme',
+          ur: 'ادویات کی تیاری اور پیکنگ',
+          zh: '药品调配与药袋打包'
+        },
+        desc: {
+          ar: 'مراجعة الجرعات وإلصاق بطاقة الإرشادات الواضحة',
+          en: 'Checking dosages & attaching clear labels',
+          tr: 'Dozaj kontrolü ve net etiketleme yapılıyor',
+          ur: 'خوراک کی جانچ اور واضح لیبل چسپاں کیے جا رہے ہیں',
+          zh: '核对用药剂量并贴上清晰标签'
+        }
+      },
+      {
+        pct: 75,
+        stepLabel: { ar: 'الخطوة 3 (75%)', en: 'Step 3 (75%)', tr: 'Adım 3 (75%)', ur: 'مرحلہ 3 (75%)', zh: '步骤 3 (75%)' },
+        title: {
+          ar: 'رصد المركبة في الموقف الذكي',
+          en: 'Vehicle Detected in Smart Bay',
+          tr: 'Araç Akıllı Parkta Algılandı',
+          ur: 'گاڑی اسمارٹ پارکنگ میں پہنچ گئی',
+          zh: '已检测到车辆进入智能车位'
+        },
+        desc: {
+          ar: 'تم ربط رقم الموقف بمسار الصرف المباشر',
+          en: 'Parking bay linked to direct pickup lane',
+          tr: 'Park alanı doğrudan teslim hattına bağlandı',
+          ur: 'پارکنگ نمبر براہ راست ترسیل کی لین سے منسلک ہے',
+          zh: '车位号已关联至车窗取药通道'
+        }
+      },
+      {
+        pct: 100,
+        stepLabel: { ar: 'الخطوة 4 (100%)', en: 'Step 4 (100%)', tr: 'Adım 4 (100%)', ur: 'مرحلہ 4 (100%)', zh: '步骤 4 (100%)' },
+        title: {
+          ar: 'التسليم المباشر إلى مركبتك',
+          en: 'Direct Handover to Your Car',
+          tr: 'Doğrudan Aracınıza Teslimat',
+          ur: 'آپ کی گاڑی تک براہ راست ترسیل',
+          zh: '正在直接送达您的车辆'
+        },
+        desc: {
+          ar: 'الصيدلي يتجه الآن إلى موقع التسليم المحدد',
+          en: 'Pharmacist heading to your selected car spot',
+          tr: 'Eczacı seçtiğiniz araç noktasına geliyor',
+          ur: 'فارماسسٹ آپ کے منتخب مقام پر آ رہا ہے',
+          zh: '药师正前往您选择的车内交付位置'
+        }
+      }
+    ];
+
+    const laneQuickSignals = [
+      {
+        id: 'arrived_bay',
+        title: { ar: 'وصلت إلى الموقف الذكي', en: 'I Am in the Bay', tr: 'Park Alanındayım', ur: 'میں پارکنگ میں پہنچ گیا ہوں', zh: '我已到达智能车位' },
+        desc: { ar: 'تنبيه الصيدلي بوجود سيارتك الآن', en: 'Notify pharmacist your car has arrived', tr: 'Eczacıya aracınızın geldiğini bildir', ur: 'فارماسسٹ کو گاڑی پہنچنے کی اطلاع دیں', zh: '立即通知药师您的车辆已就位' }
+      },
+      {
+        id: 'need_more_time',
+        title: { ar: 'أحتاج مهلة قصيرة', en: 'Need Extra Moment', tr: 'Biraz Daha Süre Lazım', ur: 'مجھے تھوڑا مزید وقت چاہیے', zh: '请稍等片刻' },
+        desc: { ar: 'إشعار الفريق بالانتظار قليلاً قبل التسليم', en: 'Let the team know you need a moment', tr: 'Teslimat öncesi biraz süre isteyin', ur: 'ٹیم کو بتائیں کہ آپ کو تھوڑا وقت درکار ہے', zh: '提醒工作人员稍后再进行交付' }
+      },
+      {
+        id: 'silent_text_only',
+        title: { ar: 'تواصل نصي فقط', en: 'Text / Silent Only', tr: 'Sadece Yazılı / Sessiz', ur: 'صرف تحریری / خاموش رابطہ', zh: '仅文字 / 静音沟通' },
+        desc: { ar: 'تفضيل الشرح الكتابي دون صوت', en: 'Prefer written instructions without audio', tr: 'Sesli yerine yazılı açıklama isteyin', ur: 'آواز کے بجائے تحریری رہنمائی کو ترجیح دیں', zh: '优先使用文字说明，无需语音' }
+      },
+      {
+        id: 'bring_pos_device',
+        title: { ar: 'إحضار جهاز الدفع للنافذة', en: 'Bring Card Terminal', tr: 'POS Cihazı Getirin', ur: 'کارڈ مشین کھڑکی پر لائیں', zh: '请携带刷卡机到车窗' },
+        desc: { ar: 'تجهيز جهاز الدفع لإتمام العملية عند السيارة', en: 'Prepare payment terminal for car window', tr: 'Araç camında ödeme için POS hazırlayın', ur: 'گاڑی کی کھڑکی پر ادائیگی کے لیے مشین لائیں', zh: '请准备支付终端在车窗完成支付' }
+      }
+    ];
     const promoDiscountsMap = {
       ADEL: 0.5,
       KAYAN: 0.25
@@ -970,6 +1172,22 @@
         emptyOrders: 'لا توجد طلبات في هذا القسم حالياً.',
         btnMarkCompleted: 'إتمام الطلب',
         btnCancelOrder: 'إلغاء الطلب',
+        laneLiveBadge: 'مراقبة المسار المباشر للمركبات',
+        laneMainTitle: 'لوحة متابعة الطلب في المسار الذكي',
+        laneSubtitleDesc: 'تم اعتماد طلبك بنجاح؛ تابع مراحل تجهيز الدواء ووصوله إلى موقفك.',
+        laneOrderIdLabel: 'رقم التتبع الحالي',
+        btnLaneViewInvoice: 'مراجعة الفاتورة',
+        btnLaneNewOrder: 'طلب جديد',
+        lblLaneProgressTitle: 'نسبة إنجاز وتقدم طلبك في المسار:',
+        laneStatusBannerDefault: 'طلبك قيد المراجعة في الصيدلية الآن — بانتظار بدء التجهيز (0%)...',
+        laneStatusBannerPrefix: 'تحديث المسار',
+        laneQuickTitle: 'إشارات التواصل السريع مع الصيدلي',
+        laneQuickDesc: 'اختر إشارة فورية لإرسالها إلى فريق الصرف عند المسار:',
+        laneChatTitle: 'رسائل المسار المباشرة',
+        laneOnlineBadge: 'نشط',
+        laneChatPlaceholder: 'لم يتم إرسال أي إشارة أو رسالة بعد.',
+        laneChatInputPh: 'اكتب رسالتك للصيدلي...',
+        btnLaneSendChat: 'إرسال',
         statusPreparingBadge: 'قيد التجهيز',
         statusCompletedBadge: 'مكتمل',
         statusCancelledBadge: 'ملغي',
@@ -1063,6 +1281,22 @@
         emptyOrders: 'No orders in this section yet.',
         btnMarkCompleted: 'Mark Completed',
         btnCancelOrder: 'Cancel Order',
+        laneLiveBadge: 'Smart Vehicle Pickup Lane',
+        laneMainTitle: 'Smart Lane Live Order Tracker',
+        laneSubtitleDesc: 'Your order is confirmed; follow preparation and window handover step by step.',
+        laneOrderIdLabel: 'Active Order ID',
+        btnLaneViewInvoice: 'View Invoice',
+        btnLaneNewOrder: 'New Order',
+        lblLaneProgressTitle: 'Smart lane completion progress:',
+        laneStatusBannerDefault: 'Your order is queued at the pharmacy — awaiting prep start (0%)...',
+        laneStatusBannerPrefix: 'Lane Update',
+        laneQuickTitle: 'Quick Signals to Pharmacist',
+        laneQuickDesc: 'Tap a quick signal to alert the smart lane team immediately:',
+        laneChatTitle: 'Live Lane Messages',
+        laneOnlineBadge: 'Online',
+        laneChatPlaceholder: 'No signal or message sent yet.',
+        laneChatInputPh: 'Type a note for the pharmacist...',
+        btnLaneSendChat: 'Send',
         statusPreparingBadge: 'In Preparation',
         statusCompletedBadge: 'Completed',
         statusCancelledBadge: 'Cancelled',
@@ -1156,6 +1390,22 @@
         emptyOrders: 'Bu bölümde henüz sipariş yok.',
         btnMarkCompleted: 'Tamamlandı Yap',
         btnCancelOrder: 'İptal Et',
+        laneLiveBadge: 'Akıllı Araç Teslim Hattı',
+        laneMainTitle: 'Akıllı Hat Canlı Sipariş Takibi',
+        laneSubtitleDesc: 'Siparişiniz onaylandı; hazırlık ve cam teslim aşamalarını anlık takip edin.',
+        laneOrderIdLabel: 'Aktif Sipariş No',
+        btnLaneViewInvoice: 'Faturayı Gör',
+        btnLaneNewOrder: 'Yeni Sipariş',
+        lblLaneProgressTitle: 'Akıllı hat ilerleme oranı:',
+        laneStatusBannerDefault: 'Siparişiniz eczanede sıraya alındı — hazırlık bekleniyor (0%)...',
+        laneStatusBannerPrefix: 'Hat Güncellemesi',
+        laneQuickTitle: 'Eczacıya Hızlı Sinyaller',
+        laneQuickDesc: 'Hat ekibine anında bildirim göndermek için bir sinyal seçin:',
+        laneChatTitle: 'Canlı Hat Mesajları',
+        laneOnlineBadge: 'Çevrimiçi',
+        laneChatPlaceholder: 'Henüz sinyal veya mesaj gönderilmedi.',
+        laneChatInputPh: 'Eczacıya not yazın...',
+        btnLaneSendChat: 'Gönder',
         statusPreparingBadge: 'Hazırlanıyor',
         statusCompletedBadge: 'Tamamlandı',
         statusCancelledBadge: 'İptal Edildi',
@@ -1249,6 +1499,22 @@
         emptyOrders: 'اس حصے میں فی الحال کوئی آرڈر نہیں ہے۔',
         btnMarkCompleted: 'مکمل کریں',
         btnCancelOrder: 'منسوخ کریں',
+        laneLiveBadge: 'اسمارٹ وہیکل پک اپ لین',
+        laneMainTitle: 'اسمارٹ لین لائیو آرڈر ٹریکر',
+        laneSubtitleDesc: 'آپ کا آرڈر کنفرم ہو گیا ہے؛ تیاری اور کھڑکی پر ترسیل کے مراحل دیکھیں۔',
+        laneOrderIdLabel: 'فعال آرڈر نمبر',
+        btnLaneViewInvoice: 'بل دیکھیں',
+        btnLaneNewOrder: 'نیا آرڈر',
+        lblLaneProgressTitle: 'اسمارٹ لین میں تکمیل کی شرح:',
+        laneStatusBannerDefault: 'آپ کا آرڈر فارمیسی میں قطار میں ہے — تیاری کے آغاز کا انتظار (0%)...',
+        laneStatusBannerPrefix: 'لین اپڈیٹ',
+        laneQuickTitle: 'فارماسسٹ کو فوری اشارے',
+        laneQuickDesc: 'لین ٹیم کو فوری اطلاع دینے کے لیے اشارہ منتخب کریں:',
+        laneChatTitle: 'لائیو لین پیغامات',
+        laneOnlineBadge: 'آن لائن',
+        laneChatPlaceholder: 'ابھی تک کوئی اشارہ یا پیغام نہیں بھیجا گیا۔',
+        laneChatInputPh: 'فارماسسٹ کے لیے پیغام لکھیں...',
+        btnLaneSendChat: 'بھیجیں',
         statusPreparingBadge: 'تیار ہو رہا ہے',
         statusCompletedBadge: 'مکمل',
         statusCancelledBadge: 'منسوخ',
@@ -1342,6 +1608,22 @@
         emptyOrders: '该分类下暂无订单。',
         btnMarkCompleted: '标记完成',
         btnCancelOrder: '取消订单',
+        laneLiveBadge: '智能车窗取药通道',
+        laneMainTitle: '智能通道订单实时追踪',
+        laneSubtitleDesc: '订单已确认，实时查看药品调配与车窗交付进度。',
+        laneOrderIdLabel: '当前追踪订单号',
+        btnLaneViewInvoice: '查看发票',
+        btnLaneNewOrder: '新的订单',
+        lblLaneProgressTitle: '智能通道完成进度：',
+        laneStatusBannerDefault: '您的订单已在药房排队 — 等待开始调配 (0%)...',
+        laneStatusBannerPrefix: '通道动态',
+        laneQuickTitle: '快捷信号通知药师',
+        laneQuickDesc: '点击快捷信号立即向通道工作人员发送状态：',
+        laneChatTitle: '通道实时消息',
+        laneOnlineBadge: '在线',
+        laneChatPlaceholder: '尚未发送任何信号或消息。',
+        laneChatInputPh: '在此输入给药师的留言...',
+        btnLaneSendChat: '发送',
         statusPreparingBadge: '准备中',
         statusCompletedBadge: '已完成',
         statusCancelledBadge: '已取消',
@@ -2339,62 +2621,148 @@
 
     function finalizeOrderApproval() {
       closeApprovalTimerModal();
+      laneProgressPct = 0;
+      laneMessages = [];
       const msg = i18n[currentLang].orderApprovedToast;
+      switchPageView('smart_lane');
       showToast(msg);
       speakText(msg);
     }
 
-    function editCartFromInvoice() {
-      closeInvoiceModal();
-      setTimeout(() => {
-        openCartDrawer();
-      }, 220);
-    }
+    function renderSmartLaneView() {
+      const L = i18n[currentLang];
+      const activeCodeEl = document.getElementById('laneActiveOrderCode');
+      const fallbackOrderId = (ordersHistory[0] && ordersHistory[0].id) || 'ORD-1041';
+      const displayId = (latestCreatedInvoice && latestCreatedInvoice.id) || fallbackOrderId;
+      if (activeCodeEl) activeCodeEl.textContent = `#${displayId}`;
 
-    function renderPaymentOptions() {
-      const container = document.getElementById('invPaymentOptions');
-      if (!container) return;
+      const pctEl = document.getElementById('laneProgressPercent');
+      const barEl = document.getElementById('laneProgressBar');
+      if (pctEl) pctEl.textContent = `${laneProgressPct}%`;
+      if (barEl) barEl.style.width = `${laneProgressPct}%`;
 
-      container.innerHTML = paymentMethodOptions.map(opt => {
-        const active = opt.id === selectedPaymentMethod;
-        return `
-          <button
-            type="button"
-            onclick="selectPaymentMethod('${opt.id}')"
-            class="px-3 py-2.5 rounded-xl border text-xs font-black transition flex items-center justify-between gap-2 cursor-pointer ${
-              active
-                ? 'bg-cyan-500 border-cyan-400 text-slate-950 shadow-sm'
-                : 'bg-slate-900/90 border-slate-700 hover:border-cyan-500/40 text-slate-200'
-            }"
-          >
-            <span class="flex items-center gap-1.5">
-              <span>${opt.icon}</span>
-              <span>${opt.label[currentLang] || opt.label.ar}</span>
-            </span>
-            <span>${active ? '✓' : '○'}</span>
-          </button>
-        `;
-      }).join('');
-    }
-
-    function selectPaymentMethod(methodId) {
-      selectedPaymentMethod = methodId;
-      if (latestCreatedInvoice) {
-        const found = paymentMethodOptions.find(p => p.id === methodId);
-        latestCreatedInvoice.paymentMethodText = found ? (found.label[currentLang] || found.label.ar) : '';
+      const bannerEl = document.getElementById('laneStatusBannerText');
+      if (bannerEl) {
+        if (laneProgressPct === 0 && laneMessages.length === 0) {
+          bannerEl.textContent = L.laneStatusBannerDefault;
+        } else {
+          const stageObj = laneStagesData.find(s => s.pct === laneProgressPct);
+          const stageTitle = stageObj ? (stageObj.title[currentLang] || stageObj.title.ar) : '';
+          bannerEl.textContent = `${L.laneStatusBannerPrefix} (${laneProgressPct}%)${stageTitle ? ` — ${stageTitle}` : ''}`;
+        }
       }
-      renderPaymentOptions();
-      const found = paymentMethodOptions.find(p => p.id === methodId);
-      if (found) speakText(found.label[currentLang] || found.label.ar);
+
+      const stagesGrid = document.getElementById('laneStagesGrid');
+      if (stagesGrid) {
+        stagesGrid.innerHTML = laneStagesData.map(st => {
+          const isReached = laneProgressPct >= st.pct;
+          return `
+            <button
+              type="button"
+              onclick="selectLaneStage(${st.pct})"
+              class="clinical-subcard text-start p-4 rounded-2xl border transition cursor-pointer space-y-1.5 ${
+                isReached
+                  ? 'bg-cyan-500/15 border-cyan-400 shadow-md'
+                  : 'bg-slate-950/80 border-slate-800 hover:border-cyan-500/40'
+              }"
+            >
+              <div class="text-[11px] font-black ${isReached ? 'text-cyan-400' : 'text-slate-400'}">${st.stepLabel[currentLang] || st.stepLabel.ar}</div>
+              <div class="text-xs sm:text-sm font-black leading-snug">${st.title[currentLang] || st.title.ar}</div>
+              <div class="text-[11px] text-slate-400 font-semibold leading-relaxed">${st.desc[currentLang] || st.desc.ar}</div>
+            </button>
+          `;
+        }).join('');
+      }
+
+      const quickGrid = document.getElementById('laneQuickSignalsGrid');
+      if (quickGrid) {
+        quickGrid.innerHTML = laneQuickSignals.map(sig => {
+          const titleText = sig.title[currentLang] || sig.title.ar;
+          const descText = sig.desc[currentLang] || sig.desc.ar;
+          return `
+            <button
+              type="button"
+              onclick="sendQuickLaneSignal('${sig.id}')"
+              class="clinical-subcard text-start p-3.5 rounded-2xl border border-slate-800 hover:border-cyan-400 transition cursor-pointer space-y-1 shadow-sm"
+            >
+              <div class="text-xs sm:text-sm font-black text-cyan-400">${titleText}</div>
+              <div class="text-[11px] text-slate-400 font-semibold leading-relaxed">${descText}</div>
+            </button>
+          `;
+        }).join('');
+      }
+
+      const chatLog = document.getElementById('laneChatLog');
+      if (chatLog) {
+        if (laneMessages.length === 0) {
+          chatLog.innerHTML = `<div class="bg-slate-900 border border-slate-800 text-slate-400 rounded-2xl p-3 text-center">${L.laneChatPlaceholder}</div>`;
+        } else {
+          chatLog.innerHTML = laneMessages.map(m => `
+            <div class="bg-slate-900 border border-cyan-500/30 rounded-2xl px-3 py-2 space-y-0.5">
+              <div class="text-[10px] text-cyan-400 font-black">${m.time}</div>
+              <div class="text-xs font-extrabold text-slate-100">${m.text}</div>
+            </div>
+          `).join('');
+          chatLog.scrollTop = chatLog.scrollHeight;
+        }
+      }
     }
 
-    function openInvoiceModal() {
-      const backdrop = document.getElementById('invoiceModalBackdrop');
-      if (!backdrop) return;
-      backdrop.classList.remove('hidden');
-      requestAnimationFrame(() => {
-        backdrop.classList.add('invoice-open');
-      });
+    function selectLaneStage(pct) {
+      laneProgressPct = pct;
+      renderSmartLaneView();
+      const stageObj = laneStagesData.find(s => s.pct === pct);
+      if (stageObj) {
+        speakText(stageObj.title[currentLang] || stageObj.title.ar);
+      }
+    }
+
+    function appendLaneMessage(text) {
+      const trimmed = String(text || '').trim();
+      if (!trimmed) return;
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      laneMessages.push({ text: trimmed, time: timeStr });
+      renderSmartLaneView();
+      speakText(trimmed);
+    }
+
+    function sendQuickLaneSignal(signalId) {
+      const sig = laneQuickSignals.find(s => s.id === signalId);
+      if (!sig) return;
+      appendLaneMessage(sig.title[currentLang] || sig.title.ar);
+    }
+
+    function sendLaneChatMessage() {
+      const inputEl = document.getElementById('laneChatInput');
+      if (!inputEl) return;
+      const val = inputEl.value.trim();
+      if (!val) return;
+      inputEl.value = '';
+      appendLaneMessage(val);
+    }
+
+    function openLatestInvoiceFromLane() {
+      if (!latestCreatedInvoice) {
+        const sample = ordersHistory[0];
+        latestCreatedInvoice = {
+          id: sample ? sample.id : 'ORD-1041',
+          createdAt: sample ? sample.createdAt : 'الآن',
+          serviceModeText: getSelectedAssistModeText(),
+          parkingText: (sample && sample.parking) || getSelectedParkingSpotText(),
+          carType: sample && sample.car ? sample.car : '',
+          plateNo: '',
+          deliverySpotText: (sample && sample.spot) || getSelectedDeliverySpotText(),
+          items: [],
+          rx: sample ? sample.rx : '',
+          subtotal: sample ? Number((sample.total / 1.15).toFixed(2)) : 0,
+          discounts: 0,
+          vat: sample ? Number((sample.total - (sample.total / 1.15)).toFixed(2)) : 0,
+          total: sample ? sample.total : 0
+        };
+      }
+      renderInvoiceModalContent();
+      openInvoiceModal();
     }
 
     function closeInvoiceModal() {
@@ -2596,14 +2964,18 @@
     }
 
     function switchPageView(viewName) {
-      activePageView = viewName === 'orders' ? 'orders' : 'shop';
+      const validViews = ['shop', 'orders', 'smart_lane'];
+      activePageView = validViews.includes(viewName) ? viewName : 'shop';
+
       const shopEl = document.getElementById('shopView');
       const ordersEl = document.getElementById('ordersView');
+      const laneEl = document.getElementById('smartLaneView');
       const navShop = document.getElementById('btnNavShop');
       const navOrders = document.getElementById('btnNavOrders');
 
       if (shopEl) shopEl.classList.toggle('hidden', activePageView !== 'shop');
       if (ordersEl) ordersEl.classList.toggle('hidden', activePageView !== 'orders');
+      if (laneEl) laneEl.classList.toggle('hidden', activePageView !== 'smart_lane');
 
       if (navShop) {
         navShop.className = activePageView === 'shop'
@@ -2618,6 +2990,8 @@
 
       if (activePageView === 'orders') {
         renderOrdersView();
+      } else if (activePageView === 'smart_lane') {
+        renderSmartLaneView();
       }
     }
 
@@ -2884,6 +3258,19 @@
       document.getElementById('lblPreparingTab').textContent = L.lblPreparingTab;
       document.getElementById('lblCompletedTab').textContent = L.lblCompletedTab;
       document.getElementById('lblCancelledTab').textContent = L.lblCancelledTab;
+      document.getElementById('laneLiveBadge').textContent = L.laneLiveBadge;
+      document.getElementById('laneMainTitle').textContent = L.laneMainTitle;
+      document.getElementById('laneSubtitleDesc').textContent = L.laneSubtitleDesc;
+      document.getElementById('laneOrderIdLabel').textContent = L.laneOrderIdLabel;
+      document.getElementById('btnLaneViewInvoice').textContent = L.btnLaneViewInvoice;
+      document.getElementById('btnLaneNewOrder').textContent = L.btnLaneNewOrder;
+      document.getElementById('lblLaneProgressTitle').textContent = L.lblLaneProgressTitle;
+      document.getElementById('laneQuickTitle').textContent = L.laneQuickTitle;
+      document.getElementById('laneQuickDesc').textContent = L.laneQuickDesc;
+      document.getElementById('laneChatTitle').textContent = L.laneChatTitle;
+      document.getElementById('laneOnlineBadge').textContent = L.laneOnlineBadge;
+      document.getElementById('laneChatInput').placeholder = L.laneChatInputPh;
+      document.getElementById('btnLaneSendChat').textContent = L.btnLaneSendChat;
 
       document.getElementById('bagTitle').textContent = L.bagTitle;
       document.getElementById('bagSubtitle').textContent = L.bagSubtitle;
@@ -2935,6 +3322,7 @@
       renderCart();
       renderOrdersView();
       renderInvoiceModalContent();
+      renderSmartLaneView();
     }
 
     function toggleSimpleMode() {
