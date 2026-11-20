@@ -425,6 +425,9 @@
           📦 <span id="btnNavOrdersText">طلباتي</span>
           <span id="ordersTotalBadge" class="bg-amber-400 text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-full">0</span>
         </button>
+        <button onclick="switchPageView('direct_track')" id="btnNavDirectTrack" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap">
+          🚦 <span id="btnNavDirectTrackText">المسار المباشر</span>
+        </button>
         <button onclick="openCartDrawer()" id="btnOpenCart" class="bg-gradient-to-r from-cyan-400 to-teal-300 hover:from-cyan-300 hover:to-teal-200 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-2 transition cursor-pointer shadow-md shadow-cyan-500/25 whitespace-nowrap">
           <span class="text-base leading-none">🛒</span>
           <span id="btnCartLabel">السلة</span>
@@ -567,6 +570,40 @@
         <div id="laneQuickSignalsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
       </div>
 
+    </div>
+  </section>
+  <section id="directTrackView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6">
+    <div class="clinical-card bg-slate-900 border-2 border-teal-400/40 rounded-3xl p-6 shadow-xl space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-black text-teal-400">🚦 بث حالة الطلب المباشر</span>
+          <h1 id="directTrackTitle" class="text-xl sm:text-2xl font-black mt-1">المسار المباشر للطلب</h1>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="directTrackOrderPill" dir="ltr" class="bg-slate-950 border border-teal-400/50 text-teal-300 text-xs font-black px-3.5 py-2 rounded-xl">#ORD-1041</span>
+          <button onclick="switchPageView('smart_lane')" class="bg-cyan-500 text-slate-950 font-black text-xs px-3.5 py-2 rounded-xl cursor-pointer">🧭 المسار الذكي</button>
+          <button onclick="switchPageView('shop')" class="bg-slate-800 text-slate-100 font-black text-xs px-3.5 py-2 rounded-xl cursor-pointer">← الصيدلية</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div class="clinical-subcard bg-slate-950 border border-slate-800 rounded-2xl p-4">
+          <div class="text-slate-400 font-bold">الحالة المباشرة:</div>
+          <div id="directValStage" class="text-sm font-black text-teal-400 mt-1">استلام الطلب في الفرع</div>
+        </div>
+        <div class="clinical-subcard bg-slate-950 border border-slate-800 rounded-2xl p-4">
+          <div class="text-slate-400 font-bold">الموقف المحدد:</div>
+          <div id="directValBay" class="text-sm font-black text-cyan-400 mt-1">موقف يُسر 1</div>
+        </div>
+        <div class="clinical-subcard bg-slate-950 border border-slate-800 rounded-2xl p-4">
+          <div class="text-slate-400 font-bold">نقطة التسليم:</div>
+          <div id="directValHandover" class="text-sm font-black text-amber-300 mt-1">تسليم عبر نافذة السائق</div>
+        </div>
+      </div>
+
+      <button onclick="advanceDirectTrackStep()" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-black text-xs py-3 rounded-2xl cursor-pointer">
+        ↻ تحديث الخطوة المباشرة التالية
+      </button>
     </div>
   </section>
   <!-- 4B. واجهة طلباتي (الطلبات المكتملة، الملغاة، وقيد التجهيز) -->
@@ -2963,36 +3000,47 @@
       return found ? (found.label[currentLang] || found.label.ar) : '';
     }
 
+    let directTrackStepIndex = 0;
+    const directStepsI18n = {
+      ar: ['استلام الطلب في الفرع', 'تجهيز وتغليف الأدوية', 'الطلب جاهز عند المسار', 'تم التسليم للمركبة'],
+      en: ['Received by branch', 'Preparing & packing meds', 'Ready at pickup lane', 'Delivered to vehicle'],
+      tr: ['Şubede alındı', 'İlaçlar hazırlanıyor', 'Teslim hattında hazır', 'Araca teslim edildi'],
+      ur: ['برانچ میں آرڈر موصول', 'ادویات تیار کی جا رہی ہیں', 'پک اپ لین پر تیار', 'گاڑی تک پہنچا دیا گیا'],
+      zh: ['门店已接单', '正在调配打包', '通道已备妥', '已完成交付']
+    };
+    const directNavI18n = { ar: 'المسار المباشر', en: 'Direct Track', tr: 'Canlı Takip', ur: 'براہ راست ٹریک', zh: '实时追踪' };
+
     function switchPageView(viewName) {
-      const validViews = ['shop', 'orders', 'smart_lane'];
-      activePageView = validViews.includes(viewName) ? viewName : 'shop';
+      activePageView = ['shop', 'orders', 'smart_lane', 'direct_track'].includes(viewName) ? viewName : 'shop';
+      ['shopView', 'ordersView', 'smartLaneView', 'directTrackView'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      const map = { shop: 'shopView', orders: 'ordersView', smart_lane: 'smartLaneView', direct_track: 'directTrackView' };
+      document.getElementById(map[activePageView])?.classList.remove('hidden');
 
-      const shopEl = document.getElementById('shopView');
-      const ordersEl = document.getElementById('ordersView');
-      const laneEl = document.getElementById('smartLaneView');
-      const navShop = document.getElementById('btnNavShop');
-      const navOrders = document.getElementById('btnNavOrders');
+      const navTxt = document.getElementById('btnNavDirectTrackText');
+      if (navTxt) navTxt.textContent = directNavI18n[currentLang] || directNavI18n.ar;
 
-      if (shopEl) shopEl.classList.toggle('hidden', activePageView !== 'shop');
-      if (ordersEl) ordersEl.classList.toggle('hidden', activePageView !== 'orders');
-      if (laneEl) laneEl.classList.toggle('hidden', activePageView !== 'smart_lane');
+      if (activePageView === 'orders') renderOrdersView();
+      if (activePageView === 'smart_lane') renderSmartLaneView();
+      if (activePageView === 'direct_track') renderDirectTrackView();
+    }
 
-      if (navShop) {
-        navShop.className = activePageView === 'shop'
-          ? 'bg-blue-600 text-white px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow whitespace-nowrap'
-          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap';
-      }
-      if (navOrders) {
-        navOrders.className = activePageView === 'orders'
-          ? 'bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow whitespace-nowrap'
-          : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap';
-      }
+    function renderDirectTrackView() {
+      const latest = ordersHistory[0];
+      const steps = directStepsI18n[currentLang] || directStepsI18n.ar;
+      document.getElementById('directTrackOrderPill').textContent = `#${(latestCreatedInvoice?.id || latest?.id || 'ORD-1041')}`;
+      document.getElementById('directValStage').textContent = steps[directTrackStepIndex % steps.length];
+      document.getElementById('directValBay').textContent = latestCreatedInvoice?.parkingText || latest?.parking || getSelectedParkingSpotText();
+      document.getElementById('directValHandover').textContent = latestCreatedInvoice?.deliverySpotText || latest?.spot || getSelectedDeliverySpotText();
+    }
 
-      if (activePageView === 'orders') {
-        renderOrdersView();
-      } else if (activePageView === 'smart_lane') {
-        renderSmartLaneView();
-      }
+    function advanceDirectTrackStep() {
+      const steps = directStepsI18n[currentLang] || directStepsI18n.ar;
+      directTrackStepIndex = (directTrackStepIndex + 1) % steps.length;
+      renderDirectTrackView();
+      speakText(steps[directTrackStepIndex]);
     }
 
     function setOrderFilter(status) {
