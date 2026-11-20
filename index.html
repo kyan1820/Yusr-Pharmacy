@@ -2651,12 +2651,13 @@ let lanePrepIntervalId = null;
       const safePct = Math.max(0, Math.min(100, Number(currentPct) || 0));
       laneProgressPct = safePct;
 
+      const activeStage = [...laneStagesData]
+        .sort((a, b) => b.pct - a.pct)
+        .find(s => safePct >= s.pct) || laneStagesData[0];
+
       const bannerEl = document.getElementById('laneStatusBannerText');
       if (bannerEl) {
         const L = i18n[currentLang] || i18n.ar;
-        const activeStage = [...laneStagesData]
-          .sort((a, b) => b.pct - a.pct)
-          .find(s => safePct >= s.pct);
         const stageTitle = activeStage ? (activeStage.title[currentLang] || activeStage.title.ar) : '';
         if (safePct === 0 && laneMessages.length === 0) {
           bannerEl.textContent = L.laneStatusBannerDefault;
@@ -2664,6 +2665,27 @@ let lanePrepIntervalId = null;
           bannerEl.textContent = `${L.laneStatusBannerPrefix} (${safePct}%)${stageTitle ? ` — ${stageTitle}` : ''}`;
         }
       }
+
+      const stagesGrid = document.getElementById('laneStagesGrid');
+      if (stagesGrid && typeof laneStagesData !== 'undefined') {
+        stagesGrid.innerHTML = laneStagesData.map(st => {
+          const isCurrent = activeStage && st.pct === activeStage.pct && safePct > 0;
+          return `
+            <div
+              class="clinical-subcard text-start p-4 rounded-2xl border-2 select-none space-y-1.5 transition ${
+                isCurrent
+                  ? 'bg-cyan-500/10 border-cyan-400 ring-2 ring-cyan-400/40 shadow-md'
+                  : 'bg-slate-950/80 border-slate-800'
+              }"
+            >
+              <div class="text-[11px] font-black ${isCurrent ? 'text-cyan-400' : 'text-slate-400'}">${st.stepLabel[currentLang] || st.stepLabel.ar}</div>
+              <div class="text-xs sm:text-sm font-black leading-snug">${st.title[currentLang] || st.title.ar}</div>
+              <div class="text-[11px] text-slate-400 font-semibold leading-relaxed">${st.desc[currentLang] || st.desc.ar}</div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
 
       const stagesGrid = document.getElementById('laneStagesGrid');
       if (stagesGrid && typeof laneStagesData !== 'undefined') {
