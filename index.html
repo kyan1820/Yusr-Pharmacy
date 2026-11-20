@@ -554,11 +554,15 @@
           </div>
         </div>
 
-        <div class="lg:col-span-7 space-y-4">
+        <div class="lg:col-span-7 space-y-4">ٍ]
           <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-2.5">
-            <div class="flex items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <span id="lblLaneProgressTitle" class="text-xs font-black text-cyan-300">نسبة إنجاز وتقدم طلبك في المسار:</span>
-              <span id="laneProgressPercent" dir="ltr" class="bg-cyan-500/20 border border-cyan-400 text-cyan-300 text-xs font-black px-3 py-0.5 rounded-full">0%</span>
+              <div class="flex flex-wrap items-center gap-2">
+                <span id="laneProgressPercent" dir="ltr" class="bg-cyan-500/20 border border-cyan-400 text-cyan-300 text-xs font-black px-3 py-0.5 rounded-full">0%</span>
+                <span id="lanePrepCountdownBadge" dir="ltr" class="hidden bg-blue-500/20 border border-blue-400 text-blue-300 text-xs font-black px-3 py-0.5 rounded-full">⏱️ --:--</span>
+                <span id="laneExpectedDeliveryBadge" class="hidden bg-teal-500/20 border border-teal-400 text-teal-300 text-xs font-black px-3 py-0.5 rounded-full">🕒 الوقت المتوقع للتسليم: --:--</span>
+              </div>
             </div>
             <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
               <div id="laneProgressBar" class="h-full bg-gradient-to-r from-cyan-400 via-teal-400 to-blue-500 transition-all duration-500" style="width: 0%;"></div>
@@ -2317,6 +2321,7 @@
             </div>
           `;
         }).join('');
+        updateLanePrepBadges();
       }
 
       const quickGrid = document.getElementById('laneQuickSignalsGrid');
@@ -2607,13 +2612,59 @@
       const ord = ordersHistory.find(o => o.id === orderId);
       if (ord) ord.prepMinutes = Number(mins) || 10;
     }
+let lanePrepIntervalId = null;
+    let lanePrepRemainingSec = 0;
+    let laneExpectedDeliveryTimeStr = '';
 
+    function formatExpectedHandoverClock(minutesToAdd) {
+      const target = new Date(Date.now() + (Number(minutesToAdd) || 0) * 60000);
+      return target.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function updateLanePrepBadges() {
+      const timerEl = document.getElementById('lanePrepCountdownBadge');
+      const etaEl = document.getElementById('laneExpectedDeliveryBadge');
+      if (!timerEl || !etaEl) return;
+
+      if (lanePrepRemainingSec > 0 && laneExpectedDeliveryTimeStr) {
+        const mins = Math.floor(lanePrepRemainingSec / 60);
+        const secs = lanePrepRemainingSec % 60;
+        const formattedTimer = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        timerEl.textContent = `⏱️ ${formattedTimer}`;
+        timerEl.classList.remove('hidden');
+
+        etaEl.textContent = `الوقت المتوقع للتسليم: ${laneExpectedDeliveryTimeStr}`;
+        etaEl.classList.remove('hidden');
+      } else {
+        timerEl.classList.add('hidden');
+        etaEl.classList.add('hidden');
+      }
+    }
+
+    function startLanePreparationTimer(minutes) {
+      const safeMins = Math.max(1, Number(minutes) || 5);
+      lanePrepRemainingSec = safeMins * 60;
+      laneExpectedDeliveryTimeStr = formatExpectedHandoverClock(safeMins);
+      updateLanePrepBadges();
+
+      clearInterval(lanePrepIntervalId);
+      lanePrepIntervalId = setInterval(() => {
+        if (lanePrepRemainingSec > 0) {
+          lanePrepRemainingSec -= 1;
+          updateLanePrepBadges();
+        } else {
+          clearInterval(lanePrepIntervalId);
+          lanePrepIntervalId = null;
+        }
+      }, 1000);
+    }
     function acceptStaffOrder(orderId) {
       const ord = ordersHistory.find(o => o.id === orderId);
       if (!ord) return;
       ord.staffAccepted = true;
       if (!ord.stagePct || ord.stagePct < 25) ord.stagePct = 25;
       laneProgressPct = ord.stagePct;
+      startLanePreparationTimer(ord.prepMinutes);
       const msg = `تم قبول طلبك (#${ord.id}) من الصيدلي — وقت التجهيز المتوقع ${ord.prepMinutes} دقائق`;
       appendLaneMessage(`🧑‍⚕️ ${msg}`, 'staff');
       renderSmartLaneView();
