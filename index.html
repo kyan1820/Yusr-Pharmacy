@@ -428,6 +428,9 @@
         <button onclick="switchPageView('direct_track')" id="btnNavDirectTrack" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap">
           🚦 <span id="btnNavDirectTrackText">المسار المباشر</span>
         </button>
+        <button onclick="switchPageView('staff')" id="btnNavStaff" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap">
+          🩺 <span id="btnNavStaffText">شاشة الموظف</span>
+        </button>
         <button onclick="openCartDrawer()" id="btnOpenCart" class="bg-gradient-to-r from-cyan-400 to-teal-300 hover:from-cyan-300 hover:to-teal-200 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-2 transition cursor-pointer shadow-md shadow-cyan-500/25 whitespace-nowrap">
           <span class="text-base leading-none">🛒</span>
           <span id="btnCartLabel">السلة</span>
@@ -604,6 +607,96 @@
       <button onclick="advanceDirectTrackStep()" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-black text-xs py-3 rounded-2xl cursor-pointer">
         ↻ تحديث الخطوة المباشرة التالية
       </button>
+    </div>
+  </section>
+  <section id="directTrackView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6">
+    <div class="clinical-card bg-slate-900 border-2 border-teal-400/40 rounded-3xl p-6 shadow-xl space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-black text-teal-400">🚦 بث حالة الطلب المباشر</span>
+          <h1 id="directTrackTitle" class="text-xl sm:text-2xl font-black mt-1">المسار المباشر للطلب</h1>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="directTrackOrderPill" dir="ltr" class="bg-slate-950 border border-teal-400/50 text-teal-300 text-xs font-black px-3.5 py-2 rounded-xl">#ORD-1041</span>
+          <button onclick="switchPageView('smart_lane')" class="bg-cyan-500 text-slate-950 font-black text-xs px-3.5 py-2 rounded-xl cursor-pointer">🧭 المسار الذكي</button>
+          <button onclick="switchPageView('shop')" class="bg-slate-800 text-slate-100 font-black text-xs px-3.5 py-2 rounded-xl cursor-pointer">← الصيدلية</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div class="clinical-subcard bg-slate-950 border border-slate-800 rounded-2xl p-4">
+          <div class="text-slate-400 font-bold">الحالة المباشرة:</div>
+          <div id="directValStage" class="text-sm font-black text-teal-400 mt-1">استلام الطلب في الفرع</div>
+        </div>
+        <div class="clinical-subcard bg-slate-950 border border-slate-800 rounded-2xl p-4">
+          <div class="text-slate-400 font-bold">الموقف المحدد:</div>
+          <div id="directValBay" class="text-sm font-black text-cyan-400 mt-1">موقف يُسر 1</div>
+        </div>
+        <div class="clinical-subcard bg-slate-950 border border-slate-800 rounded-2xl p-4">
+          <div class="text-slate-400 font-bold">نقطة التسليم:</div>
+          <div id="directValHandover" class="text-sm font-black text-amber-300 mt-1">تسليم عبر نافذة السائق</div>
+        </div>
+      </div>
+
+      <button onclick="advanceDirectTrackStep()" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-black text-xs py-3 rounded-2xl cursor-pointer">
+        ↻ تحديث الخطوة المباشرة التالية
+      </button>
+    </div>
+  </section>
+  <section id="staffView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6">
+    <div class="clinical-card bg-slate-900 border-2 border-cyan-500/35 rounded-3xl p-5 sm:p-6 shadow-xl space-y-5">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 px-3.5 py-2 rounded-2xl text-xs font-black">
+            طلبات قيد المتابعة: <span id="staffActiveQueueCount">0</span>
+          </span>
+          <button onclick="toggleTheme()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-2 rounded-2xl text-xs font-black cursor-pointer">
+            🌓 تبديل المظهر
+          </button>
+          <button onclick="switchPageView('shop')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-2 rounded-2xl text-xs font-black cursor-pointer">
+            ← واجهة العميل
+          </button>
+        </div>
+        <div class="text-start lg:text-end space-y-1">
+          <span class="inline-flex items-center bg-amber-400/20 border border-amber-400/40 text-amber-300 px-3 py-0.5 rounded-full text-[11px] font-black">
+            محطة الصيدلي — صرف مسار المركبات
+          </span>
+          <h1 class="text-xl sm:text-2xl font-black">لوحة إدارة طلبات «صيدلية يُسْر»</h1>
+        </div>
+      </div>
+
+      <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2">
+        <div class="text-xs font-black text-cyan-400">طابور الطلبات الجارية (اضغط على الطلب للتحديد والتحكم):</div>
+        <div id="staffQueueList" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        <div class="lg:col-span-5 clinical-subcard bg-slate-950 border border-slate-800 rounded-3xl p-4 space-y-3.5">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+            <h2 class="text-sm font-black text-cyan-400">رسائل العميل وتنبيهات المسار</h2>
+            <span class="bg-emerald-500/20 text-emerald-300 text-[11px] font-black px-2.5 py-0.5 rounded-full">مباشر</span>
+          </div>
+          <div id="staffMessagesBox" class="bg-slate-900 border border-slate-800 rounded-2xl p-3 max-h-40 overflow-y-auto space-y-1.5 text-xs font-bold text-slate-300">
+            <div class="text-slate-400">لا توجد رسائل واردة بعد من العميل في المسار.</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="staffReplyInput" type="text" onkeydown="if(event.key==='Enter') sendStaffReply()" placeholder="اكتب رداً للصيدلاني للعميل..." class="clinical-input flex-1 bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl px-3 py-2 text-xs font-bold outline-none" />
+            <button onclick="sendStaffReply()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs px-4 py-2 rounded-xl cursor-pointer shrink-0">إرسال</button>
+          </div>
+          <div class="space-y-1.5 pt-2 border-t border-slate-800">
+            <div class="text-[11px] font-black text-cyan-300">ردود جاهزة سريعة للصيدلي:</div>
+            <button onclick="sendQuickStaffReply('أهلاً بك في صيدلية يُسْر، تم رصد طلبك وجاري تحضيره لمسارك.')" class="w-full text-start px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-bold cursor-pointer">رد: تم رصد طلبك وجاري تحضيره لمسارك</button>
+            <button onclick="sendQuickStaffReply('خذ راحتك في الموقف، سننتظرك دون أي استعجال.')" class="w-full text-start px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-bold cursor-pointer">رد: خذ راحتك في الموقف دون استعجال</button>
+            <button onclick="sendQuickStaffReply('سيتم التواصل معك كتابياً وبإشارة واضحة عند النافذة.')" class="w-full text-start px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-bold cursor-pointer">رد: تواصل كتابي وإشارة واضحة عند النافذة</button>
+            <button onclick="sendQuickStaffReply('الصيدلي متجه الآن إلى مركبتك ومعه جهاز الدفع.')" class="w-full text-start px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-bold cursor-pointer">رد: الصيدلي متجه لمركبتك مع جهاز الدفع</button>
+          </div>
+          <div class="space-y-2 pt-2 border-t border-slate-800">
+            <button onclick="triggerStaffAlert('تم إرسال إشعار للعميل: الصيدلي في طريقه لمركبتك الآن.')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-2.5 rounded-xl cursor-pointer">إشعار العميل: الصيدلي متجه لمركبتك</button>
+            <button onclick="triggerStaffAlert('تم إرسال تنبيه بصري وصوتي: الدواء جاهز للتسليم.')" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs py-2.5 rounded-xl cursor-pointer">تنبيه بصري وصوتي: الدواء جاهز</button>
+          </div>
+        </div>
+        <div id="staffOrderDetailCard" class="lg:col-span-7 clinical-subcard bg-slate-950 border border-slate-800 rounded-3xl p-4 sm:p-5 space-y-4"></div>
+      </div>
     </div>
   </section>
   <!-- 4B. واجهة طلباتي (الطلبات المكتملة، الملغاة، وقيد التجهيز) -->
@@ -919,6 +1012,196 @@
   <div id="toastBox" class="hidden fixed bottom-5 left-5 z-[90] bg-cyan-500 text-slate-950 font-black text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-2xl"></div>
 
   <script>
+    let directTrackStepIndex = 0;
+    let selectedStaffOrderId = '';
+    let staffPrepMinutes = 10;
+    let staffApprovedMap = {};
+    let staffInboxMessages = [];
+
+    const directStepsI18n = {
+      ar: ['استلام الطلب في الفرع', 'تجهيز وتغليف الأدوية', 'الطلب جاهز عند المسار', 'تم التسليم للمركبة'],
+      en: ['Received by branch', 'Preparing & packing meds', 'Ready at pickup lane', 'Delivered to vehicle'],
+      tr: ['Şubede alındı', 'İlaçlar hazırlanıyor', 'Teslim hattında hazır', 'Araca teslim edildi'],
+      ur: ['برانچ میں آرڈر موصول', 'ادویات تیار کی جا رہی ہیں', 'پک اپ لین پر تیار', 'گاڑی تک پہنچا دیا گیا'],
+      zh: ['门店已接单', '正在调配打包', '通道已备妥', '已完成交付']
+    };
+    const directNavI18n = { ar: 'المسار المباشر', en: 'Direct Track', tr: 'Canlı Takip', ur: 'براہ راست ٹریک', zh: '实时追踪' };
+
+    function renderDirectTrackView() {
+      const latest = ordersHistory[0];
+      const steps = directStepsI18n[currentLang] || directStepsI18n.ar;
+      document.getElementById('directTrackOrderPill').textContent = `#${(latestCreatedInvoice?.id || latest?.id || 'ORD-1041')}`;
+      document.getElementById('directValStage').textContent = steps[directTrackStepIndex % steps.length];
+      document.getElementById('directValBay').textContent = latestCreatedInvoice?.parkingText || latest?.parking || getSelectedParkingSpotText();
+      document.getElementById('directValHandover').textContent = latestCreatedInvoice?.deliverySpotText || latest?.spot || getSelectedDeliverySpotText();
+    }
+
+    function advanceDirectTrackStep() {
+      const steps = directStepsI18n[currentLang] || directStepsI18n.ar;
+      directTrackStepIndex = (directTrackStepIndex + 1) % steps.length;
+      renderDirectTrackView();
+      speakText(steps[directTrackStepIndex]);
+    }
+
+    function getActiveStaffOrder() {
+      const list = ordersHistory.filter(o => o.status === 'preparing');
+      if (!list.length) return null;
+      const found = list.find(o => o.id === selectedStaffOrderId);
+      if (found) return found;
+      selectedStaffOrderId = list[0].id;
+      return list[0];
+    }
+
+    function selectStaffOrder(orderId) {
+      selectedStaffOrderId = orderId;
+      renderStaffView();
+    }
+
+    function approveSelectedStaffOrder() {
+      const ord = getActiveStaffOrder();
+      if (!ord) return;
+      staffApprovedMap[ord.id] = { minutes: staffPrepMinutes };
+      laneProgressPct = Math.max(laneProgressPct, 25);
+      const msg = `تم قبول الطلب #${ord.id} وتحديد وقت التجهيز (${staffPrepMinutes} دقائق).`;
+      appendLaneMessage(msg);
+      renderStaffView();
+      showToast(msg);
+    }
+
+    function cancelSelectedStaffOrder() {
+      const ord = getActiveStaffOrder();
+      if (!ord) return;
+      ord.status = 'cancelled';
+      delete staffApprovedMap[ord.id];
+      selectedStaffOrderId = '';
+      renderOrdersView();
+      renderStaffView();
+    }
+
+    function setStaffStageProgress(pct) {
+      if (!getActiveStaffOrder()) return;
+      laneProgressPct = pct;
+      renderSmartLaneView();
+      renderStaffView();
+    }
+
+    function sendStaffReply() {
+      const inp = document.getElementById('staffReplyInput');
+      if (!inp || !inp.value.trim()) return;
+      const txt = inp.value.trim();
+      inp.value = '';
+      sendQuickStaffReply(txt);
+    }
+
+    function sendQuickStaffReply(text) {
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      staffInboxMessages.push({ time: now, text });
+      appendLaneMessage(`الصيدلي: ${text}`);
+      renderStaffView();
+    }
+
+    function triggerStaffAlert(msg) {
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      staffInboxMessages.push({ time: now, text: msg });
+      appendLaneMessage(msg);
+      renderStaffView();
+      showToast(msg);
+    }
+
+    function renderStaffView() {
+      const queueEl = document.getElementById('staffQueueList');
+      const detailEl = document.getElementById('staffOrderDetailCard');
+      const countEl = document.getElementById('staffActiveQueueCount');
+      const msgBox = document.getElementById('staffMessagesBox');
+      if (!queueEl || !detailEl) return;
+
+      const prepOrders = ordersHistory.filter(o => o.status === 'preparing');
+      if (countEl) countEl.textContent = prepOrders.length;
+
+      if (msgBox) {
+        const combined = [
+          ...laneMessages.map(m => `<div class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5"><span class="text-[10px] text-cyan-400">${m.time}</span> — ${m.text}</div>`),
+          ...staffInboxMessages.map(m => `<div class="bg-emerald-950/40 border border-emerald-500/30 rounded-xl px-3 py-1.5"><span class="text-[10px] text-emerald-300">${m.time}</span> — ${m.text}</div>`)
+        ];
+        if (combined.length) {
+          msgBox.innerHTML = combined.join('');
+          msgBox.scrollTop = msgBox.scrollHeight;
+        }
+      }
+
+      if (!prepOrders.length) {
+        queueEl.innerHTML = `<span class="text-xs text-slate-400 font-bold">لا توجد طلبات قيد التجهيز حالياً.</span>`;
+        detailEl.innerHTML = `<div class="text-center py-10 text-xs font-black text-slate-400">لا يوجد طلب نشط في الطابور حالياً.</div>`;
+        return;
+      }
+
+      const activeOrd = getActiveStaffOrder();
+      queueEl.innerHTML = prepOrders.map((o, idx) => {
+        const isCurrent = activeOrd && activeOrd.id === o.id;
+        const isApproved = !!staffApprovedMap[o.id];
+        return `
+          <button type="button" onclick="selectStaffOrder('${o.id}')" class="px-3.5 py-2 rounded-2xl border text-xs font-black flex items-center gap-2 cursor-pointer transition ${isCurrent ? 'bg-emerald-600 text-white border-emerald-400 shadow' : 'bg-slate-900 text-slate-200 border-slate-700 hover:border-cyan-400'}">
+            <span>#${idx + 1}</span>
+            <span dir="ltr">${o.id}</span>
+            <span class="bg-slate-950/70 text-cyan-300 px-2 py-0.5 rounded-lg text-[10px]">${o.parking || 'موقف يُسر 1'}</span>
+            <span class="px-2 py-0.5 rounded-lg text-[10px] ${isApproved ? 'bg-emerald-400 text-slate-950' : 'bg-amber-400 text-slate-950'}">${isApproved ? 'مقبول' : 'بانتظار القبول'}</span>
+          </button>
+        `;
+      }).join('');
+
+      const approvedInfo = staffApprovedMap[activeOrd.id];
+      const statusBadge = approvedInfo
+        ? `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-3 py-1 rounded-full text-xs font-black">✓ مقبول — وقت التجهيز: ${approvedInfo.minutes} دقائق</span>`
+        : `<span class="bg-amber-400/20 text-amber-300 border border-amber-400/40 px-3 py-1 rounded-full text-xs font-black">⏳ بانتظار قبول الصيدلي وتحديد وقت التجهيز</span>`;
+
+      const stageButtons = [
+        { pct: 25, label: '1. استلام (25%)' },
+        { pct: 50, label: '2. تحضير (50%)' },
+        { pct: 75, label: '3. وصول (75%)' },
+        { pct: 100, label: '4. تسليم (100%)' }
+      ];
+
+      detailEl.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div class="text-lg sm:text-xl font-black text-cyan-400" dir="ltr">#${activeOrd.id}</div>
+          ${statusBadge}
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <label for="staffPrepSelect" class="text-xs font-black text-cyan-300">⏱ وقت التجهيز:</label>
+            <select id="staffPrepSelect" onchange="staffPrepMinutes = Number(this.value)" class="bg-slate-950 border border-slate-700 text-slate-100 rounded-xl px-3 py-1.5 text-xs font-black outline-none cursor-pointer">
+              <option value="5" ${staffPrepMinutes === 5 ? 'selected' : ''}>5 دقائق</option>
+              <option value="10" ${staffPrepMinutes === 10 ? 'selected' : ''}>10 دقائق</option>
+              <option value="15" ${staffPrepMinutes === 15 ? 'selected' : ''}>15 دقيقة</option>
+              <option value="20" ${staffPrepMinutes === 20 ? 'selected' : ''}>20 دقيقة</option>
+            </select>
+            <button onclick="approveSelectedStaffOrder()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2 rounded-xl cursor-pointer">✓ قبول الطلب وتحديد الوقت</button>
+          </div>
+          <button onclick="cancelSelectedStaffOrder()" class="bg-rose-600 hover:bg-rose-500 text-white font-black text-xs px-3.5 py-2 rounded-xl cursor-pointer">✕ إلغاء الطلب</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 text-xs">
+          <div>
+            <div class="text-slate-400 font-bold">الموقف / المركبة:</div>
+            <div class="font-black text-cyan-300 mt-0.5">${activeOrd.parking || 'موقف يُسر 1'} — ${activeOrd.car || 'مركبة العميل'}</div>
+          </div>
+          <div>
+            <div class="text-slate-400 font-bold">طريقة التسليم والإجمالي:</div>
+            <div class="font-black text-emerald-300 mt-0.5">${activeOrd.spot || 'تسليم عبر نافذة السائق'} (${formatPrice(activeOrd.total)})</div>
+          </div>
+        </div>
+        <div class="bg-amber-400/15 border border-amber-400/40 rounded-2xl p-3 text-xs font-bold text-amber-200">• إرشادات الصرف: التزم بنمط خدمة العميل ومكان التسليم المحدد دون إجهاد أو تأخير.</div>
+        <div class="space-y-1.5">
+          <div class="text-xs font-black text-cyan-400">الأصناف والوصفات المطلوبة:</div>
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 text-xs font-black">${activeOrd.itemsSummary || 'وصفة طبية'}</div>
+        </div>
+        <div class="space-y-2 pt-2 border-t border-slate-800">
+          <div class="text-xs font-black text-cyan-300">تحكم الصيدلي في مرحلة الطلب المحدد:</div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            ${stageButtons.map(b => `<button type="button" onclick="setStaffStageProgress(${b.pct})" class="px-3 py-2 rounded-xl border text-xs font-black cursor-pointer transition ${laneProgressPct === b.pct ? 'bg-cyan-500 text-slate-950 border-cyan-400' : 'bg-slate-900 text-slate-200 border-slate-700 hover:border-cyan-400'}">${b.label}</button>`).join('')}
+          </div>
+        </div>
+      `;
+    }
     let currentLang = 'ar';
     let ttsEnabled = true;
     let isLightMode = true;
@@ -3011,20 +3294,28 @@
     const directNavI18n = { ar: 'المسار المباشر', en: 'Direct Track', tr: 'Canlı Takip', ur: 'براہ راست ٹریک', zh: '实时追踪' };
 
     function switchPageView(viewName) {
-      activePageView = ['shop', 'orders', 'smart_lane', 'direct_track'].includes(viewName) ? viewName : 'shop';
-      ['shopView', 'ordersView', 'smartLaneView', 'directTrackView'].forEach(id => {
+      activePageView = ['shop', 'orders', 'smart_lane', 'direct_track', 'staff'].includes(viewName) ? viewName : 'shop';
+      ['shopView', 'ordersView', 'smartLaneView', 'directTrackView', 'staffView'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
       });
-      const map = { shop: 'shopView', orders: 'ordersView', smart_lane: 'smartLaneView', direct_track: 'directTrackView' };
+      const map = {
+        shop: 'shopView',
+        orders: 'ordersView',
+        smart_lane: 'smartLaneView',
+        direct_track: 'directTrackView',
+        staff: 'staffView'
+      };
       document.getElementById(map[activePageView])?.classList.remove('hidden');
 
       const navTxt = document.getElementById('btnNavDirectTrackText');
       if (navTxt) navTxt.textContent = directNavI18n[currentLang] || directNavI18n.ar;
 
       if (activePageView === 'orders') renderOrdersView();
+      renderStaffView();
       if (activePageView === 'smart_lane') renderSmartLaneView();
       if (activePageView === 'direct_track') renderDirectTrackView();
+      if (activePageView === 'staff') renderStaffView();
     }
 
     function renderDirectTrackView() {
