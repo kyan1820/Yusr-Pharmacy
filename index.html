@@ -98,6 +98,26 @@
       transform: translateY(0) scale(1);
     }
 
+    /* نافذة باسورد شاشة الموظف */
+    #staffPassModalBackdrop {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #staffPassModalBackdrop.pass-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #staffPassModalCard {
+      opacity: 0;
+      transform: translateY(14px) scale(0.96);
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
+    }
+    #staffPassModalBackdrop.pass-open #staffPassModalCard {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
     @keyframes lanePanelSlideUp {
       0% {
         opacity: 0;
@@ -112,7 +132,7 @@
       animation: lanePanelSlideUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
-    /* وضع التبسيط: إخفاء العناصر والأزرار الثانوية وإبقاء الأساسية */
+    /* وضع التبسيط */
     body.simple-mode .secondary-element {
       display: none !important;
     }
@@ -308,7 +328,7 @@
     }
   </style>
 </head>
-<body class="light-mode bg-slate-950 text-slate-100 min-h-screen selection:bg-cyan-500 selection:text-slate-950">
+<body class="light-mode bg-slate-950 text-slate-100 min-h-screen pb-16 selection:bg-cyan-500 selection:text-slate-950">
 
   <!-- 1. شاشة الترحيب السينمائية -->
   <div id="introSplash" onclick="dismissSplash()" class="fixed inset-0 z-[80] bg-gradient-to-br from-slate-950 via-cyan-950 to-slate-900 flex items-center justify-center p-6 text-center cursor-pointer">
@@ -416,12 +436,8 @@
         </button>
       </div>
 
-      <!-- أقصى اليسار: شاشة الصيدلي (مستقلة)، طلباتي، المسار، والسلة -->
+      <!-- أقصى اليسار: طلباتي ثم المسار المباشر ثم السلة (بدون زر شاشة الصيدلي) -->
       <div class="flex items-center gap-2 shrink-0">
-        <button onclick="switchPageView('staff')" id="btnNavStaff" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border border-cyan-400/50 text-white px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow-md whitespace-nowrap">
-          🧑‍⚕️ <span id="btnNavStaffText">شاشة الصيدلي</span>
-          <span id="staffNavQueueBadge" class="bg-cyan-300 text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-full">1</span>
-        </button>
         <button onclick="switchPageView('orders')" id="btnNavOrders" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap">
           📦 <span id="btnNavOrdersText">طلباتي</span>
           <span id="ordersTotalBadge" class="bg-amber-400 text-slate-950 text-[11px] font-black px-2 py-0.5 rounded-full">0</span>
@@ -637,11 +653,10 @@
     </div>
   </section>
 
-  <!-- 4C. شاشة الصيدلي / الموظف المستقلة (بتصميم وتوزيع أماكن مختلف عن الصورة وبنفس ألوان الصيدلية) -->
+  <!-- 4C. شاشة الصيدلي / الموظف المستقلة (يتم الوصول إليها عبر زر تطوير كيان عادل عباس بكلمة مرور 1820) -->
   <section id="staffView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 lane-panel-enter">
     <div class="clinical-card bg-slate-900 border-2 border-blue-500/40 rounded-3xl p-5 sm:p-6 shadow-xl space-y-6">
 
-      <!-- رأس شاشة الصيدلي المستقلة (العنوان في اليمين، ومؤشر الطابور والعودة في اليسار) -->
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div class="space-y-1.5">
           <span id="staffRoleBadge" class="inline-flex items-center gap-1.5 bg-blue-500/15 border border-blue-400/40 text-blue-400 px-3.5 py-1 rounded-full text-xs font-black">
@@ -658,7 +673,7 @@
             <span id="staffActiveCountNum" class="bg-cyan-400 text-slate-950 px-2.5 py-0.5 rounded-full font-black">1</span>
           </div>
           <button onclick="switchPageView('shop')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-4 py-2 rounded-2xl text-xs font-black transition cursor-pointer">
-            ← <span id="btnStaffBackShop">العودة لواجهة الصيدلية</span>
+            ← <span id="btnStaffBackShop">الخروج والعودة لواجهة العميل</span>
           </button>
         </div>
       </div>
@@ -671,7 +686,7 @@
         <div id="staffOrdersQueueBar" class="flex flex-wrap items-center gap-2.5"></div>
       </div>
 
-      <!-- الشبكة الرئيسية المعكوسة عن الصورة: المحادثة والتنبيهات في اليمين (5 أعمدة)، وتفاصيل الطلب والتحكم في اليسار (7 أعمدة) -->
+      <!-- الشبكة الرئيسية المعكوسة: المحادثة والتنبيهات في اليمين، وتفاصيل الطلب والتحكم في اليسار -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
         <!-- العمود الأيمن: إشارات السائق والمحادثة والردود السريعة وإشعارات التسليم -->
@@ -681,10 +696,8 @@
             <span id="staffChatLiveStatus" class="bg-blue-500/20 text-blue-300 border border-blue-400/40 text-[11px] font-black px-2.5 py-0.5 rounded-full">متصل بالمسار</span>
           </div>
 
-          <!-- سجل الرسائل والإشارات الواردة من المركبة -->
           <div id="staffMessagesLog" class="space-y-2 max-h-48 overflow-y-auto pe-1 text-xs font-bold"></div>
 
-          <!-- حقل كتابة رد مخصص للعميل -->
           <div class="flex items-center gap-2 pt-2 border-t border-slate-800">
             <input
               id="staffCustomReplyInput"
@@ -698,13 +711,11 @@
             </button>
           </div>
 
-          <!-- ردود جاهزة سريعة من الصيدلي -->
           <div class="space-y-2 pt-2 border-t border-slate-800">
             <div id="staffQuickRepliesLabel" class="text-xs font-black text-cyan-400">⚡ ردود جاهزة سريعة على محادثة العميل:</div>
             <div id="staffQuickRepliesList" class="space-y-1.5"></div>
           </div>
 
-          <!-- إشعارات حالة التسليم السريعة للمركبة -->
           <div class="space-y-2 pt-2 border-t border-slate-800">
             <div id="staffHandoverAlertsLabel" class="text-xs font-black text-blue-400">🔔 إشعارات حالة التسليم السريعة:</div>
             <button onclick="triggerStaffDeliveryAlert('coming_to_car')" id="btnStaffComingToCar" class="w-full bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black text-xs py-2.5 px-4 rounded-xl transition cursor-pointer shadow">
@@ -718,7 +729,6 @@
 
         <!-- العمود الأيسر: بطاقة التحكم بالطلب، وقت التجهيز، الإرشادات، المنتجات، ومراحل الصرف -->
         <div id="staffOrderDetailPanel" class="lg:col-span-7 clinical-subcard bg-slate-950 border border-blue-500/35 rounded-3xl p-4 sm:p-5 space-y-4">
-          <!-- يُملأ ديناميكياً عبر renderStaffView() -->
         </div>
 
       </div>
@@ -908,7 +918,7 @@
           <span id="invValVat">0.00 ر.س</span>
         </div>
         <div class="flex justify-between text-sm font-black text-cyan-400 pt-1.5 border-t border-slate-800">
-          <span id="invLblFinalTotal">الإجمالي النهائي:</span>
+          <span id="invLblFinalTotal" class="text-cyan-400">الإجمالي النهائي:</span>
           <span id="invValFinalTotal">0.00 ر.س</span>
         </div>
       </div>
@@ -991,7 +1001,54 @@
     </div>
   </div>
 
-  <div id="toastBox" class="hidden fixed bottom-5 left-5 z-[90] bg-cyan-500 text-slate-950 font-black text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-2xl"></div>
+  <!-- 9. نافذة كلمة المرور للوصول إلى شاشة الصيدلي (1820) -->
+  <div id="staffPassModalBackdrop" onclick="closeStaffPassModal()" class="fixed inset-0 z-[85] bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="staffPassModalCard" onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-2 border-cyan-500/50 rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl space-y-4">
+      <div class="inline-flex items-center gap-2 bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 px-4 py-1 rounded-full text-xs font-black">
+        <span>🔐</span>
+        <span>بوابة الصيدلي والمطور</span>
+      </div>
+
+      <h3 class="text-lg font-black">أدخل كلمة المرور للمتابعة</h3>
+      <p class="text-xs text-slate-400 font-bold">تطوير كيان عادل عباس — صيدلية يُسْر</p>
+
+      <div class="space-y-2">
+        <input
+          id="staffPasswordInput"
+          type="password"
+          inputmode="numeric"
+          dir="ltr"
+          onkeydown="if(event.key==='Enter') verifyStaffPassword()"
+          placeholder="••••"
+          class="clinical-input w-full bg-slate-950 border-2 border-slate-700 focus:border-cyan-400 rounded-2xl px-4 py-3 text-center text-lg font-black tracking-[0.4em] outline-none"
+        />
+        <div id="staffPassErrorMsg" class="hidden text-xs font-black text-rose-400">
+          كلمة المرور غير صحيحة، حاول مرة أخرى!
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <button onclick="closeStaffPassModal()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-black py-2.5 rounded-2xl text-xs transition cursor-pointer">
+          إلغاء
+        </button>
+        <button onclick="verifyStaffPassword()" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black py-2.5 rounded-2xl text-xs shadow-lg transition cursor-pointer">
+          دخول
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. زر ثابت أسفل اليمين باسم: تطوير كيان عادل عباس -->
+  <button
+    type="button"
+    onclick="openStaffPassModal()"
+    class="fixed bottom-4 right-4 z-[60] bg-slate-900/95 hover:bg-slate-800 border border-cyan-500/50 hover:border-cyan-400 text-cyan-300 px-4 py-2 rounded-2xl text-xs font-black shadow-xl backdrop-blur-md transition cursor-pointer flex items-center gap-2"
+  >
+    <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+    <span>تطوير كيان عادل عباس</span>
+  </button>
+
+  <div id="toastBox" class="hidden fixed bottom-16 left-5 z-[90] bg-cyan-500 text-slate-950 font-black text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-2xl"></div>
 
   <script>
     let currentLang = 'ar';
@@ -1015,6 +1072,49 @@
     let laneProgressPct = 0;
     let laneMessages = [];
     let selectedStaffOrderId = 'ORD-1041';
+
+    /* دوال نافذة باسورد شاشة الموظف (1820) */
+    function openStaffPassModal() {
+      const backdrop = document.getElementById('staffPassModalBackdrop');
+      const input = document.getElementById('staffPasswordInput');
+      const err = document.getElementById('staffPassErrorMsg');
+      if (!backdrop) return;
+      if (input) input.value = '';
+      if (err) err.classList.add('hidden');
+      backdrop.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        backdrop.classList.add('pass-open');
+        if (input) setTimeout(() => input.focus(), 120);
+      });
+    }
+
+    function closeStaffPassModal() {
+      const backdrop = document.getElementById('staffPassModalBackdrop');
+      if (!backdrop) return;
+      backdrop.classList.remove('pass-open');
+      setTimeout(() => {
+        if (!backdrop.classList.contains('pass-open')) {
+          backdrop.classList.add('hidden');
+        }
+      }, 300);
+    }
+
+    function verifyStaffPassword() {
+      const input = document.getElementById('staffPasswordInput');
+      const err = document.getElementById('staffPassErrorMsg');
+      const val = (input ? input.value : '').trim();
+      if (val === '1820') {
+        closeStaffPassModal();
+        switchPageView('staff');
+        showToast('تم تسجيل الدخول إلى شاشة الصيدلي بنجاح');
+      } else {
+        if (err) err.classList.remove('hidden');
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }
 
     const laneStagesData = [
       {
@@ -1240,7 +1340,6 @@
         brandTitle: 'صيدلية يُسْر',
         brandTagline: 'منصة المسار الصيدلاني الذكي للمركبات',
         btnNavShop: 'الصيدلية',
-        btnNavStaff: 'شاشة الصيدلي',
         btnNavOrders: 'طلباتي',
         btnCartLabel: 'السلة',
         simpleOn: 'التبسيط: مفعل (الأساسية فقط)',
@@ -1350,7 +1449,6 @@
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Smart Accessible Drive-Thru Pharmacy',
         btnNavShop: 'Pharmacy',
-        btnNavStaff: 'Pharmacist Screen',
         btnNavOrders: 'My Orders',
         btnCartLabel: 'Cart',
         simpleOn: 'Simplify: ON (Core Only)',
@@ -1460,7 +1558,6 @@
         brandTitle: 'Yusr Pharmacy',
         brandTagline: 'Akıllı Arabaya Servis Eczane Platformu',
         btnNavShop: 'Eczane',
-        btnNavStaff: 'Eczacı Ekranı',
         btnNavOrders: 'Siparişlerim',
         btnCartLabel: 'Sepet',
         simpleOn: 'Sade Mod: AÇIK (Temel)',
@@ -1570,7 +1667,6 @@
         brandTitle: 'یُسر فارمیسی',
         brandTagline: 'گاڑیوں کے لیے اسمارٹ فارمیسی پلیٹ فارم',
         btnNavShop: 'فارمیسی',
-        btnNavStaff: 'فارماسسٹ اسکرین',
         btnNavOrders: 'میرے آرڈرز',
         btnCartLabel: 'ٹوکری',
         simpleOn: 'سادہ موڈ: فعال (صرف بنیادی)',
@@ -1680,7 +1776,6 @@
         brandTitle: 'Yusr Pharmacy',
         brandTagline: '智慧无障碍汽车穿梭药房',
         btnNavShop: '药房',
-        btnNavStaff: '药师工作台',
         btnNavOrders: '我的订单',
         btnCartLabel: '购物车',
         simpleOn: '极简模式：已开启',
@@ -1931,7 +2026,7 @@
       { id: 'med_sport_prot1', cat: 'sport_protein', price: 185, badge: 'Whey Protein', name: { ar: 'واي بروتين (Whey Protein) لدعم الكتلة العضلية', en: 'Whey Protein Formula for Lean Muscle Support', tr: 'Kas Gelişimi İçin Whey Protein Tozu', ur: 'مسلز کی مضبوطی کے لیے وے پروٹین', zh: '乳清蛋白粉 (Whey Protein) 增肌塑形' }, dosage: { ar: 'مكيال واحد بعد التمرين أو حسب الاحتياج اليومي', en: '1 scoop post-workout or as daily protein goal requires', tr: 'Antrenman sonrası 1 ölçek veya günlük ihtiyaca göre', ur: 'ورزش کے بعد ایک اسکوپ یا روزانہ ضرورت کے مطابق', zh: '训练后1勺或按每日蛋白质需求饮用' } },
       { id: 'med_sport_amino1', cat: 'sport_amino', price: 92, badge: 'Amino & Energy', name: { ar: 'أحماض أمينية (BCAA) ومشروب طاقة رياضي', en: 'BCAA Amino Acids & Sports Energy Drink', tr: 'BCAA Amino Asitler ve Sporcu Enerji İçeceği', ur: 'بی سی اے اے امائنو ایسڈز اور انرجی ڈرنک', zh: 'BCAA支链氨基酸与运动能量饮品' }, dosage: { ar: 'يُتناول قبل أو أثناء التمرين لدعم التحمل', en: 'Take before or during workout to support endurance', tr: 'Dayanıklılığı desteklemek için antrenman öncesi veya sırasında', ur: 'ورزش سے پہلے یا دوران طاقت کے لیے لیں', zh: '运动前或运动中饮用，助力耐力表现' } },
       { id: 'med_sport_weight1', cat: 'sport_weight', price: 67, badge: 'Fitness', name: { ar: 'بدائل وجبات، سناكات صحية، ومنتجات إنقاص الوزن', en: 'Meal Replacements, Healthy Snacks & Weight Aids', tr: 'Öğün Yerine Geçenler, Sağlıklı Atıştırmalıklar ve Form', ur: 'کھانے کے متبادل، ہیلدی اسنیکس اور وزن کنٹرول', zh: '代餐奶昔、健康零食与体重管理产品' }, dosage: { ar: 'تُدمج ضمن نظام غذائي متوازن وحركة منتظمة', en: 'Use as part of a balanced diet and active routine', tr: 'Dengeli beslenme ve aktif yaşam ile birlikte kullanın', ur: 'متوازن غذا اور باقاعدہ ورزش کے ساتھ استعمال کریں', zh: '配合均衡饮食与规律运动使用' } },
-      { id: 'med_eye_drops1', cat: 'eye_drops', price: 28, badge: 'Eye Care', name: { ar: 'قطرات ترطيب العين (الدموع الاصطناعية)', en: 'Lubricating Eye Drops (Artificial Tears)', tr: 'Nemlendirici Göz Damlası (Yapay Gözyaşı)', ur: 'آنکھوں کو تر رکھنے والے قطرے (مصنوعی آنسو)', zh: '人工泪液保湿滴眼液' }, dosage: { ar: 'نقطة إلى نقطتين في كل عين عند الحاجة أو الجفاف', en: '1-2 drops per eye as needed for dryness', tr: 'Kuruluk halinde her göze 1-2 damla damlatın', ur: 'خشکی کی صورت میں ہر آنکھ میں 1 سے 2 قطرے ڈالیں', zh: '眼干或按需每眼滴入1至2滴' } },
+      { id: 'med_eye_drops1', cat: 'eye_drops', price: 28, badge: 'Eye Care', name: { ar: 'قطرات ترطيب العين (الدموع الاصطناعية)', en: 'Lubricating Eye Drops (Artificial Tears)', tr: 'Nemlendirici Göz Damlaları (Yapay Gözyaşı)', ur: 'آنکھوں کو تر رکھنے والے قطرے (مصنوعی آنسو)', zh: '人工泪液保湿滴眼液' }, dosage: { ar: 'نقطة إلى نقطتين في كل عين عند الحاجة أو الجفاف', en: '1-2 drops per eye as needed for dryness', tr: 'Kuruluk halinde her göze 1-2 damla damlatın', ur: 'خشکی کی صورت میں ہر آنکھ میں 1 سے 2 قطرے ڈالیں', zh: '眼干或按需每眼滴入1至2滴' } },
       { id: 'med_eye_lens1', cat: 'eye_lens', price: 35, badge: 'Lens Care', name: { ar: 'محلول تعقيم وحفظ العدسات اللاصقة مع حافظة', en: 'Contact Lens Solution & Sterile Case', tr: 'Kontakt Lens Solüsyonu ve Saklama Kabı', ur: 'کانٹیکٹ لینز کا محلول اور کیس', zh: '隐形眼镜多功能护理液与便携镜盒' }, dosage: { ar: 'تُغمر العدسات في محلول جديد بعد كل إزالة', en: 'Soak lenses in fresh solution after each removal', tr: 'Her çıkarmadan sonra lensleri taze solüsyonda bekletin', ur: 'لینز اتارنے کے بعد نئے محلول میں محفوظ رکھیں', zh: '每次摘下后浸泡于新鲜护理液中' } },
       { id: 'med_ear_care1', cat: 'ear_care', price: 34, badge: 'Ear Care', name: { ar: 'بخاخ تنظيف الأذن وسدادات أذن مريحة', en: 'Ear Cleaning Spray & Comfort Earplugs', tr: 'Kulak Temizleme Spreyi ve Rahat Kulak Tıkacı', ur: 'کان صاف کرنے کا اسپرے اور ایئر پلگ', zh: '耳道清洁喷雾与舒适隔音耳塞' }, dosage: { ar: 'يُستخدم البخاخ بلطف والسدادات عند الضوضاء أو النوم', en: 'Use spray gently; wear earplugs for noise or sleep', tr: 'Spreyi nazikçe uygulayın; tıkaçları gürültü veya uyku için takın', ur: 'اسپرے نرمی سے استعمال کریں اور شور میں ایئر پلگ لگائیں', zh: '温和喷入清洁；睡眠或嘈杂环境可佩戴耳塞' } }
     ];
@@ -2310,16 +2405,13 @@
       const preparingOrders = ordersHistory.filter(o => o.status === 'preparing');
       const activeQueueCount = preparingOrders.length;
 
-      const badgeNav = document.getElementById('staffNavQueueBadge');
       const badgeHeader = document.getElementById('staffActiveCountNum');
-      if (badgeNav) badgeNav.textContent = activeQueueCount;
       if (badgeHeader) badgeHeader.textContent = activeQueueCount;
 
       if (!preparingOrders.some(o => o.id === selectedStaffOrderId)) {
         selectedStaffOrderId = preparingOrders[0] ? preparingOrders[0].id : '';
       }
 
-      // 1. شريط طابور الطلبات النشطة
       const queueBar = document.getElementById('staffOrdersQueueBar');
       if (queueBar) {
         if (preparingOrders.length === 0) {
@@ -2350,7 +2442,6 @@
         }
       }
 
-      // 2. سجل المحادثة والإشارات في شاشة الصيدلي
       const staffLogEl = document.getElementById('staffMessagesLog');
       if (staffLogEl) {
         if (laneMessages.length === 0) {
@@ -2366,7 +2457,6 @@
         }
       }
 
-      // 3. قائمة الردود السريعة للصيدلي
       const quickListEl = document.getElementById('staffQuickRepliesList');
       if (quickListEl) {
         quickListEl.innerHTML = staffQuickRepliesData.map((txt, idx) => `
@@ -2380,7 +2470,6 @@
         `).join('');
       }
 
-      // 4. بطاقة تفاصيل الطلب والتحكم بمراحل التجهيز (العمود الأيسر)
       const detailPanel = document.getElementById('staffOrderDetailPanel');
       if (!detailPanel) return;
 
@@ -2445,7 +2534,6 @@
           </div>
         </div>
 
-        <!-- بطاقة بيانات المركبة والمسار وطريقة التسليم والدفع -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 text-xs">
           <div>
             <div class="text-slate-400 font-bold">بيانات المركبة:</div>
@@ -2461,7 +2549,6 @@
           </div>
         </div>
 
-        <!-- إرشادات التعامل الخاصة بالعميل -->
         <div class="space-y-1.5">
           <div class="text-xs font-black text-cyan-300">🩺 إرشادات التعامل الصيدلاني الخاصة بهذا العميل:</div>
           <div class="bg-blue-500/15 border border-blue-400/40 text-blue-300 rounded-2xl px-4 py-3 text-xs font-extrabold leading-relaxed">
@@ -2469,7 +2556,6 @@
           </div>
         </div>
 
-        <!-- الأصناف والوصفات المطلوبة -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-black text-cyan-300">💊 الأصناف والوصفات المطلوبة:</span>
@@ -2485,7 +2571,6 @@
           </div>
         </div>
 
-        <!-- تحكم الصيدلي في مرحلة الطلب المحدد -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
           <div class="text-xs font-black text-cyan-400">
             تحكم الصيدلي في مرحلة الطلب المحدد (يرفع النسبة المئوية وينطق الصوت عند العميل تلقائياً):
@@ -2888,16 +2973,10 @@
       document.getElementById(map[activePageView])?.classList.remove('hidden');
 
       const btnShop = document.getElementById('btnNavShop');
-      const btnStaff = document.getElementById('btnNavStaff');
       if (btnShop) {
         btnShop.className = activePageView === 'shop'
           ? 'bg-blue-600 text-white px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer shadow whitespace-nowrap'
           : 'bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap';
-      }
-      if (btnStaff) {
-        btnStaff.className = activePageView === 'staff'
-          ? 'bg-gradient-to-r from-cyan-400 to-teal-300 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow-md whitespace-nowrap'
-          : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border border-cyan-400/50 text-white px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow-md whitespace-nowrap';
       }
 
       const navTxt = document.getElementById('btnNavDirectTrackText');
@@ -3139,8 +3218,6 @@
       document.getElementById('brandTitle').textContent = L.brandTitle;
       document.getElementById('brandTagline').textContent = L.brandTagline;
       document.getElementById('btnNavShopText').textContent = L.btnNavShop;
-      const staffNavTextEl = document.getElementById('btnNavStaffText');
-      if (staffNavTextEl) staffNavTextEl.textContent = L.btnNavStaff;
       document.getElementById('btnNavOrdersText').textContent = L.btnNavOrders;
       document.getElementById('btnCartLabel').textContent = L.btnCartLabel;
 
