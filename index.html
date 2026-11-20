@@ -277,6 +277,72 @@
       color: #0f172a !important;
       border-color: #94a3b8 !important;
     }
+    #viewStaff {
+      animation: staffFadeIn 0.35s ease-out;
+    }
+    @keyframes staffFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    body.light-mode #viewStaff > div {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+    body.light-mode #viewStaff .bg-slate-900,
+    body.light-mode #viewStaff .bg-slate-900\/90,
+    body.light-mode #viewStaff .bg-slate-800,
+    body.light-mode #viewStaff .bg-slate-800\/90 {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+    body.light-mode #viewStaff .text-white,
+    body.light-mode #viewStaff .text-slate-200,
+    body.light-mode #viewStaff .text-slate-300 {
+      color: #0f172a !important;
+    }
+    body.light-mode #viewStaff .text-slate-400 {
+      color: #475569 !important;
+    }
+    body.light-mode #viewStaff .text-cyan-400,
+    body.light-mode #viewStaff .text-cyan-300 {
+      color: #0284c7 !important;
+    }
+    body.light-mode #viewStaff .text-amber-400,
+    body.light-mode #viewStaff .text-amber-300,
+    body.light-mode #viewStaff .text-amber-200 {
+      color: #b45309 !important;
+    }
+    body.light-mode #viewStaff .bg-amber-500\/10 {
+      background-color: #fffbeb !important;
+      border-color: #fcd34d !important;
+    }
+    body.light-mode #viewStaff .bg-cyan-500\/20 {
+      background-color: #e0f2fe !important;
+      border-color: #38bdf8 !important;
+    }
+    body.light-mode #viewStaff .border-slate-700,
+    body.light-mode #viewStaff .border-slate-600,
+    body.light-mode #viewStaff .border-slate-800 {
+      border-color: #cbd5e1 !important;
+    }
+    body.light-mode #viewStaff .bg-cyan-950\/90 {
+      background-color: #ecfeff !important;
+      border-color: #06b6d4 !important;
+      color: #164e63 !important;
+    }
+    body.light-mode #viewStaff .bg-amber-950\/80 {
+      background-color: #fffbeb !important;
+      border-color: #f59e0b !important;
+      color: #92400e !important;
+    }
+    body.light-mode #viewStaff input[type="text"],
+    body.light-mode #viewStaff input[type="password"] {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #94a3b8 !important;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
@@ -739,6 +805,9 @@
         </button>
       </div>
     </div>
+    <button type="button" onclick="openAdminModal()" id="btnNavStaff" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap">
+          🩺 <span>شاشة الصيدلي</span>
+        </button>
   </header>
 
   <main class="max-w-7xl mx-auto w-full flex-1 p-4 sm:p-6 space-y-8">
