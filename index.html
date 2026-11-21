@@ -1356,6 +1356,20 @@ body.light-mode #staffView .bg-slate-900,
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
           ordersHistory = parsed;
+          const activeOrder =
+            ordersHistory.find(o => o.id === selectedStaffOrderId) ||
+            ordersHistory.find(o => o.status === 'preparing' && o.staffAccepted) ||
+            ordersHistory.find(o => o.status === 'preparing') ||
+            ordersHistory[0];
+          if (activeOrder) {
+            selectedStaffOrderId = activeOrder.id;
+            if (typeof activeOrder.stagePct === 'number') {
+              laneProgressPct = activeOrder.stagePct;
+            }
+            if (Array.isArray(activeOrder.laneMessages)) {
+              laneMessages = activeOrder.laneMessages;
+            }
+          }
           const currentTracked = ordersHistory.find(o => o.status === 'preparing' && o.staffAccepted) || ordersHistory[0];
       if (currentTracked && typeof currentTracked.stagePct === 'number') {
         laneProgressPct = currentTracked.stagePct;
@@ -2360,6 +2374,17 @@ body.light-mode #staffView .bg-slate-900,
       const activeCodeEl = document.getElementById('laneActiveOrderCode');
       const fallbackOrderId = (ordersHistory[0] && ordersHistory[0].id) || 'ORD-1041';
       const displayId = (latestCreatedInvoice && latestCreatedInvoice.id) || fallbackOrderId;
+      const targetOrder =
+        ordersHistory.find(o => o.id === displayId) ||
+        ordersHistory.find(o => o.id === selectedStaffOrderId) ||
+        ordersHistory.find(o => o.status === 'preparing' && o.staffAccepted) ||
+        ordersHistory[0];
+      if (targetOrder && typeof targetOrder.stagePct === 'number') {
+        laneProgressPct = targetOrder.stagePct;
+        if (!Array.isArray(targetOrder.laneMessages)) {
+          targetOrder.laneMessages = laneMessages;
+        }
+      }
       const activeOrd = ordersHistory.find(o => o.id === displayId);
       if (activeOrd) {
         if (typeof activeOrd.stagePct === 'number' && activeOrd.stagePct > laneProgressPct) {
@@ -2459,6 +2484,14 @@ body.light-mode #staffView .bg-slate-900,
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       laneMessages.push({ text: trimmed, time: timeStr, sender });
+      const msgTargetOrder =
+        ordersHistory.find(o => o.id === selectedStaffOrderId) ||
+        ordersHistory.find(o => o.status === 'preparing' && o.staffAccepted) ||
+        ordersHistory[0];
+      if (msgTargetOrder) {
+        msgTargetOrder.laneMessages = [...laneMessages];
+      }
+      saveOrdersToStorage();
       renderSmartLaneView();
       renderStaffView();
       speakText(trimmed);
@@ -2534,7 +2567,8 @@ function renderStaffOrderBuckets() {
       if (badgeHeader) badgeHeader.textContent = activeQueueCount;
 
       if (!preparingOrders.some(o => o.id === selectedStaffOrderId)) {
-        selectedStaffOrderId = preparingOrders[0] ? preparingOrders[0].id : '';
+        const acceptedPrep = preparingOrders.find(o => o.staffAccepted);
+        selectedStaffOrderId = acceptedPrep ? acceptedPrep.id : (preparingOrders[0] ? preparingOrders[0].id : '');
       }
       const queueBar = document.getElementById('staffOrdersQueueBar');
       if (queueBar) {
@@ -2892,6 +2926,8 @@ let lanePrepIntervalId = null;
         speakText(stageTitle);
         showToast(`تم تحديث مرحلة الطلب إلى ${pct}% — ${stageTitle}`);
       }
+      ord.laneMessages = [...laneMessages];
+      saveOrdersToStorage();
     }
 
     function sendStaffQuickReply(idx) {
@@ -3255,6 +3291,7 @@ let lanePrepIntervalId = null;
       const target = ordersHistory.find(o => o.id === orderId);
       if (!target) return;
       target.status = newStatus;
+      saveOrdersToStorage();
       renderOrdersView();
       renderStaffView();
     }
@@ -4116,6 +4153,7 @@ let lanePrepIntervalId = null;
       };
 
       ordersHistory.unshift(newOrder);
+      saveOrdersToStorage();
       selectedStaffOrderId = orderId;
       cart = [];
       appliedPromoCode = '';
