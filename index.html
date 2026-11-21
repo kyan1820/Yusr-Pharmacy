@@ -1356,6 +1356,10 @@ body.light-mode #staffView .bg-slate-900,
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
           ordersHistory = parsed;
+          const currentTracked = ordersHistory.find(o => o.status === 'preparing' && o.staffAccepted) || ordersHistory[0];
+      if (currentTracked && typeof currentTracked.stagePct === 'number') {
+        laneProgressPct = currentTracked.stagePct;
+      }
         }
       } catch (e) {}
     }
@@ -2356,6 +2360,15 @@ body.light-mode #staffView .bg-slate-900,
       const activeCodeEl = document.getElementById('laneActiveOrderCode');
       const fallbackOrderId = (ordersHistory[0] && ordersHistory[0].id) || 'ORD-1041';
       const displayId = (latestCreatedInvoice && latestCreatedInvoice.id) || fallbackOrderId;
+      const activeOrd = ordersHistory.find(o => o.id === displayId);
+      if (activeOrd) {
+        if (typeof activeOrd.stagePct === 'number' && activeOrd.stagePct > laneProgressPct) {
+          laneProgressPct = activeOrd.stagePct;
+        }
+        if (activeOrd.staffAccepted && laneProgressPct < 25) {
+          laneProgressPct = 25;
+        }
+      }
       if (activeCodeEl) activeCodeEl.textContent = `#${displayId}`;
 
       const pctEl = document.getElementById('laneProgressPercent');
