@@ -2682,6 +2682,35 @@ function renderStaffOrderBuckets() {
       }
 
       const detailPanel = document.getElementById('staffOrderDetailPanel');
+      const hasActiveStaffOrder = preparingOrders.some(o => o.id === selectedStaffOrderId);
+      const replyInp = document.getElementById('staffCustomReplyInput');
+      const replyBtn = document.getElementById('btnStaffSendReply');
+      const quickBtns = document.querySelectorAll('#staffQuickRepliesList button');
+      const handoverBtns = document.querySelectorAll('#btnStaffComingToCar, #btnStaffOrderReadyAV');
+
+      if (replyInp) {
+        replyInp.disabled = !hasActiveStaffOrder;
+        replyInp.placeholder = hasActiveStaffOrder
+          ? 'اكتب رداً مخصصاً للعميل...'
+          : 'لا يوجد طلب نشط لإرسال رسالة...';
+        replyInp.classList.toggle('opacity-50', !hasActiveStaffOrder);
+        replyInp.classList.toggle('cursor-not-allowed', !hasActiveStaffOrder);
+      }
+      if (replyBtn) {
+        replyBtn.disabled = !hasActiveStaffOrder;
+        replyBtn.classList.toggle('opacity-50', !hasActiveStaffOrder);
+        replyBtn.classList.toggle('cursor-not-allowed', !hasActiveStaffOrder);
+      }
+      quickBtns.forEach(btn => {
+        btn.disabled = !hasActiveStaffOrder;
+        btn.classList.toggle('opacity-50', !hasActiveStaffOrder);
+        btn.classList.toggle('cursor-not-allowed', !hasActiveStaffOrder);
+      });
+      handoverBtns.forEach(btn => {
+        btn.disabled = !hasActiveStaffOrder;
+        btn.classList.toggle('opacity-50', !hasActiveStaffOrder);
+        btn.classList.toggle('cursor-not-allowed', !hasActiveStaffOrder);
+      });
       if (!detailPanel) return;
 
       const currentOrder = preparingOrders.find(o => o.id === selectedStaffOrderId);
@@ -2984,6 +3013,11 @@ let lanePrepIntervalId = null;
     }
 
     function sendStaffQuickReply(idx) {
+      const hasActive = ordersHistory.some(o => o.status === 'preparing' && o.id === selectedStaffOrderId);
+      if (!hasActive) {
+        showToast('لا يوجد طلب نشط حالياً لإرسال رد سريع.');
+        return;
+      }
       const reply = staffQuickRepliesData[idx];
       if (!reply) return;
       appendLaneMessage(`🧑‍⚕️ ${reply}`, 'staff');
@@ -2991,6 +3025,11 @@ let lanePrepIntervalId = null;
     }
 
     function sendStaffCustomReply() {
+      const hasActive = ordersHistory.some(o => o.status === 'preparing' && o.id === selectedStaffOrderId);
+      if (!hasActive) {
+        showToast('لا يوجد طلب نشط حالياً لإرسال رسالة.');
+        return;
+      }
       const inp = document.getElementById('staffCustomReplyInput');
       if (!inp) return;
       const val = inp.value.trim();
@@ -3001,6 +3040,11 @@ let lanePrepIntervalId = null;
     }
 
     function triggerStaffDeliveryAlert(type) {
+      const hasActive = ordersHistory.some(o => o.status === 'preparing' && o.id === selectedStaffOrderId);
+      if (!hasActive) {
+        showToast('لا يوجد طلب نشط حالياً لإرسال تنبيه.');
+        return;
+      }
       const text = type === 'coming_to_car'
         ? '🚗 إشعار من الصيدلي: الصيدلي قادم الآن إلى مركبتك لتسليم الدواء!'
         : '💡 إشعار ضوئي وصوتي: طلبك الدوائي جاهز للاستلام الآن عند النافذة!';
