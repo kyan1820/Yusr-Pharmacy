@@ -3469,8 +3469,11 @@ let lanePrepIntervalId = null;
     let laneExpectedDeliveryTimeStr = '';
 
     function formatExpectedHandoverClock(minutesToAdd) {
-      const target = new Date(Date.now() + (Number(minutesToAdd) || 0) * 60000);
-      return target.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      const mins = Math.max(1, Number(minutesToAdd) || 5);
+      const target = new Date(Date.now() + mins * 60000);
+      const hh = String(target.getHours()).padStart(2, '0');
+      const mm = String(target.getMinutes()).padStart(2, '0');
+      return `${hh}:${mm}`;
     }
 
     function syncLaneStageCardsAndBanner(currentPct) {
@@ -3514,38 +3517,35 @@ let lanePrepIntervalId = null;
     }
     function getLiveOrderProgressPct(ord) {
       if (!ord) return 0;
-      if (ord.status === 'completed' || ord.stagePct === 100) return 100;
+      if (ord.status === 'completed' || Number(ord.stagePct) === 100) return 100;
 
       const isCurrentActive =
         ord.id === selectedStaffOrderId ||
         (latestCreatedInvoice && latestCreatedInvoice.id === ord.id);
 
-      let remSec = typeof ord.prepRemainingSec === 'number' ? ord.prepRemainingSec : null;
-      let totSec = typeof ord.prepTotalSec === 'number' ? ord.prepTotalSec : null;
+      let remSec = typeof ord.prepRemainingSec === 'number' ? ord.prepRemainingSec : 0;
+      let totSec = typeof ord.prepTotalSec === 'number' ? ord.prepTotalSec : 0;
 
       if (isCurrentActive && typeof lanePrepRemainingSec === 'number' && lanePrepTotalSec > 0) {
         remSec = lanePrepRemainingSec;
         totSec = lanePrepTotalSec;
-      } else if (typeof remSec === 'number' && typeof totSec === 'number' && totSec > 0 && ord.prepLastSavedAt) {
+      } else if (totSec > 0 && ord.prepLastSavedAt) {
         const elapsed = Math.floor((Date.now() - ord.prepLastSavedAt) / 1000);
         remSec = Math.max(0, remSec - Math.max(0, elapsed));
       }
 
-      if (typeof remSec === 'number' && typeof totSec === 'number' && totSec > 0) {
+      if (totSec > 0) {
         if (remSec <= 0) return 100;
         const elapsed = Math.max(0, totSec - remSec);
-        const ratio = Math.min(1, elapsed / totSec);
-        if (ratio <= 0.5) {
-          return Math.round(25 + (ratio / 0.5) * 25);
-        }
-        return Math.min(99, Math.round(50 + ((ratio - 0.5) / 0.5) * 50));
+        const ratio = Math.min(1, Math.max(0, elapsed / totSec));
+        return Math.min(99, Math.max(25, Math.round(25 + ratio * 74)));
       }
 
-      if (isCurrentActive && typeof laneProgressPct === 'number' && laneProgressPct > 0) {
-        return laneProgressPct;
+      if (ord.staffAccepted) {
+        return Math.max(25, Number(ord.stagePct) || 25);
       }
 
-      return Number(ord.stagePct) || (ord.staffAccepted ? 25 : 0);
+      return Math.max(0, Number(ord.stagePct) || 0);
     }
     function applyLiveTimerProgress() {
       const pctEl = document.getElementById('laneProgressPercent');
@@ -4849,6 +4849,14 @@ function formatGregorianDateTime(dateInput) {
       return `${yyyy}/${mm}/${dd} • ${hh}:${min}`;
     }
     function submitPharmacyOrder() {
+      if (lanePrepIntervalId) {
+        clearInterval(lanePrepIntervalId);
+        lanePrepIntervalId = null;
+      }
+      laneProgressPct = 0;
+      lanePrepRemainingSec = 0;
+      lanePrepTotalSec = 0;
+      laneExpectedDeliveryTimeStr = '';
       const L = i18n[currentLang];
       const rxVal = document.getElementById('rxInput').value.trim();
       const plateVal = (document.getElementById('carPlateInput')?.value || '').trim();
