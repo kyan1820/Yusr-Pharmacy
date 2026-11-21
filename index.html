@@ -434,6 +434,32 @@ body.light-mode #staffView .bg-slate-900,
     body:not(.dark) div:has(> #laneProgressBar) {
       background-color: #e2e8f0 !important;
     }
+    html:not(.dark) #laneActiveOrderCode,
+    body:not(.dark) #laneActiveOrderCode,
+    html:not(.dark) #laneActiveOrderCode *,
+    body:not(.dark) #laneActiveOrderCode * {
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    html:not(.dark) [id*="laneActiveOrderCode"],
+    body:not(.dark) [id*="laneActiveOrderCode"],
+    html:not(.dark) div:has(> #laneActiveOrderCode),
+    body:not(.dark) div:has(> #laneActiveOrderCode) {
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    html:not(.dark) #laneChatLog > div,
+    body:not(.dark) #laneChatLog > div,
+    html:not(.dark) #laneMessagesLog > div,
+    body:not(.dark) #laneMessagesLog > div {
+      background-color: #f1f5f9 !important;
+      color: #334155 !important;
+      border-color: #cbd5e1 !important;
+    }
   </style>
 </head>
 <body class="light-mode bg-slate-950 text-slate-100 min-h-screen pb-16 selection:bg-cyan-500 selection:text-slate-950">
