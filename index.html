@@ -2503,14 +2503,13 @@ function renderStaffOrderBuckets() {
       if (!preparingOrders.some(o => o.id === selectedStaffOrderId)) {
         selectedStaffOrderId = preparingOrders[0] ? preparingOrders[0].id : '';
       }
-
       const queueBar = document.getElementById('staffOrdersQueueBar');
       if (queueBar) {
         const queueOnlyOrders = preparingOrders.filter(o => !o.staffAccepted);
-        if (preparingOrders.length === 0) {
+        if (queueOnlyOrders.length === 0) {
           queueBar.innerHTML = `<div class="text-xs text-slate-400 font-bold py-1">لا توجد طلبات نشطة بانتظار الصرف حالياً.</div>`;
         } else {
-          queueBar.innerHTML = preparingOrders.map((ord, index) => {
+          queueBar.innerHTML = queueOnlyOrders.map((ord, index) => {
             const isSelected = ord.id === selectedStaffOrderId;
             const statusTag = ord.staffAccepted
               ? `قيد التجهيز (${ord.stagePct || 25}%)`
