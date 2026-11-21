@@ -139,6 +139,44 @@
       transition: opacity 0.35s ease, max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), margin 0.35s ease, padding 0.35s ease;
     }
     #staffAcceptActionBar.is-accepted-hidden {
+      /* تحسين الوضع النهاري للخط الفاصل والمسار الذكي */
+    html:not(.dark) #smartLaneView hr,
+    html:not(.dark) .clinical-card hr,
+    html:not(.dark) .border-slate-800 {
+      border-color: #e2e8f0 !important;
+    }
+
+    html:not(.dark) #smartLaneView .bg-slate-950,
+    html:not(.dark) #smartLaneView .bg-slate-950\/80,
+    html:not(.dark) #smartLaneView .bg-slate-900 {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    /* فقاعة رسالة العميل في الوضع النهاري */
+    html:not(.dark) #laneMessagesLog .bg-cyan-950\/60,
+    html:not(.dark) #laneMessagesLog .bg-cyan-900\/50,
+    html:not(.dark) #laneMessagesLog .bg-slate-900.border-cyan-500\/30,
+    html:not(.dark) #laneMessagesLog [class*="bg-slate-950"],
+    html:not(.dark) #laneMessagesLog [class*="bg-cyan-950"] {
+      background-color: #ecfeff !important;
+      border-color: #67e8f9 !important;
+      color: #0f172a !important;
+    }
+
+    /* فقاعة رسالة الصيدلي في الوضع النهاري */
+    html:not(.dark) #laneMessagesLog .bg-slate-800,
+    html:not(.dark) #laneMessagesLog .bg-slate-800\/90,
+    html:not(.dark) #laneMessagesLog [class*="bg-slate-800"] {
+      background-color: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+
+    html:not(.dark) #laneMessagesLog * {
+      color: #0f172a;
+    }
       opacity: 0;
       max-height: 0;
       transform: translateY(-6px) scale(0.97);
