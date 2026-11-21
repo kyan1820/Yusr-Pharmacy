@@ -3003,8 +3003,14 @@ let editingPreparingOrderId = null;
         if (!searchRaw) return true;
         const idStr = String(ord.id || '').toLowerCase().replace(/^#/, '');
         const parkingStr = String(ord.parking || ord.bay || '').toLowerCase();
-        const itemsStr = String(ord.itemsSummary || ord.vehicle || '').toLowerCase();
-        return idStr.includes(searchRaw) || parkingStr.includes(searchRaw) || itemsStr.includes(searchRaw);
+        const carStr = String(ord.car || ord.vehicle || '').toLowerCase();
+        const itemsStr = String(ord.itemsSummary || '').toLowerCase();
+        return (
+          idStr.includes(searchRaw) ||
+          parkingStr.includes(searchRaw) ||
+          carStr.includes(searchRaw) ||
+          itemsStr.includes(searchRaw)
+        );
       };
 
       const list = (Array.isArray(ordersHistory) ? ordersHistory : []).filter(matchesSearch);
@@ -3016,42 +3022,106 @@ let editingPreparingOrderId = null;
       if (compCountEl) compCountEl.textContent = String(completedOrders.length);
       if (cancCountEl) cancCountEl.textContent = String(cancelledOrders.length);
 
-      const drawItems = (items, emptyText, isPreparingBucket = false) => {
-        if (!items.length) {
-          return `<div class="clinical-subcard bg-slate-950/80 border border-slate-800 rounded-2xl p-3.5 text-slate-400 font-bold text-center">${emptyText}</div>`;
+      const formatSortedItemsLine = (ord) => {
+        if (Array.isArray(ord.detailedItems) && ord.detailedItems.length > 0) {
+          return ord.detailedItems
+            .map(it => `${it.qty || 1}x ${it.name}`)
+            .join(' • ');
         }
-        return items.map(ord => `
-          <div class="clinical-subcard bg-slate-950/80 border border-slate-800 rounded-2xl p-3.5 space-y-2">
-            <div class="flex items-center justify-between font-black">
-              <span dir="ltr" class="text-cyan-400">#${ord.id || 'ORD'}</span>
-              <span>${ord.parking || ord.bay || 'موقف يُسْر 1'}</span>
+        return ord.itemsSummary || 'أصناف صيدلانية';
+      };
+
+      const drawOrderCard = (ord, bucketType) => {
+        const ordId = ord.id || 'ORD';
+        const bayText = ord.parking || ord.bay || 'موقف يُسْر 1';
+        const carText = ord.car || ord.vehicle || 'سيارة العميل (بدون لوحة مدخلة)';
+        const itemsLine = formatSortedItemsLine(ord);
+        const timeText = ord.createdAt || 'الآن';
+        const payText = ord.paymentMethod || 'مدى (Mada)';
+        const totalNum = Number(ord.total || 0);
+
+        const badgeInfo = {
+          preparing: {
+            text: `⏳ قيد التجهيز (${ord.stagePct || 25}%)`,
+            cls: 'bg-amber-400/15 border-amber-400/50 text-amber-300'
+          },
+          completed: {
+            text: '✓ فاتورة مكتملة',
+            cls: 'bg-emerald-500/15 border-emerald-400/50 text-emerald-300'
+          },
+          cancelled: {
+            text: '✕ فاتورة ملغاة',
+            cls: 'bg-rose-500/15 border-rose-400/50 text-rose-300'
+          }
+        }[bucketType] || {
+          text: 'فاتورة',
+          cls: 'bg-cyan-500/15 border-cyan-400/50 text-cyan-300'
+        };
+
+        return `
+          <div class="clinical-subcard bg-slate-950/90 border border-slate-800 hover:border-cyan-500/40 rounded-2xl p-4 space-y-2.5 transition">
+            <div class="flex items-center justify-between gap-2">
+              <span class="inline-flex items-center px-3 py-1 rounded-full border text-[11px] font-black ${badgeInfo.cls}">
+                ${badgeInfo.text}
+              </span>
+              <span dir="ltr" class="text-base font-black text-cyan-400">#${ordId}</span>
             </div>
-            <div class="text-slate-300 font-semibold">${ord.itemsSummary || ord.vehicle || 'مركبة العميل'} — ${ord.stagePct || 25}%</div>
-            ${isPreparingBucket ? `
-              <div class="pt-1">
-                <button type="button" onclick="openEditPreparingOrderModal('${ord.id}')" class="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 text-cyan-300 text-[11px] font-black px-3 py-1 rounded-xl transition cursor-pointer">
-                  ✎ تعديل السلة
+
+            <div class="flex flex-wrap items-center justify-between gap-1.5 text-xs font-extrabold text-slate-300">
+              <span>المركبة: ${carText}</span>
+              <span class="text-amber-300 font-black">• ${bayText}</span>
+            </div>
+
+            <div class="text-xs font-bold text-slate-200 leading-relaxed">
+              <span class="text-cyan-400 font-black">الأصناف:</span> ${itemsLine}
+            </div>
+
+            <div class="border-t border-slate-800 pt-2.5 flex items-center justify-between gap-2 text-xs">
+              <div class="text-emerald-400 font-black text-sm">
+                ${formatPrice(totalNum)}
+              </div>
+              <div class="text-[11px] text-slate-400 font-bold text-end">
+                وقت العملية: ${timeText} (${payText})
+              </div>
+            </div>
+
+            ${bucketType === 'preparing' ? `
+              <div class="flex justify-start pt-1">
+                <button
+                  type="button"
+                  onclick="openEditPreparingOrderModal('${ordId}')"
+                  class="bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400 text-cyan-300 text-xs font-black px-4 py-1.5 rounded-xl transition cursor-pointer inline-flex items-center gap-1.5"
+                >
+                  <span>✎</span>
+                  <span>تعديل السلة</span>
                 </button>
               </div>
             ` : ''}
           </div>
-        `).join('');
+        `;
       };
 
-      prepListEl.innerHTML = drawItems(
+      const drawBucketList = (items, bucketType, emptyText) => {
+        if (!items.length) {
+          return `<div class="clinical-subcard bg-slate-950/80 border border-slate-800 rounded-2xl p-3.5 text-slate-400 font-bold text-center">${emptyText}</div>`;
+        }
+        return items.map(ord => drawOrderCard(ord, bucketType)).join('');
+      };
+
+      prepListEl.innerHTML = drawBucketList(
         preparingOrders,
-        searchRaw ? 'لا توجد طلبات قيد التجهيز مطابقة للبحث.' : 'لا توجد طلبات قيد التجهيز حالياً.',
-        true
+        'preparing',
+        searchRaw ? 'لا توجد طلبات قيد التجهيز مطابقة للبحث.' : 'لا توجد طلبات قيد التجهيز حالياً.'
       );
-      compListEl.innerHTML = drawItems(
+      compListEl.innerHTML = drawBucketList(
         completedOrders,
-        searchRaw ? 'لا توجد طلبات مكتملة مطابقة للبحث.' : 'لا توجد طلبات مكتملة بعد.',
-        false
+        'completed',
+        searchRaw ? 'لا توجد طلبات مكتملة مطابقة للبحث.' : 'لا توجد طلبات مكتملة بعد.'
       );
-      cancListEl.innerHTML = drawItems(
+      cancListEl.innerHTML = drawBucketList(
         cancelledOrders,
-        searchRaw ? 'لا توجد طلبات ملغاة مطابقة للبحث.' : 'لا توجد طلبات ملغاة.',
-        false
+        'cancelled',
+        searchRaw ? 'لا توجد طلبات ملغاة مطابقة للبحث.' : 'لا توجد طلبات ملغاة.'
       );
     }
     function renderStaffView() {
