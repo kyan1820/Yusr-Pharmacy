@@ -1478,8 +1478,28 @@ body.light-mode #staffView .bg-slate-900,
     ];
     const YUSR_ORDERS_STORAGE_KEY = 'yusr_pharmacy_orders_history_v1';
 const YUSR_CLEARED_FLAG_KEY = 'yusr_pharmacy_orders_cleared_v1';
+    function syncActiveLaneTimerToOrder() {
+      if (!Array.isArray(ordersHistory) || ordersHistory.length === 0) return;
+      const target =
+        ordersHistory.find(o => o.id === selectedStaffOrderId) ||
+        ordersHistory.find(o => o.status === 'preparing') ||
+        ordersHistory[0];
+      if (!target) return;
+
+      if (typeof laneProgressPct === 'number') {
+        target.stagePct = laneProgressPct;
+      }
+      if (typeof lanePrepRemainingSec === 'number') {
+        target.prepRemainingSec = Math.max(0, lanePrepRemainingSec);
+        target.prepLastSavedAt = Date.now();
+      }
+      if (Array.isArray(laneMessages)) {
+        target.laneMessages = [...laneMessages];
+      }
+    }
     function saveOrdersToStorage() {
       try {
+        syncActiveLaneTimerToOrder();
         localStorage.setItem(YUSR_ORDERS_STORAGE_KEY, JSON.stringify(ordersHistory));
         if (ordersHistory.length === 0) {
           localStorage.setItem(YUSR_CLEARED_FLAG_KEY, '1');
@@ -2523,6 +2543,21 @@ function hasActiveSmartLaneOrder() {
       if (!hasActiveSmartLaneOrder()) return;
       const L = i18n[currentLang];
       const activeCodeEl = document.getElementById('laneActiveOrderCode');
+      const trackedOrd = activeOrd || targetOrder;
+      if (trackedOrd) {
+        if (typeof trackedOrd.prepRemainingSec === 'number') {
+          const elapsedSec = trackedOrd.prepLastSavedAt
+            ? Math.floor((Date.now() - trackedOrd.prepLastSavedAt) / 1000)
+            : 0;
+          const computedRemaining = Math.max(0, trackedOrd.prepRemainingSec - Math.max(0, elapsedSec));
+          if (typeof lanePrepRemainingSec === 'number') {
+            lanePrepRemainingSec = computedRemaining;
+          }
+        }
+        if (typeof trackedOrd.stagePct === 'number' && trackedOrd.stagePct > laneProgressPct) {
+          laneProgressPct = trackedOrd.stagePct;
+        }
+      }
       const fallbackOrderId = (ordersHistory[0] && ordersHistory[0].id) || 'ORD-1041';
       const displayId = (latestCreatedInvoice && latestCreatedInvoice.id) || fallbackOrderId;
       const targetOrder =
@@ -3115,6 +3150,7 @@ let lanePrepIntervalId = null;
       lanePrepIntervalId = setInterval(() => {
         if (lanePrepRemainingSec > 0) {
           lanePrepRemainingSec -= 1;
+          saveOrdersToStorage();
           updateLanePrepBadges();
         } else {
           clearInterval(lanePrepIntervalId);
