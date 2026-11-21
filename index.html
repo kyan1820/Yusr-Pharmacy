@@ -131,6 +131,22 @@
     .lane-panel-enter {
       animation: lanePanelSlideUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
+    #staffAcceptActionBar {
+      overflow: hidden;
+      max-height: 120px;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transition: opacity 0.35s ease, max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), margin 0.35s ease, padding 0.35s ease;
+    }
+    #staffAcceptActionBar.is-accepted-hidden {
+      opacity: 0;
+      max-height: 0;
+      transform: translateY(-6px) scale(0.97);
+      margin: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      pointer-events: none;
+    }
 
     /* وضع التبسيط */
     body.simple-mode .secondary-element {
@@ -2665,7 +2681,7 @@ function renderStaffOrderBuckets() {
             </span>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2 bg-slate-900 border border-cyan-500/30 rounded-2xl p-2">
+          <div id="staffAcceptActionBar" class="flex flex-wrap items-center gap-2 bg-slate-900 border border-cyan-500/30 rounded-2xl p-2 ${currentOrder.staffAccepted ? 'is-accepted-hidden' : ''}">
             <label for="staffPrepTimeSelect" class="text-xs font-black text-cyan-300 px-1">⏱️ وقت التجهيز:</label>
             <select
               id="staffPrepTimeSelect"
@@ -2691,7 +2707,6 @@ function renderStaffOrderBuckets() {
               ✕ حذف الطلب
             </button>
           </div>
-        </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 text-xs">
           <div>
@@ -2886,6 +2901,8 @@ let lanePrepIntervalId = null;
   const ord = ordersHistory.find(o => o.id === orderId);
   if (!ord) return;
   ord.staffAccepted = true;
+ const actionBar = document.getElementById('staffAcceptActionBar');
+  if (actionBar) actionBar.classList.add('is-accepted-hidden');
   ord.status = 'preparing';
   if (!ord.stagePct || ord.stagePct < 25) ord.stagePct = 25;
   laneProgressPct = ord.stagePct;
