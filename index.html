@@ -477,7 +477,7 @@ body.light-mode #staffView .bg-slate-900,
 
       <!-- أقصى اليسار: طلباتي ثم المسار المباشر ثم السلة (بدون زر شاشة الصيدلي) -->
       <div class="flex items-center gap-2 shrink-0">
-        <button onclick="switchPageView('smart_lane')" id="btnNavSmartLane" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow whitespace-nowrap">
+        <button onclick="switchPageView('smart_lane')" id="btnNavSmartLane" class="hidden bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow whitespace-nowrap">
           🧭 <span id="btnNavSmartLaneText">المسار الذكي</span>
         </button>
         <button onclick="switchPageView('orders')" id="btnNavOrders" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap">
@@ -542,6 +542,15 @@ body.light-mode #staffView .bg-slate-900,
 
   <!-- 4A. واجهة المسار الذكي بعد اعتماد الطلب -->
   <section id="smartLaneView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 lane-panel-enter">
+    <div id="smartLaneEmptyState" class="hidden clinical-card bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-3 shadow-xl">
+      <div class="text-3xl">🧭</div>
+      <h2 class="text-base font-black text-cyan-400">لا يوجد طلب نشط حالياً في المسار الذكي</h2>
+      <p class="text-xs text-slate-400 font-bold">أنشئ طلباً جديداً من الصيدلية لمتابعة مراحله لحظة بلحظة.</p>
+      <button type="button" onclick="switchPageView('shop')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-5 py-2.5 rounded-2xl transition cursor-pointer">
+        العودة إلى الصيدلية
+      </button>
+    </div>
+    <div id="smartLaneActiveContent" class="space-y-6">
     <div class="clinical-card bg-slate-900 border-2 border-cyan-500/35 rounded-3xl p-5 sm:p-6 shadow-xl space-y-6">
 
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
@@ -625,7 +634,7 @@ body.light-mode #staffView .bg-slate-900,
         </div>
         <div id="laneQuickSignalsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
       </div>
-
+</div>
     </div>
   </section>
 
@@ -2391,8 +2400,32 @@ const YUSR_CLEARED_FLAG_KEY = 'yusr_pharmacy_orders_cleared_v1';
       showToast(msg);
       speakText(msg);
     }
+function hasActiveSmartLaneOrder() {
+      return Array.isArray(ordersHistory) && ordersHistory.some(o => o.status === 'preparing');
+    }
 
+    function syncSmartLaneAvailability() {
+      const hasActive = hasActiveSmartLaneOrder();
+      const navBtn = document.getElementById('btnNavSmartLane');
+      const activeBox = document.getElementById('smartLaneActiveContent');
+      const emptyBox = document.getElementById('smartLaneEmptyState');
+
+      if (navBtn) {
+        navBtn.classList.toggle('hidden', !hasActive);
+      }
+      if (activeBox) {
+        activeBox.classList.toggle('hidden', !hasActive);
+      }
+      if (emptyBox) {
+        emptyBox.classList.toggle('hidden', hasActive);
+      }
+      if (!hasActive && activePageView === 'smart_lane') {
+        switchPageView('shop');
+      }
+    }
     function renderSmartLaneView() {
+      syncSmartLaneAvailability();
+      if (!hasActiveSmartLaneOrder()) return;
       const L = i18n[currentLang];
       const activeCodeEl = document.getElementById('laneActiveOrderCode');
       const fallbackOrderId = (ordersHistory[0] && ordersHistory[0].id) || 'ORD-1041';
@@ -2609,6 +2642,7 @@ function renderStaffOrderBuckets() {
       cancListEl.innerHTML = drawItems(cancelledOrders, 'لا توجد طلبات ملغاة.');
     }
     function renderStaffView() {
+      syncSmartLaneAvailability();
       const preparingOrders = ordersHistory.filter(o => o.status === 'preparing');
       const activeQueueCount = preparingOrders.length;
 
@@ -2839,6 +2873,7 @@ function renderStaffOrderBuckets() {
     function selectStaffOrder(orderId) {
       selectedStaffOrderId = orderId;
       renderStaffView();
+      syncSmartLaneAvailability();
     }
 renderStaffOrderBuckets();
     function setStaffPrepMinutes(orderId, mins) {
@@ -3391,6 +3426,7 @@ let lanePrepIntervalId = null;
     }
 
     function renderOrdersView() {
+      syncSmartLaneAvailability();
       const L = i18n[currentLang];
       const container = document.getElementById('ordersListContainer');
       if (!container) return;
