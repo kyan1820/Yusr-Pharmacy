@@ -1480,6 +1480,24 @@ body.light-mode #staffView .bg-slate-900,
 const YUSR_CLEARED_FLAG_KEY = 'yusr_pharmacy_orders_cleared_v1';
     function saveOrdersToStorage() {
       try {
+        if (Array.isArray(ordersHistory) && ordersHistory.length > 0) {
+        const activeOrd =
+          ordersHistory.find(o => o.id === selectedStaffOrderId) ||
+          ordersHistory.find(o => o.status === 'preparing' && o.staffAccepted) ||
+          ordersHistory.find(o => o.status === 'preparing');
+        if (activeOrd && activeOrd.status === 'preparing' && activeOrd.staffAccepted) {
+          activeOrd.stagePct = laneProgressPct;
+          if (typeof lanePrepRemainingSec === 'number') {
+            activeOrd.prepRemainingSec = Math.max(0, lanePrepRemainingSec);
+            activeOrd.prepTotalSec = lanePrepTotalSec;
+            activeOrd.expectedDeliveryTimeStr = laneExpectedDeliveryTimeStr;
+            activeOrd.prepLastSavedAt = Date.now();
+          }
+          if (Array.isArray(laneMessages)) {
+            activeOrd.laneMessages = [...laneMessages];
+          }
+        }
+      }
         localStorage.setItem(YUSR_ORDERS_STORAGE_KEY, JSON.stringify(ordersHistory));
         if (ordersHistory.length === 0) {
           localStorage.setItem(YUSR_CLEARED_FLAG_KEY, '1');
@@ -2545,6 +2563,45 @@ function hasActiveSmartLaneOrder() {
           laneProgressPct = 25;
         }
       }
+      if (
+        activeOrd &&
+        activeOrd.status === 'preparing' &&
+        activeOrd.staffAccepted &&
+        typeof activeOrd.prepRemainingSec === 'number' &&
+        activeOrd.prepRemainingSec > 0
+      ) {
+        const elapsedSec = activeOrd.prepLastSavedAt
+          ? Math.floor((Date.now() - activeOrd.prepLastSavedAt) / 1000)
+          : 0;
+        const remainingNow = Math.max(0, activeOrd.prepRemainingSec - Math.max(0, elapsedSec));
+        if (remainingNow > 0) {
+          lanePrepTotalSec = Math.max(
+            remainingNow,
+            typeof activeOrd.prepTotalSec === 'number' ? activeOrd.prepTotalSec : remainingNow
+          );
+          lanePrepRemainingSec = remainingNow;
+          if (activeOrd.expectedDeliveryTimeStr) {
+            laneExpectedDeliveryTimeStr = activeOrd.expectedDeliveryTimeStr;
+          }
+          if (!lanePrepIntervalId) {
+            updateLanePrepBadges();
+            lanePrepIntervalId = setInterval(() => {
+              if (lanePrepRemainingSec > 0) {
+                lanePrepRemainingSec -= 1;
+                saveOrdersToStorage();
+                updateLanePrepBadges();
+              } else {
+                clearInterval(lanePrepIntervalId);
+                lanePrepIntervalId = null;
+                const pctEl = document.getElementById('laneProgressPercent');
+                const barEl = document.getElementById('laneProgressBar');
+                if (pctEl) pctEl.textContent = '100%';
+                if (barEl) barEl.style.width = '100%';
+              }
+            }, 1000);
+          }
+        }
+      }
       if (activeCodeEl) activeCodeEl.textContent = `#${displayId}`;
 
       const pctEl = document.getElementById('laneProgressPercent');
@@ -3115,6 +3172,7 @@ let lanePrepIntervalId = null;
       lanePrepIntervalId = setInterval(() => {
         if (lanePrepRemainingSec > 0) {
           lanePrepRemainingSec -= 1;
+          saveOrdersToStorage();
           updateLanePrepBadges();
         } else {
           clearInterval(lanePrepIntervalId);
