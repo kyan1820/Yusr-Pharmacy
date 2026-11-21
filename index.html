@@ -129,6 +129,19 @@
       }
     }
     .lane-panel-enter {
+      @keyframes orderDetailSmoothSwap {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.99);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .order-detail-smooth-swap {
+      animation: orderDetailSmoothSwap 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
       animation: lanePanelSlideUp 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
     #staffAcceptActionBar {
@@ -3435,6 +3448,15 @@ let editingPreparingOrderId = null;
       renderStaffView();
       renderSmartLaneView();
       syncSmartLaneAvailability();
+
+      const detailPanel = document.getElementById('staffOrderDetailPanel');
+      const staffLogEl = document.getElementById('staffMessagesLog');
+      [detailPanel, staffLogEl].forEach(el => {
+        if (!el) return;
+        el.classList.remove('order-detail-smooth-swap');
+        void el.offsetWidth;
+        el.classList.add('order-detail-smooth-swap');
+      });
     }
 renderStaffOrderBuckets();
     function setStaffPrepMinutes(orderId, mins) {
