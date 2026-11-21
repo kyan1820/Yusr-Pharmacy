@@ -3177,8 +3177,9 @@ let editingPreparingOrderId = null;
       if (queueBar) {
         const renderQueueChip = (ord, idx, isAccepted) => {
           const isSelected = ord.id === selectedStaffOrderId;
+          const livePct = getLiveOrderProgressPct(ord);
           const badgeText = isAccepted
-            ? `قيد التجهيز (${ord.stagePct || 25}%)`
+            ? `قيد التجهيز (${livePct}%)`
             : 'بانتظار القبول';
           const badgeCls = isAccepted
             ? 'bg-emerald-400 text-slate-950'
@@ -3489,6 +3490,41 @@ let lanePrepIntervalId = null;
         }).join('');
       }
     }
+    function getLiveOrderProgressPct(ord) {
+      if (!ord) return 0;
+      if (ord.status === 'completed' || ord.stagePct === 100) return 100;
+
+      const isCurrentActive =
+        ord.id === selectedStaffOrderId ||
+        (latestCreatedInvoice && latestCreatedInvoice.id === ord.id);
+
+      let remSec = typeof ord.prepRemainingSec === 'number' ? ord.prepRemainingSec : null;
+      let totSec = typeof ord.prepTotalSec === 'number' ? ord.prepTotalSec : null;
+
+      if (isCurrentActive && typeof lanePrepRemainingSec === 'number' && lanePrepTotalSec > 0) {
+        remSec = lanePrepRemainingSec;
+        totSec = lanePrepTotalSec;
+      } else if (typeof remSec === 'number' && typeof totSec === 'number' && totSec > 0 && ord.prepLastSavedAt) {
+        const elapsed = Math.floor((Date.now() - ord.prepLastSavedAt) / 1000);
+        remSec = Math.max(0, remSec - Math.max(0, elapsed));
+      }
+
+      if (typeof remSec === 'number' && typeof totSec === 'number' && totSec > 0) {
+        if (remSec <= 0) return 100;
+        const elapsed = Math.max(0, totSec - remSec);
+        const ratio = Math.min(1, elapsed / totSec);
+        if (ratio <= 0.5) {
+          return Math.round(25 + (ratio / 0.5) * 25);
+        }
+        return Math.min(99, Math.round(50 + ((ratio - 0.5) / 0.5) * 50));
+      }
+
+      if (isCurrentActive && typeof laneProgressPct === 'number' && laneProgressPct > 0) {
+        return laneProgressPct;
+      }
+
+      return Number(ord.stagePct) || (ord.staffAccepted ? 25 : 0);
+    }
     function applyLiveTimerProgress() {
       const pctEl = document.getElementById('laneProgressPercent');
       const barEl = document.getElementById('laneProgressBar');
@@ -3538,6 +3574,10 @@ let lanePrepIntervalId = null;
       lanePrepRemainingSec = lanePrepTotalSec;
       laneExpectedDeliveryTimeStr = formatExpectedHandoverClock(safeMins);
       updateLanePrepBadges();
+      if (activePageView === 'staff') {
+              renderStaffView();
+              renderStaffOrderBuckets();
+            }
 
       clearInterval(lanePrepIntervalId);
       lanePrepIntervalId = setInterval(() => {
@@ -3545,6 +3585,10 @@ let lanePrepIntervalId = null;
           lanePrepRemainingSec -= 1;
           saveOrdersToStorage();
           updateLanePrepBadges();
+          if (activePageView === 'staff') {
+              renderStaffView();
+              renderStaffOrderBuckets();
+            }
         } else {
           clearInterval(lanePrepIntervalId);
           lanePrepIntervalId = null;
