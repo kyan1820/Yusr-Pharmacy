@@ -2816,18 +2816,20 @@ let lanePrepIntervalId = null;
       }, 1000);
     }
     function acceptStaffOrder(orderId) {
-      const ord = ordersHistory.find(o => o.id === orderId);
-      if (!ord) return;
-      ord.staffAccepted = true;
-      if (!ord.stagePct || ord.stagePct < 25) ord.stagePct = 25;
-      laneProgressPct = ord.stagePct;
-      startLanePreparationTimer(ord.prepMinutes);
-      const msg = `تم قبول طلبك (#${ord.id}) من الصيدلي — وقت التجهيز المتوقع ${ord.prepMinutes} دقائق`;
-      appendLaneMessage(`🧑‍⚕️ ${msg}`, 'staff');
-      renderSmartLaneView();
-      renderStaffView();
-      showToast('تم قبول الطلب وإبلاغ العميل في المسار الذكي!');
-    }
+  const ord = ordersHistory.find(o => o.id === orderId);
+  if (!ord) return;
+  ord.staffAccepted = true;
+  ord.status = 'preparing';
+  if (!ord.stagePct || ord.stagePct < 25) ord.stagePct = 25;
+  laneProgressPct = ord.stagePct;
+  startLanePreparationTimer(ord.prepMinutes);
+  const msg = `تم قبول طلبك (#${ord.id}) من الصيدلي — وقت التجهيز المتوقع ${ord.prepMinutes} دقائق`;
+  appendLaneMessage(`🧑‍⚕️ ${msg}`, 'staff');
+  renderSmartLaneView();
+  renderStaffView();
+  renderStaffOrderBuckets();
+  showToast('تم قبول الطلب وإبلاغ العميل في المسار الذكي!');
+}
     function deleteStaffOrder(orderId) {
       updateOrderStatus(orderId, 'cancelled');
       renderStaffView();
