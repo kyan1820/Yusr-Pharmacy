@@ -2466,7 +2466,7 @@ function renderStaffOrderBuckets() {
       if (!prepListEl || !compListEl || !cancListEl) return;
 
       const list = Array.isArray(ordersHistory) ? ordersHistory : [];
-      const preparingOrders = list.filter(o => o.staffAccepted === true && o.status !== 'completed' && o.status !== 'cancelled');
+      const preparingOrders = list.filter(o => o.status === 'preparing' && o.staffAccepted === true);
       const completedOrders = list.filter(o => o.status === 'completed');
       const cancelledOrders = list.filter(o => o.status === 'cancelled');
 
@@ -2506,6 +2506,7 @@ function renderStaffOrderBuckets() {
 
       const queueBar = document.getElementById('staffOrdersQueueBar');
       if (queueBar) {
+        const queueOnlyOrders = preparingOrders.filter(o => !o.staffAccepted);
         if (preparingOrders.length === 0) {
           queueBar.innerHTML = `<div class="text-xs text-slate-400 font-bold py-1">لا توجد طلبات نشطة بانتظار الصرف حالياً.</div>`;
         } else {
