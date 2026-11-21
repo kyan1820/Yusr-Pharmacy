@@ -3036,7 +3036,33 @@ let editingPreparingOrderId = null;
         const bayText = ord.parking || ord.bay || 'موقف يُسْر 1';
         const carText = ord.car || ord.vehicle || 'سيارة العميل (بدون لوحة مدخلة)';
         const itemsLine = formatSortedItemsLine(ord);
-        const timeText = ord.createdAt || 'الآن';
+        const parseOrderDateToGregorian = (rawVal) => {
+          if (!rawVal) return formatGregorianDateTime(new Date());
+          const str = String(rawVal).trim();
+          const matchSlash = str.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})(?:.*?(\d{1,2}):(\d{2}))?/);
+          if (matchSlash) {
+            const y = matchSlash[1];
+            const m = String(matchSlash[2]).padStart(2, '0');
+            const d = String(matchSlash[3]).padStart(2, '0');
+            const hh = matchSlash[4] ? String(matchSlash[4]).padStart(2, '0') : '00';
+            const mm = matchSlash[5] ? String(matchSlash[5]).padStart(2, '0') : '00';
+            return `${y}/${m}/${d} • ${hh}:${mm}`;
+          }
+          const timeMatch = str.match(/(\d{1,2}):(\d{2})\s*(ص|م|AM|PM)?/i);
+          let hour = timeMatch ? Number(timeMatch[1]) : new Date().getHours();
+          const minute = timeMatch ? String(timeMatch[2]).padStart(2, '0') : String(new Date().getMinutes()).padStart(2, '0');
+          const period = (timeMatch && timeMatch[3]) ? timeMatch[3].toLowerCase() : '';
+          if ((period === 'م' || period === 'pm') && hour < 12) hour += 12;
+          if ((period === 'ص' || period === 'am') && hour === 12) hour = 0;
+
+          const base = new Date();
+          if (str.includes('أمس')) base.setDate(base.getDate() - 1);
+          if (str.includes('قبل يومين')) base.setDate(base.getDate() - 2);
+          base.setHours(Math.min(23, Math.max(0, hour)), Number(minute), 0, 0);
+          return formatGregorianDateTime(base);
+        };
+
+        const timeText = parseOrderDateToGregorian(ord.createdAt);
         const payText = ord.paymentMethod || 'مدى (Mada)';
         const totalNum = Number(ord.total || 0);
 
@@ -4695,7 +4721,16 @@ let lanePrepIntervalId = null;
       document.getElementById('valVat').innerHTML = formatPrice(vat);
       document.getElementById('valTotal').innerHTML = formatPrice(total);
     }
-
+function formatGregorianDateTime(dateInput) {
+      const d = dateInput instanceof Date ? dateInput : new Date(dateInput || Date.now());
+      const validDate = Number.isNaN(d.getTime()) ? new Date() : d;
+      const yyyy = validDate.getFullYear();
+      const mm = String(validDate.getMonth() + 1).padStart(2, '0');
+      const dd = String(validDate.getDate()).padStart(2, '0');
+      const hh = String(validDate.getHours()).padStart(2, '0');
+      const min = String(validDate.getMinutes()).padStart(2, '0');
+      return `${yyyy}/${mm}/${dd} • ${hh}:${min}`;
+    }
     function submitPharmacyOrder() {
       const L = i18n[currentLang];
       const rxVal = document.getElementById('rxInput').value.trim();
@@ -4729,7 +4764,7 @@ let lanePrepIntervalId = null;
       }
 
       const orderId = `ORD-${Math.floor(1050 + Math.random() * 8900)}`;
-      const createdAt = 'الآن';
+      const createdAt = formatGregorianDateTime(new Date());
 
       const newOrder = {
         id: orderId,
