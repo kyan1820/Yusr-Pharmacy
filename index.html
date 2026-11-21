@@ -2769,40 +2769,31 @@ function hasActiveSmartLaneOrder() {
     function appendLaneMessage(text, sender = 'customer') {
       const trimmed = String(text || '').trim();
       if (!trimmed) return;
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      laneMessages.push({ text: trimmed, time: timeStr, sender });
+
       const msgTargetOrder =
         ordersHistory.find(o => o.id === selectedStaffOrderId) ||
         ordersHistory.find(o => o.status === 'preparing' && o.staffAccepted) ||
+        ordersHistory.find(o => o.status === 'preparing') ||
         ordersHistory[0];
-      if (msgTargetOrder) {
-        msgTargetOrder.laneMessages = [...laneMessages];
+
+      if (!msgTargetOrder) return;
+
+      if (!Array.isArray(msgTargetOrder.laneMessages)) {
+        msgTargetOrder.laneMessages = [];
       }
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const msgObj = { text: trimmed, time: timeStr, sender };
+
+      msgTargetOrder.laneMessages.push(msgObj);
+      selectedStaffOrderId = msgTargetOrder.id;
+      laneMessages = msgTargetOrder.laneMessages;
+
       saveOrdersToStorage();
-      if (ordersHistory.length === 0) {
-        selectedStaffOrderId = '';
-        laneProgressPct = 0;
-        laneMessages = [];
-      }
       renderSmartLaneView();
       renderStaffView();
       speakText(trimmed);
-      const isLightMode = !document.documentElement.classList.contains('dark');
-      const logBox = document.getElementById('laneMessagesLog');
-      if (logBox && isLightMode) {
-        logBox.querySelectorAll('div').forEach(el => {
-          if (el.className.includes('bg-slate-950') || el.className.includes('bg-cyan-950')) {
-            el.style.backgroundColor = '#ecfeff';
-            el.style.borderColor = '#67e8f9';
-            el.style.color = '#0f172a';
-          } else if (el.className.includes('bg-slate-800') || el.className.includes('bg-slate-900')) {
-            el.style.backgroundColor = '#f1f5f9';
-            el.style.borderColor = '#cbd5e1';
-            el.style.color = '#0f172a';
-          }
-        });
-      }
     }
 
     function sendQuickLaneSignal(signalId) {
@@ -3162,43 +3153,96 @@ let editingPreparingOrderId = null;
         const acceptedPrep = preparingOrders.find(o => o.staffAccepted);
         selectedStaffOrderId = acceptedPrep ? acceptedPrep.id : (preparingOrders[0] ? preparingOrders[0].id : '');
       }
+      const acceptedPrepOrders = preparingOrders.filter(o => o.staffAccepted === true);
+      const pendingAcceptOrders = preparingOrders.filter(o => !o.staffAccepted);
+
+      const getOrderMessages = (ord) => {
+        if (!ord) return [];
+        if (Array.isArray(ord.laneMessages) && ord.laneMessages.length > 0) {
+          return ord.laneMessages;
+        }
+        if (ord.id === selectedStaffOrderId && Array.isArray(laneMessages) && laneMessages.length > 0) {
+          ord.laneMessages = [...laneMessages];
+          return ord.laneMessages;
+        }
+        ord.laneMessages = [];
+        return ord.laneMessages;
+      };
+
+      const activeOrdForChat = preparingOrders.find(o => o.id === selectedStaffOrderId) || null;
+      const activeOrderMsgs = getOrderMessages(activeOrdForChat);
+      laneMessages = activeOrderMsgs;
+
       const queueBar = document.getElementById('staffOrdersQueueBar');
       if (queueBar) {
-        const queueOnlyOrders = preparingOrders.filter(o => !o.staffAccepted);
-        if (queueOnlyOrders.length === 0) {
-          queueBar.innerHTML = `<div class="text-xs text-slate-400 font-bold py-1">لا توجد طلبات نشطة بانتظار الصرف حالياً.</div>`;
-        } else {
-          queueBar.innerHTML = queueOnlyOrders.map((ord, index) => {
-            const isSelected = ord.id === selectedStaffOrderId;
-            const statusTag = ord.staffAccepted
-              ? `قيد التجهيز (${ord.stagePct || 25}%)`
-              : 'بانتظار القبول';
-            return `
-              <button
-                type="button"
-                onclick="selectStaffOrder('${ord.id}')"
-                class="px-4 py-2 rounded-2xl border-2 text-xs font-black transition cursor-pointer flex items-center gap-2 ${
-                  isSelected
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 border-cyan-300 text-white shadow-md'
-                    : 'bg-slate-900 border-slate-700 hover:border-cyan-400 text-slate-200'
-                }"
-              >
-                <span>#${index + 1}</span>
-                <span dir="ltr">#${ord.id}</span>
-                <span class="bg-slate-950/80 text-cyan-300 px-2.5 py-0.5 rounded-full text-[11px]">${ord.parking || 'موقف يُسر 1'}</span>
-                <span class="bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full text-[11px]">${statusTag}</span>
-              </button>
-            `;
-          }).join('');
-        }
+        const renderQueueChip = (ord, idx, isAccepted) => {
+          const isSelected = ord.id === selectedStaffOrderId;
+          const badgeText = isAccepted
+            ? `قيد التجهيز (${ord.stagePct || 25}%)`
+            : 'بانتظار القبول';
+          const badgeCls = isAccepted
+            ? 'bg-emerald-400 text-slate-950'
+            : 'bg-amber-400 text-slate-950';
+
+          return `
+            <button
+              type="button"
+              onclick="selectStaffOrder('${ord.id}')"
+              class="px-3.5 py-2 rounded-2xl border-2 text-xs font-black transition cursor-pointer flex items-center gap-2 ${
+                isSelected
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 border-cyan-300 text-white shadow-md'
+                  : 'bg-slate-900 border-slate-700 hover:border-cyan-400 text-slate-200'
+              }"
+            >
+              <span>#${idx + 1}</span>
+              <span dir="ltr">#${ord.id}</span>
+              <span class="bg-slate-950/80 text-cyan-300 px-2 py-0.5 rounded-full text-[11px]">${ord.parking || 'موقف يُسْر 1'}</span>
+              <span class="${badgeCls} px-2 py-0.5 rounded-full text-[11px]">${badgeText}</span>
+            </button>
+          `;
+        };
+
+        queueBar.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
+            <div class="clinical-subcard bg-slate-900/90 border border-emerald-500/35 rounded-2xl p-3 space-y-2">
+              <div class="flex items-center justify-between text-xs font-black text-emerald-400">
+                <span>⚙️ طابور الطلبات قيد التجهيز (للتبديل والدردشة)</span>
+                <span class="bg-emerald-500/20 border border-emerald-400/40 px-2.5 py-0.5 rounded-full">${acceptedPrepOrders.length}</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                ${
+                  acceptedPrepOrders.length === 0
+                    ? `<div class="text-xs text-slate-400 font-bold py-1">لا توجد طلبات قيد التجهيز حالياً.</div>`
+                    : acceptedPrepOrders.map((ord, i) => renderQueueChip(ord, i, true)).join('')
+                }
+              </div>
+            </div>
+
+            <div class="clinical-subcard bg-slate-900/90 border border-amber-400/35 rounded-2xl p-3 space-y-2">
+              <div class="flex items-center justify-between text-xs font-black text-amber-300">
+                <span>⏳ طابور الطلبات بانتظار القبول</span>
+                <span class="bg-amber-400/20 border border-amber-400/40 px-2.5 py-0.5 rounded-full">${pendingAcceptOrders.length}</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                ${
+                  pendingAcceptOrders.length === 0
+                    ? `<div class="text-xs text-slate-400 font-bold py-1">لا توجد طلبات بانتظار القبول حالياً.</div>`
+                    : pendingAcceptOrders.map((ord, i) => renderQueueChip(ord, i, false)).join('')
+                }
+              </div>
+            </div>
+          </div>
+        `;
       }
 
       const staffLogEl = document.getElementById('staffMessagesLog');
       if (staffLogEl) {
-        if (laneMessages.length === 0) {
-          staffLogEl.innerHTML = `<div class="bg-slate-900 border border-slate-800 text-slate-400 rounded-2xl p-3.5 text-center">بانتظار إشارات من شاشة مركبة العميل لهذا الطلب...</div>`;
+        if (!activeOrdForChat) {
+          staffLogEl.innerHTML = `<div class="bg-slate-900 border border-slate-800 text-slate-400 rounded-2xl p-3.5 text-center">اختر طلباً من الطابور لعرض المحادثة والدردشة معه.</div>`;
+        } else if (activeOrderMsgs.length === 0) {
+          staffLogEl.innerHTML = `<div class="bg-slate-900 border border-slate-800 text-slate-400 rounded-2xl p-3.5 text-center">بانتظار إشارات من شاشة مركبة العميل للطلب <span dir="ltr">#${activeOrdForChat.id}</span>...</div>`;
         } else {
-          staffLogEl.innerHTML = laneMessages.map(m => `
+          staffLogEl.innerHTML = activeOrderMsgs.map(m => `
             <div class="bg-slate-900 border ${m.sender === 'staff' ? 'border-blue-400/50 bg-blue-950/30' : 'border-cyan-500/40'} rounded-2xl px-3 py-2 space-y-0.5">
               <div class="text-[10px] ${m.sender === 'staff' ? 'text-blue-400' : 'text-cyan-400'} font-black">${m.time}</div>
               <div class="text-xs font-extrabold">${m.text}</div>
@@ -3381,7 +3425,14 @@ let editingPreparingOrderId = null;
 
     function selectStaffOrder(orderId) {
       selectedStaffOrderId = orderId;
+      const ord = ordersHistory.find(o => o.id === orderId);
+      if (ord) {
+        if (!Array.isArray(ord.laneMessages)) ord.laneMessages = [];
+        laneMessages = ord.laneMessages;
+        if (typeof ord.stagePct === 'number') laneProgressPct = ord.stagePct;
+      }
       renderStaffView();
+      renderSmartLaneView();
       syncSmartLaneAvailability();
     }
 renderStaffOrderBuckets();
