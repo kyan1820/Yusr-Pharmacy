@@ -403,6 +403,10 @@ body.light-mode #staffView .bg-slate-900,
       will-change: transform, opacity;
       animation: subCatCascadeIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) var(--stagger-delay, 0ms) forwards;
     }
+    html:not(.dark) hr,
+    body:not(.dark) hr {
+      border-color: #e2e8f0 !important;
+    }
   </style>
 </head>
 <body class="light-mode bg-slate-950 text-slate-100 min-h-screen pb-16 selection:bg-cyan-500 selection:text-slate-950">
@@ -2560,6 +2564,28 @@ function hasActiveSmartLaneOrder() {
           `).join('');
           chatLog.scrollTop = chatLog.scrollHeight;
         }
+      }
+      const laneBox = document.getElementById('laneChatLog');
+      if (laneBox) {
+        const isLight = !document.documentElement.classList.contains('dark') && !document.body.classList.contains('dark');
+        laneBox.querySelectorAll('div').forEach(div => {
+          if (!isLight) {
+            div.style.backgroundColor = '';
+            div.style.borderColor = '';
+            div.style.color = '';
+            return;
+          }
+          const txt = div.textContent || '';
+          if (txt.includes('رسالة العميل') || txt.includes('إشارة المركبة')) {
+            div.style.setProperty('background-color', '#e0f7fa', 'important');
+            div.style.setProperty('border-color', '#67e8f9', 'important');
+            div.style.setProperty('color', '#0f172a', 'important');
+          } else if (txt.includes('الصيدلي') || txt.includes('تم قبول')) {
+            div.style.setProperty('background-color', '#f1f5f9', 'important');
+            div.style.setProperty('border-color', '#cbd5e1', 'important');
+            div.style.setProperty('color', '#0f172a', 'important');
+          }
+        });
       }
     }
 
