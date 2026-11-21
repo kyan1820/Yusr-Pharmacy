@@ -1373,42 +1373,34 @@ body.light-mode #staffView .bg-slate-900,
       }
     ];
     const YUSR_ORDERS_STORAGE_KEY = 'yusr_pharmacy_orders_history_v1';
-
+const YUSR_CLEARED_FLAG_KEY = 'yusr_pharmacy_orders_cleared_v1';
     function saveOrdersToStorage() {
       try {
         localStorage.setItem(YUSR_ORDERS_STORAGE_KEY, JSON.stringify(ordersHistory));
+        if (ordersHistory.length === 0) {
+          localStorage.setItem(YUSR_CLEARED_FLAG_KEY, '1');
+        } else {
+          localStorage.removeItem(YUSR_CLEARED_FLAG_KEY);
+        }
       } catch (e) {}
     }
 
     function loadOrdersFromStorage() {
       try {
+        const wasCleared = localStorage.getItem(YUSR_CLEARED_FLAG_KEY) === '1';
         const raw = localStorage.getItem(YUSR_ORDERS_STORAGE_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          ordersHistory = parsed;
-          const activeOrder =
-            ordersHistory.find(o => o.id === selectedStaffOrderId) ||
-            ordersHistory.find(o => o.status === 'preparing' && o.staffAccepted) ||
-            ordersHistory.find(o => o.status === 'preparing') ||
-            ordersHistory[0];
-          if (activeOrder) {
-            selectedStaffOrderId = activeOrder.id;
-            if (typeof activeOrder.stagePct === 'number') {
-              laneProgressPct = activeOrder.stagePct;
-            }
-            if (Array.isArray(activeOrder.laneMessages)) {
-              laneMessages = activeOrder.laneMessages;
-            }
+        if (raw !== null) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            ordersHistory = parsed;
+            return;
           }
-          const currentTracked = ordersHistory.find(o => o.status === 'preparing' && o.staffAccepted) || ordersHistory[0];
-      if (currentTracked && typeof currentTracked.stagePct === 'number') {
-        laneProgressPct = currentTracked.stagePct;
-      }
+        }
+        if (wasCleared) {
+          ordersHistory = [];
         }
       } catch (e) {}
     }
-
     loadOrdersFromStorage();
     let splashDismissed = false;
 
@@ -2523,6 +2515,11 @@ body.light-mode #staffView .bg-slate-900,
         msgTargetOrder.laneMessages = [...laneMessages];
       }
       saveOrdersToStorage();
+      if (ordersHistory.length === 0) {
+        selectedStaffOrderId = '';
+        laneProgressPct = 0;
+        laneMessages = [];
+      }
       renderSmartLaneView();
       renderStaffView();
       speakText(trimmed);
