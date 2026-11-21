@@ -1341,6 +1341,26 @@ body.light-mode #staffView .bg-slate-900,
         spot: 'وضع الطلب في الشنطة الخلفية للسيارة'
       }
     ];
+    const YUSR_ORDERS_STORAGE_KEY = 'yusr_pharmacy_orders_history_v1';
+
+    function saveOrdersToStorage() {
+      try {
+        localStorage.setItem(YUSR_ORDERS_STORAGE_KEY, JSON.stringify(ordersHistory));
+      } catch (e) {}
+    }
+
+    function loadOrdersFromStorage() {
+      try {
+        const raw = localStorage.getItem(YUSR_ORDERS_STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          ordersHistory = parsed;
+        }
+      } catch (e) {}
+    }
+
+    loadOrdersFromStorage();
     let splashDismissed = false;
 
     const paymentMethodOptions = [
