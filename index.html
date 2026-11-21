@@ -2594,6 +2594,21 @@ function hasActiveSmartLaneOrder() {
       renderSmartLaneView();
       renderStaffView();
       speakText(trimmed);
+      const isLightMode = !document.documentElement.classList.contains('dark');
+      const logBox = document.getElementById('laneMessagesLog');
+      if (logBox && isLightMode) {
+        logBox.querySelectorAll('div').forEach(el => {
+          if (el.className.includes('bg-slate-950') || el.className.includes('bg-cyan-950')) {
+            el.style.backgroundColor = '#ecfeff';
+            el.style.borderColor = '#67e8f9';
+            el.style.color = '#0f172a';
+          } else if (el.className.includes('bg-slate-800') || el.className.includes('bg-slate-900')) {
+            el.style.backgroundColor = '#f1f5f9';
+            el.style.borderColor = '#cbd5e1';
+            el.style.color = '#0f172a';
+          }
+        });
+      }
     }
 
     function sendQuickLaneSignal(signalId) {
