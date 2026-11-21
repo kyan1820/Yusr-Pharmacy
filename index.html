@@ -2843,12 +2843,14 @@ let lanePrepIntervalId = null;
   if (!ord.stagePct || ord.stagePct < 25) ord.stagePct = 25;
   laneProgressPct = ord.stagePct;
   startLanePreparationTimer(ord.prepMinutes);
+  saveOrdersToStorage();
   const msg = `تم قبول طلبك (#${ord.id}) من الصيدلي — وقت التجهيز المتوقع ${ord.prepMinutes} دقائق`;
   appendLaneMessage(`🧑‍⚕️ ${msg}`, 'staff');
   renderSmartLaneView();
   renderStaffView();
   renderStaffOrderBuckets();
   showToast('تم قبول الطلب وإبلاغ العميل في المسار الذكي!');
+  saveOrdersToStorage();
 }
     function deleteStaffOrder(orderId) {
       updateOrderStatus(orderId, 'cancelled');
