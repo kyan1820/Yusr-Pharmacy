@@ -3254,13 +3254,6 @@ let editingPreparingOrderId = null;
           </div>
         `;
       }
-const detailPanelEl = document.getElementById('staffOrderDetailPanel');
-      if (detailPanelEl && lastAnimatedStaffOrderId === selectedStaffOrderId) {
-        detailPanelEl.classList.remove('detail-pane-smooth-in');
-        void detailPanelEl.offsetWidth;
-        detailPanelEl.classList.add('detail-pane-smooth-in');
-        lastAnimatedStaffOrderId = null;
-      }
       const staffLogEl = document.getElementById('staffMessagesLog');
       if (staffLogEl) {
         if (!activeOrdForChat) {
