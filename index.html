@@ -3085,7 +3085,7 @@ let editingPreparingOrderId = null;
 
         const badgeInfo = {
           preparing: {
-            text: `⏳ قيد التجهيز (${ord.stagePct || 25}%)`,
+            text: `⏳ قيد التجهيز (${typeof laneProgressPct === 'number' && ord.status === 'preparing' && ord.id === selectedStaffOrderId ? laneProgressPct : (ord.stagePct || 25)}%)`,
             cls: 'bg-amber-400/15 border-amber-400/50 text-amber-300'
           },
           completed: {
@@ -3509,7 +3509,14 @@ let lanePrepIntervalId = null;
     function syncLaneStageCardsAndBanner(currentPct) {
       const safePct = Math.max(0, Math.min(100, Number(currentPct) || 0));
       laneProgressPct = safePct;
-
+const targetOrder = ordersHistory.find(o => o.status === 'preparing' && o.id === selectedStaffOrderId)
+        || ordersHistory.find(o => o.status === 'preparing');
+      if (targetOrder && targetOrder.stagePct !== safePct) {
+        targetOrder.stagePct = safePct;
+        if (typeof renderStaffView === 'function') {
+          renderStaffView();
+        }
+      }
       const activeStage = [...laneStagesData]
         .sort((a, b) => b.pct - a.pct)
         .find(s => safePct >= s.pct) || laneStagesData[0];
