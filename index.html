@@ -4118,101 +4118,169 @@ let lanePrepIntervalId = null;
       renderStaffView();
     }
 
-    function renderOrdersView() {
-      syncSmartLaneAvailability();
-      const L = i18n[currentLang];
-      const container = document.getElementById('ordersListContainer');
-      if (!container) return;
+    function openOrderInvoiceDetails(orderId) {
+   const ord = ordersHistory.find(o => o.id === orderId);
+   if (!ord) {
+     openLatestInvoiceFromLane();
+     return;
+   }
 
-      const prepCount = ordersHistory.filter(o => o.status === 'preparing').length;
-      const compCount = ordersHistory.filter(o => o.status === 'completed').length;
-      const cancCount = ordersHistory.filter(o => o.status === 'cancelled').length;
+   const rawItems = (Array.isArray(ord.detailedItems) && ord.detailedItems.length > 0)
+     ? ord.detailedItems
+     : [];
 
-      const cPrep = document.getElementById('countPreparing');
-      const cComp = document.getElementById('countCompleted');
-      const cCanc = document.getElementById('countCancelled');
-      const cTotalNav = document.getElementById('ordersTotalBadge');
+   const computedSubFromItems = rawItems.reduce(
+     (sum, it) => sum + ((Number(it.price) || 0) * (Number(it.qty) || 1)),
+     0
+   );
 
-      if (cPrep) cPrep.textContent = prepCount;
-      if (cComp) cComp.textContent = compCount;
-      if (cCanc) cCanc.textContent = cancCount;
-      if (cTotalNav) cTotalNav.textContent = ordersHistory.length;
+   const finalTotal = Number(ord.total) || 0;
+   const subtotal = computedSubFromItems > 0
+     ? Number(computedSubFromItems.toFixed(2))
+     : Number((finalTotal / 1.15).toFixed(2));
+   const rate = (ord.promo && promoDiscountsMap[ord.promo] !== undefined)
+     ? promoDiscountsMap[ord.promo]
+     : 0;
+   const discounts = Number((subtotal * rate).toFixed(2));
+   const discountedSub = Math.max(0, subtotal - discounts);
+   const vat = Number((discountedSub * 0.15).toFixed(2));
 
-      const tabPrep = document.getElementById('tabPreparing');
-      const tabComp = document.getElementById('tabCompleted');
-      const tabCanc = document.getElementById('tabCancelled');
+   const modeObj = assistModes.find(m => m.id === ord.assistMode);
+   const serviceModeText = modeObj
+     ? (modeObj.title[currentLang] || modeObj.title.ar)
+     : getSelectedAssistModeText();
 
-      if (tabPrep) {
-        tabPrep.className = activeOrderFilter === 'preparing'
-          ? 'p-3.5 rounded-2xl border-2 border-amber-400 bg-amber-400/20 text-start transition cursor-pointer flex items-center justify-between shadow'
-          : 'clinical-subcard p-3.5 rounded-2xl border border-slate-700 hover:border-amber-400 text-start transition cursor-pointer flex items-center justify-between';
-      }
-      if (tabComp) {
-        tabComp.className = activeOrderFilter === 'completed'
-          ? 'p-3.5 rounded-2xl border-2 border-emerald-400 bg-emerald-500/20 text-start transition cursor-pointer flex items-center justify-between shadow'
-          : 'clinical-subcard p-3.5 rounded-2xl border border-slate-700 hover:border-emerald-400 text-start transition cursor-pointer flex items-center justify-between';
-      }
-      if (tabCanc) {
-        tabCanc.className = activeOrderFilter === 'cancelled'
-          ? 'p-3.5 rounded-2xl border-2 border-rose-400 bg-rose-500/20 text-start transition cursor-pointer flex items-center justify-between shadow'
-          : 'clinical-subcard p-3.5 rounded-2xl border border-slate-700 hover:border-rose-400 text-start transition cursor-pointer flex items-center justify-between';
-      }
+   let carType = '';
+   let plateNo = '';
+   if (ord.car) {
+     const parts = String(ord.car).split(' - ');
+     carType = parts[0] || '';
+     plateNo = parts.slice(1).join(' - ') || '';
+   }
 
-      const filtered = ordersHistory.filter(o => o.status === activeOrderFilter);
+   latestCreatedInvoice = {
+     id: ord.id,
+     createdAt: ord.createdAt || '',
+     serviceModeText,
+     parkingText: ord.parking || '',
+     carType,
+     plateNo,
+     deliverySpotText: ord.spot || '',
+     items: rawItems,
+     rx: ord.rx || '',
+     subtotal,
+     discounts,
+     vat,
+     total: finalTotal || Number((discountedSub + vat).toFixed(2))
+   };
 
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="clinical-subcard bg-slate-950/80 border border-slate-800 rounded-2xl p-6 text-center text-xs font-bold text-slate-400">${L.emptyOrders}</div>`;
-        return;
-      }
+   renderInvoiceModalContent();
+   openInvoiceModal();
+ }
 
-      const badgeMap = {
-        preparing: `<span class="bg-amber-400 text-slate-950 text-[11px] font-black px-3 py-1 rounded-full">${L.statusPreparingBadge}</span>`,
-        completed: `<span class="bg-emerald-500 text-slate-950 text-[11px] font-black px-3 py-1 rounded-full">${L.statusCompletedBadge}</span>`,
-        cancelled: `<span class="bg-rose-500 text-white text-[11px] font-black px-3 py-1 rounded-full">${L.statusCancelledBadge}</span>`
-      };
+ function renderOrdersView() {
+   syncSmartLaneAvailability();
+   const L = i18n[currentLang];
+   const container = document.getElementById('ordersListContainer');
+   if (!container) return;
 
-      container.innerHTML = filtered.map(ord => {
-        const actionsHtml = ord.status === 'preparing'
-          ? `
-            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80">
-              <button onclick="updateOrderStatus('${ord.id}', 'completed')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer">
-                ✓ ${L.btnMarkCompleted}
-              </button>
-              <button onclick="updateOrderStatus('${ord.id}', 'cancelled')" class="bg-rose-600 hover:bg-rose-500 text-white font-black text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer">
-                ✕ ${L.btnCancelOrder}
-              </button>
-            </div>
-          `
-          : '';
+   const prepCount = ordersHistory.filter(o => o.status === 'preparing').length;
+   const compCount = ordersHistory.filter(o => o.status === 'completed').length;
+   const cancCount = ordersHistory.filter(o => o.status === 'cancelled').length;
 
-        return `
-          <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-2.5 shadow">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-2.5">
-                <span class="text-sm font-black text-cyan-400">#${ord.id}</span>
-                <span class="text-[11px] text-slate-400 font-bold">${ord.createdAt}</span>
-              </div>
-              ${badgeMap[ord.status] || ''}
-            </div>
+   const cPrep = document.getElementById('countPreparing');
+   const cComp = document.getElementById('countCompleted');
+   const cCanc = document.getElementById('countCancelled');
+   const cTotalNav = document.getElementById('ordersTotalBadge');
 
-            <div class="text-xs sm:text-sm font-black leading-relaxed">${ord.itemsSummary}</div>
+   if (cPrep) cPrep.textContent = prepCount;
+   if (cComp) cComp.textContent = compCount;
+   if (cCanc) cCanc.textContent = cancCount;
+   if (cTotalNav) cTotalNav.textContent = ordersHistory.length;
 
-            <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
-              <div class="flex flex-wrap items-center gap-2 text-slate-400">
-                ${ord.parking ? `<span class="bg-amber-400/15 text-amber-300 border border-amber-400/30 px-2.5 py-0.5 rounded-lg">🅿️ ${ord.parking}</span>` : ''}
-                ${ord.spot ? `<span class="bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 px-2.5 py-0.5 rounded-lg">📍 ${ord.spot}</span>` : ''}
-                ${ord.promo ? `<span class="bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-lg">🏷️ ${ord.promo}</span>` : ''}
-                ${ord.rx ? `<span class="bg-slate-800 text-cyan-300 px-2.5 py-0.5 rounded-lg">RX: ${ord.rx}</span>` : ''}
-                ${ord.car ? `<span class="bg-slate-800 text-slate-200 px-2.5 py-0.5 rounded-lg">🚗 ${ord.car}</span>` : ''}
-              </div>
-              <div class="text-sm font-black text-cyan-500">${formatPrice(ord.total)}</div>
-            </div>
+   const tabPrep = document.getElementById('tabPreparing');
+   const tabComp = document.getElementById('tabCompleted');
+   const tabCanc = document.getElementById('tabCancelled');
 
-            ${actionsHtml}
-          </div>
-        `;
-      }).join('');
-    }
+   if (tabPrep) {
+     tabPrep.className = activeOrderFilter === 'preparing'
+       ? 'p-3.5 rounded-2xl border-2 border-amber-400 bg-amber-400/20 text-start transition cursor-pointer flex items-center justify-between shadow'
+       : 'clinical-subcard p-3.5 rounded-2xl border border-slate-700 hover:border-amber-400 text-start transition cursor-pointer flex items-center justify-between';
+   }
+   if (tabComp) {
+     tabComp.className = activeOrderFilter === 'completed'
+       ? 'p-3.5 rounded-2xl border-2 border-emerald-400 bg-emerald-500/20 text-start transition cursor-pointer flex items-center justify-between shadow'
+       : 'clinical-subcard p-3.5 rounded-2xl border border-slate-700 hover:border-emerald-400 text-start transition cursor-pointer flex items-center justify-between';
+   }
+   if (tabCanc) {
+     tabCanc.className = activeOrderFilter === 'cancelled'
+       ? 'p-3.5 rounded-2xl border-2 border-rose-400 bg-rose-500/20 text-start transition cursor-pointer flex items-center justify-between shadow'
+       : 'clinical-subcard p-3.5 rounded-2xl border border-slate-700 hover:border-rose-400 text-start transition cursor-pointer flex items-center justify-between';
+   }
+
+   const filtered = ordersHistory.filter(o => o.status === activeOrderFilter);
+
+   if (filtered.length === 0) {
+     container.innerHTML = `<div class="clinical-subcard bg-slate-950/80 border border-slate-800 rounded-2xl p-6 text-center text-xs font-bold text-slate-400">${L.emptyOrders}</div>`;
+     return;
+   }
+
+   const badgeMap = {
+     preparing: `<span class="bg-amber-400 text-slate-950 text-[11px] font-black px-3 py-1 rounded-full">${L.statusPreparingBadge}</span>`,
+     completed: `<span class="bg-emerald-500 text-slate-950 text-[11px] font-black px-3 py-1 rounded-full">${L.statusCompletedBadge}</span>`,
+     cancelled: `<span class="bg-rose-500 text-white text-[11px] font-black px-3 py-1 rounded-full">${L.statusCancelledBadge}</span>`
+   };
+
+   const invoiceBtnLabel = {
+     ar: 'تفاصيل الفاتورة كاملة',
+     en: 'Full Invoice Details',
+     tr: 'Tam Fatura Detayları',
+     ur: 'مکمل بل کی تفصیل',
+     zh: '查看完整发票详情'
+   }[currentLang] || 'تفاصيل الفاتورة كاملة';
+
+   container.innerHTML = filtered.map(ord => {
+     const actionsHtml = `
+       <div class="flex flex-wrap items-center justify-end gap-2 pt-2 border-t border-slate-800/80">
+         <button
+           type="button"
+           onclick="openOrderInvoiceDetails('${ord.id}')"
+           class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-4 py-2 rounded-xl transition cursor-pointer shadow-sm inline-flex items-center gap-1.5"
+         >
+           <span>🧾</span>
+           <span>${invoiceBtnLabel}</span>
+         </button>
+       </div>
+     `;
+
+     return `
+       <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-2.5 shadow">
+         <div class="flex flex-wrap items-center justify-between gap-2">
+           <div class="flex items-center gap-2.5">
+             <span class="text-sm font-black text-cyan-400">#${ord.id}</span>
+             <span class="text-[11px] text-slate-400 font-bold">${ord.createdAt}</span>
+           </div>
+           ${badgeMap[ord.status] || ''}
+         </div>
+
+         <div class="text-xs sm:text-sm font-black leading-relaxed">${ord.itemsSummary}</div>
+
+         <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+           <div class="flex flex-wrap items-center gap-2 text-slate-400">
+             ${ord.parking ? `<span class="bg-amber-400/15 text-amber-300 border border-amber-400/30 px-2.5 py-0.5 rounded-lg">🅿️ ${ord.parking}</span>` : ''}
+             ${ord.spot ? `<span class="bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 px-2.5 py-0.5 rounded-lg">📍 ${ord.spot}</span>` : ''}
+             ${ord.promo ? `<span class="bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-lg">🏷️ ${ord.promo}</span>` : ''}
+             ${ord.rx ? `<span class="bg-slate-800 text-cyan-300 px-2.5 py-0.5 rounded-lg">RX: ${ord.rx}</span>` : ''}
+             ${ord.car ? `<span class="bg-slate-800 text-slate-200 px-2.5 py-0.5 rounded-lg">🚗 ${ord.car}</span>` : ''}
+           </div>
+           <div class="text-sm font-black text-cyan-500">${formatPrice(ord.total)}</div>
+         </div>
+
+         ${actionsHtml}
+       </div>
+     `;
+   }).join('');
+ }
 
     function openCartDrawer() {
       const backdrop = document.getElementById('cartDrawerBackdrop');
