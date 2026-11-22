@@ -2802,7 +2802,7 @@ function hasActiveSmartLaneOrder() {
           chatLog.innerHTML = laneMessages.map(m => `
             <div class="bg-slate-900 border ${m.sender === 'staff' ? 'border-blue-400/50 bg-blue-950/30' : 'border-cyan-500/30'} rounded-2xl px-3 py-2 space-y-0.5">
               <div class="text-[10px] ${m.sender === 'staff' ? 'text-blue-400' : 'text-cyan-400'} font-black">${m.time}</div>
-              <div class="text-xs font-extrabold">${m.text}</div>
+              <div class="text-xs font-extrabold">${m.customerViewText || m.text}</div>
             </div>
           `).join('');
           chatLog.scrollTop = chatLog.scrollHeight;
@@ -2841,7 +2841,7 @@ function hasActiveSmartLaneOrder() {
       }
     }
 
-    function appendLaneMessage(text, sender = 'customer') {
+   function appendLaneMessage(text, sender = 'customer', options = {}) {
       const trimmed = String(text || '').trim();
       if (!trimmed) return;
 
@@ -2859,8 +2859,13 @@ function hasActiveSmartLaneOrder() {
 
       const now = new Date();
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const msgObj = { text: trimmed, time: timeStr, sender };
-
+const msgObj = {
+  text: trimmed,
+  customerViewText: (options && options.customerViewText) ? options.customerViewText : trimmed,
+  staffViewText: (options && options.staffViewText) ? options.staffViewText : trimmed,
+  time: timeStr,
+  sender
+};
       msgTargetOrder.laneMessages.push(msgObj);
       selectedStaffOrderId = msgTargetOrder.id;
       laneMessages = msgTargetOrder.laneMessages;
@@ -2876,15 +2881,104 @@ function hasActiveSmartLaneOrder() {
       if (!sig) return;
       appendLaneMessage(`🚗 إشارة المركبة: ${sig.title[currentLang] || sig.title.ar}`, 'customer');
     }
+/* ===== نظام الترجمة الفورية للشات المباشر (جميع اللغات) ===== */
+const YUSR_LANG_MAP = {
+  ar: 'ar',
+  en: 'en',
+  tr: 'tr',
+  ur: 'ur',
+  zh: 'zh-CN'
+};
 
-    function sendLaneChatMessage() {
-      const inputEl = document.getElementById('laneChatInput');
-      if (!inputEl) return;
-      const val = inputEl.value.trim();
-      if (!val) return;
-      inputEl.value = '';
-      appendLaneMessage(`<span class="yusr-sender-badge">إفادة العميل:</span> ${val}`, 'customer');
+const YUSR_PHRASE_DICT = {
+  en: {
+    'hello': 'مرحباً',
+    'hi': 'أهلاً',
+    'thanks': 'شكراً لك',
+    'thank you': 'شكراً لك',
+    'where is my order': 'أين طلبي؟',
+    'how long': 'كم المدة المتبقية؟',
+    'i am here': 'أنا هنا في الموقف',
+    'i arrived': 'لقد وصلت'
+  },
+  ar: {
+    'مرحبا': 'Hello',
+    'مرحباً': 'Hello',
+    'اهلا': 'Hello',
+    'أهلاً': 'Hello',
+    'اهلا وسهلا': 'Welcome',
+    'أهلاً وسهلاً': 'Welcome',
+    'شكرا': 'Thank you',
+    'شكراً': 'Thank you',
+    'الطلب جاهز': 'Your order is ready',
+    'تم التجهيز': 'Prepared',
+    'تفضل': 'Please go ahead',
+    'انا قادم': 'I am coming'
+  }
+};
+
+async function translateYusrText(text, sourceLang = 'auto', targetLang = 'ar') {
+  const clean = String(text || '').trim();
+  if (!clean) return '';
+
+  const src = YUSR_LANG_MAP[sourceLang] || (sourceLang === 'auto' ? 'auto' : sourceLang);
+  const dst = YUSR_LANG_MAP[targetLang] || targetLang;
+
+  if (src !== 'auto' && src.split('-')[0] === dst.split('-')[0]) {
+    return clean;
+  }
+
+  const lower = clean.toLowerCase();
+  if (YUSR_PHRASE_DICT[src] && YUSR_PHRASE_DICT[src][lower]) {
+    return YUSR_PHRASE_DICT[src][lower];
+  }
+  if (YUSR_PHRASE_DICT[src] && YUSR_PHRASE_DICT[src][clean]) {
+    return YUSR_PHRASE_DICT[src][clean];
+  }
+
+  try {
+    const pair = `${src === 'auto' ? 'autodetect' : src}|${dst}`;
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(clean)}&langpair=${encodeURIComponent(pair)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Network response not ok');
+    const data = await res.json();
+    const translated = data && data.responseData && data.responseData.translatedText;
+    if (
+      translated &&
+      !/MYMEMORY WARNING/i.test(translated) &&
+      translated.trim().toLowerCase() !== clean.toLowerCase()
+    ) {
+      return translated.trim();
     }
+  } catch (err) {
+    console.warn('Yusr translator fallback:', err);
+  }
+
+  return clean;
+}
+   async function sendLaneChatMessage() {
+  const inputEl = document.getElementById('laneChatInput');
+  if (!inputEl) return;
+  const val = inputEl.value.trim();
+  if (!val) return;
+  inputEl.value = '';
+
+  const clientLang = (typeof currentLang !== 'undefined' && currentLang) ? currentLang : 'ar';
+  let arTranslation = '';
+
+  if (clientLang !== 'ar') {
+    arTranslation = await translateYusrText(val, clientLang, 'ar');
+  }
+
+  const staffText = (clientLang !== 'ar' && arTranslation && arTranslation !== val)
+    ? `${val}\n🌐 ترجمة للعربية: ${arTranslation}`
+    : val;
+
+  appendLaneMessage(`إفادة العميل: ${val}`, 'customer', {
+    customerViewText: `إفادة العميل: ${val}`,
+    staffViewText: `إفادة العميل: ${staffText}`
+  });
+}
 
     /* ================= منطق شاشة الصيدلي / الموظف المستقلة ================= */
     function getStaffCareGuidance(assistModeId) {
@@ -3320,7 +3414,7 @@ let editingPreparingOrderId = null;
           staffLogEl.innerHTML = activeOrderMsgs.map(m => `
             <div class="bg-slate-900 border ${m.sender === 'staff' ? 'border-blue-400/50 bg-blue-950/30' : 'border-cyan-500/40'} rounded-2xl px-3 py-2 space-y-0.5">
               <div class="text-[10px] ${m.sender === 'staff' ? 'text-blue-400' : 'text-cyan-400'} font-black">${m.time}</div>
-              <div class="text-xs font-extrabold">${m.text}</div>
+              <div class="text-xs font-extrabold">${m.staffViewText || m.text}</div>
             </div>
           `).join('');
           staffLogEl.scrollTop = staffLogEl.scrollHeight;
@@ -3878,20 +3972,31 @@ function confirmAndCompleteStaffOrder(orderId) {
       showToast('تم إرسال الرد السريع إلى شاشة العميل.');
     }
 
-    function sendStaffCustomReply() {
-      const hasActive = ordersHistory.some(o => o.status === 'preparing' && o.id === selectedStaffOrderId);
-      if (!hasActive) {
-        showToast('لا يوجد طلب نشط حالياً لإرسال رسالة.');
-        return;
-      }
-      const inp = document.getElementById('staffCustomReplyInput');
-      if (!inp) return;
-      const val = inp.value.trim();
-      if (!val) return;
-      inp.value = '';
-      appendLaneMessage(`👨‍⚕️ <span class="yusr-pharmacist-badge">إفادة الصيدلي:</span> ${val}`, 'staff');
-      showToast('تم إرسال الرسالة إلى شاشة العميل.');
-    }
+    async function sendStaffCustomReply() {
+  const hasActive = ordersHistory.some(o => o.status === 'preparing' && o.id === selectedStaffOrderId);
+  if (!hasActive) {
+    showToast('لا يوجد طلب نشط حالياً لإرسال رسالة');
+    return;
+  }
+  const inp = document.getElementById('staffCustomReplyInput');
+  if (!inp) return;
+  const val = inp.value.trim();
+  if (!val) return;
+  inp.value = '';
+
+  const clientLang = (typeof currentLang !== 'undefined' && currentLang) ? currentLang : 'ar';
+  let translatedForClient = val;
+
+  if (clientLang !== 'ar') {
+    translatedForClient = await translateYusrText(val, 'ar', clientLang);
+  }
+
+  appendLaneMessage(`👨‍⚕️ إفادة الصيدلي: ${val}`, 'staff', {
+    staffViewText: `👨‍⚕️ إفادة الصيدلي: ${val}`,
+    customerViewText: `👨‍⚕️ إفادة الصيدلي: ${translatedForClient}`
+  });
+  showToast('تم إرسال الرسالة إلى شاشة العميل');
+}
 
     function triggerStaffDeliveryAlert(type) {
       const hasActive = ordersHistory.some(o => o.status === 'preparing' && o.id === selectedStaffOrderId);
