@@ -129,6 +129,32 @@
       }
     }
     .lane-panel-enter {
+      @keyframes queueChipSweepRtl {
+      0% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    .queue-chip-active-sweep {
+      background-image: linear-gradient(270deg, #06b6d4 0%, #0284c7 50%, #2563eb 100%) !important;
+      background-size: 220% 100% !important;
+      animation: queueChipSweepRtl 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes detailPaneSmoothIn {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .detail-pane-smooth-in {
+      animation: detailPaneSmoothIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
       @keyframes orderDetailSmoothSwap {
       0% {
         opacity: 0;
@@ -3204,8 +3230,8 @@ let editingPreparingOrderId = null;
               onclick="selectStaffOrder('${ord.id}')"
               class="px-3.5 py-2 rounded-2xl border-2 text-xs font-black transition cursor-pointer flex items-center gap-2 ${
                 isSelected
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 border-cyan-300 text-white shadow-md'
-                  : 'bg-slate-900 border-slate-700 hover:border-cyan-400 text-slate-200'
+                ? 'queue-chip-active-sweep border-cyan-300 text-white shadow-md'
+                : 'bg-slate-900 border-slate-700 hover:border-cyan-400 text-slate-200'
               }"
             >
               <span>#${idx + 1}</span>
@@ -3248,7 +3274,13 @@ let editingPreparingOrderId = null;
           </div>
         `;
       }
-
+const detailPanelEl = document.getElementById('staffOrderDetailPanel');
+      if (detailPanelEl && lastAnimatedStaffOrderId === selectedStaffOrderId) {
+        detailPanelEl.classList.remove('detail-pane-smooth-in');
+        void detailPanelEl.offsetWidth;
+        detailPanelEl.classList.add('detail-pane-smooth-in');
+        lastAnimatedStaffOrderId = null;
+      }
       const staffLogEl = document.getElementById('staffMessagesLog');
       if (staffLogEl) {
         if (!activeOrdForChat) {
@@ -3437,8 +3469,11 @@ let editingPreparingOrderId = null;
       `;
     }
 
+    let lastAnimatedStaffOrderId = null;
+
     function selectStaffOrder(orderId) {
       selectedStaffOrderId = orderId;
+      lastAnimatedStaffOrderId = orderId;
       const ord = ordersHistory.find(o => o.id === orderId);
       if (ord) {
         if (!Array.isArray(ord.laneMessages)) ord.laneMessages = [];
@@ -3448,15 +3483,6 @@ let editingPreparingOrderId = null;
       renderStaffView();
       renderSmartLaneView();
       syncSmartLaneAvailability();
-
-      const detailPanel = document.getElementById('staffOrderDetailPanel');
-      const staffLogEl = document.getElementById('staffMessagesLog');
-      [detailPanel, staffLogEl].forEach(el => {
-        if (!el) return;
-        el.classList.remove('order-detail-smooth-swap');
-        void el.offsetWidth;
-        el.classList.add('order-detail-smooth-swap');
-      });
     }
 renderStaffOrderBuckets();
     function setStaffPrepMinutes(orderId, mins) {
