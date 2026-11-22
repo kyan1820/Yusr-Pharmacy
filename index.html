@@ -643,7 +643,7 @@ body.light-mode .yusr-sender-badge {
       <!-- أقصى اليسار: طلباتي ثم المسار المباشر ثم السلة (بدون زر شاشة الصيدلي) -->
       <div class="flex items-center gap-2 shrink-0">
         <button onclick="switchPageView('smart_lane')" id="btnNavSmartLane" class="hidden bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow whitespace-nowrap">
-          🧭 <span id="btnNavSmartLaneText">المسار الذكي</span>
+          🧭 <span id="btnNavSmartLaneText" data-yusr-smart-lane>المسار الذكي</span>
         </button>
         <button onclick="switchPageView('orders')" id="btnNavOrders" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer whitespace-nowrap">
           📦 <span id="btnNavOrdersText">طلباتي</span>
@@ -2955,6 +2955,21 @@ async function translateYusrText(text, sourceLang = 'auto', targetLang = 'ar') {
   }
 
   return clean;
+}
+    const YUSR_SMART_LANE_LABELS = {
+  ar: 'المسار الذكي',
+  en: 'Smart Lane',
+  tr: 'Akıllı Şerit',
+  ur: 'اسمارٹ لین',
+  zh: '智能车道'
+};
+
+function updateSmartLaneButtonLabel() {
+  const lang = (typeof currentLang !== 'undefined' && currentLang) ? currentLang : 'ar';
+  const el = document.querySelector('[data-yusr-smart-lane]') || document.getElementById('btnNavSmartLaneText');
+  if (el) {
+    el.textContent = YUSR_SMART_LANE_LABELS[lang] || YUSR_SMART_LANE_LABELS.ar;
+  }
 }
    async function sendLaneChatMessage() {
   const inputEl = document.getElementById('laneChatInput');
@@ -5514,5 +5529,22 @@ const alertBox = document.getElementById('orderValidationAlert');
       </div>
     </div>
   </div>
+  <script>
+  (function () {
+    function runSmartLaneLabelSync() {
+      if (typeof updateSmartLaneButtonLabel === 'function') {
+        updateSmartLaneButtonLabel();
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      runSmartLaneLabelSync();
+      var obs = new MutationObserver(runSmartLaneLabelSync);
+      obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+    });
+    window.addEventListener('click', function () {
+      setTimeout(runSmartLaneLabelSync, 0);
+    });
+  })();
+</script>
 </body>
 </html>
