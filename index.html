@@ -5642,28 +5642,5 @@ const alertBox = document.getElementById('orderValidationAlert');
         }
       });
     }
-
-    document.addEventListener('DOMContentLoaded', function () {
-      applyYusrPaymentDayThemeAndLogos();
-      const obs = new MutationObserver(applyYusrPaymentDayThemeAndLogos);
-      obs.observe(document.body, { childList: true, subtree: true, attributes: true });
-    });
-
-    window.addEventListener('click', function () {
-      setTimeout(applyYusrPaymentDayThemeAndLogos, 0);
-    });
-  })();
-</script>
-  <script>
-  (function () {
-    document.addEventListener('click', function (e) {
-      const opt = e.target.closest('.yusr-pay-option');
-      if (!opt) return;
-      document.querySelectorAll('.yusr-pay-option').forEach(item => {
-        item.setAttribute('data-selected', item === opt ? 'true' : 'false');
-      });
-    }, true);
-  })();
-</script>
 </body>
 </html>
