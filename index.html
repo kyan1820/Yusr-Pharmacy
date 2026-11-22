@@ -981,22 +981,24 @@ body.light-mode #staffView .bg-slate-900,
 
         <div id="cartItemsContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
 
-        <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2">
-          <div id="parkingSpotTitle" class="text-xs font-black text-cyan-300">رقم موقف أو مسار الانتظار الذكي:</div>
+        <div class="clinical-subcard bg-white border border-slate-200 rounded-2xl p-3.5 space-y-2 shadow-sm">
+          <div id="parkingSpotTitle" class="text-xs font-black text-slate-800">رقم موقف أو مسار الانتظار الذكي:</div>
           <div id="parkingSpotOptions" class="grid grid-cols-3 gap-2"></div>
         </div>
 
-        <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2">
-          <div id="deliverySpotTitle" class="text-xs font-black text-cyan-300">مكان تسليم الطلب في السيارة:</div>
+        <div class="clinical-subcard bg-white border border-slate-200 rounded-2xl p-3.5 space-y-2 shadow-sm">
+          <div id="deliverySpotTitle" class="text-xs font-black text-slate-800">مكان تسليم الطلب في السيارة:</div>
           <div id="deliverySpotOptions" class="space-y-1.5"></div>
         </div>
 
-        <div class="secondary-element clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
-          <div id="carInfoTitle" class="text-xs font-black text-cyan-300">بيانات المركبة لتسليم الدواء للنافذة</div>
+        <div class="secondary-element clinical-subcard bg-white border border-slate-200 rounded-2xl p-3.5 space-y-2.5 shadow-sm">
+          <div id="carInfoTitle" class="text-xs font-black text-slate-800">بيانات المركبة لتسليم الدواء للنافذة</div>
           <div class="grid grid-cols-2 gap-2">
-            <input id="carPlateInput" type="text" placeholder="رقم اللوحة (مثال: أ ب ج 1234)" class="clinical-input bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold outline-none" />
-            <input id="carColorInput" type="text" placeholder="نوع ولون السيارة" class="clinical-input bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold outline-none" />
+            <input id="carPlateInput" type="text" placeholder="رقم اللوحة (مثال: أ ب ج 1234)" class="clinical-input bg-slate-50 text-slate-900 placeholder:text-slate-400 border border-slate-300 focus:border-blue-600 rounded-xl px-3 py-2 text-xs font-bold outline-none transition" />
+            <input id="carColorInput" type="text" placeholder="نوع ولون السيارة" class="clinical-input bg-slate-50 text-slate-900 placeholder:text-slate-400 border border-slate-300 focus:border-blue-600 rounded-xl px-3 py-2 text-xs font-bold outline-none transition" />
           </div>
+        </div>
+        <div id="orderValidationAlert" class="hidden rounded-xl bg-red-50 border-2 border-red-500 text-red-700 px-3.5 py-2.5 text-xs font-black"></div>
         </div>
 
         <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
@@ -1027,10 +1029,10 @@ body.light-mode #staffView .bg-slate-900,
             type="button"
             onclick="toggleCouponsList()"
             id="btnToggleCoupons"
-            class="w-full text-start px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-extrabold text-amber-300 flex items-center justify-between transition cursor-pointer"
+            class="w-full text-start px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-extrabold text-slate-800 flex items-center justify-between transition cursor-pointer"
           >
             <span>🎟️ <span id="lblAvailableCouponsBtn">عرض الكوبونات والعروض المتاحة</span></span>
-            <span id="couponsArrow" class="text-xs font-black">▾</span>
+            <span id="couponsArrow" class="text-xs font-black text-slate-600">▾</span>
           </button>
 
           <div id="availableCouponsBox" class="hidden space-y-1.5 pt-1">
@@ -1324,8 +1326,8 @@ body.light-mode #staffView .bg-slate-900,
     let fontScaleIndex = 0;
     const fontScales = [100, 110, 120, 135];
     let selectedAssistMode = 'mobility';
-    let selectedParkingSpot = 'yusr_1';
-    let selectedDeliverySpot = 'driver_window';
+    let selectedParkingSpot = '';
+let selectedDeliverySpot = '';
     let selectedPaymentMethod = 'mada';
     let appliedPromoCode = '';
     let isCouponsBoxOpen = false;
@@ -3937,10 +3939,10 @@ let lanePrepIntervalId = null;
             type="button"
             onclick="selectParkingSpot('${opt.id}')"
             class="px-2.5 py-2 rounded-xl border text-[11px] font-black transition text-center cursor-pointer ${
-              active
-                ? 'bg-cyan-500 border-cyan-400 text-slate-950 shadow-sm'
-                : 'bg-slate-900/90 border-slate-700 hover:border-cyan-500/40 text-slate-200'
-            }"
+                active
+                  ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                  : 'bg-slate-50 border-slate-300 hover:border-blue-500 text-slate-800'
+              }"
           >
             ${opt.label[currentLang] || opt.label.ar}
           </button>
@@ -3973,14 +3975,14 @@ let lanePrepIntervalId = null;
             onclick="selectDeliverySpot('${opt.id}')"
             class="w-full text-start px-3 py-2.5 rounded-xl border text-xs font-extrabold transition flex items-center justify-between gap-2 cursor-pointer ${
               active
-                ? 'bg-cyan-500/15 border-cyan-400 text-cyan-300 shadow-sm'
-                : 'bg-slate-900/90 border-slate-700 hover:border-cyan-500/40 text-slate-200'
+                  ? 'bg-blue-50 border-blue-600 text-blue-900 shadow-sm'
+                  : 'bg-slate-50 border-slate-300 hover:border-blue-500 text-slate-800'
             }"
           >
             <span>${opt.label[currentLang] || opt.label.ar}</span>
             <span class="w-5 h-5 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${
-              active ? 'bg-cyan-400 text-slate-950' : 'bg-slate-800 text-slate-400 border border-slate-600'
-            }">${circleIcon}</span>
+                active ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600 border border-slate-300'
+              }">${circleIcon}</span>
           </button>
         `;
       }).join('');
@@ -4926,7 +4928,51 @@ function formatGregorianDateTime(dateInput) {
       const serviceModeText = getSelectedAssistModeText();
       const parkingText = getSelectedParkingSpotText();
       const spotText = getSelectedDeliverySpotText();
+const alertBox = document.getElementById('orderValidationAlert');
+  const plateEl = document.getElementById('carPlateInput');
+  const colorEl = document.getElementById('carColorInput');
+  const parkingContainer = document.getElementById('parkingSpotOptions');
+  const deliveryContainer = document.getElementById('deliverySpotOptions');
+  const missingFields = [];
 
+  if (!selectedParkingSpot || !parkingText) missingFields.push('رقم الموقف');
+  if (!selectedDeliverySpot || !spotText) missingFields.push('مكان تسليم الطلب');
+  if (!plateVal) missingFields.push('رقم اللوحة');
+  if (!colorVal) missingFields.push('نوع ولون السيارة');
+
+  if (parkingContainer) {
+    parkingContainer.classList.toggle('ring-2', !selectedParkingSpot || !parkingText);
+    parkingContainer.classList.toggle('ring-red-500', !selectedParkingSpot || !parkingText);
+    parkingContainer.classList.toggle('rounded-xl', !selectedParkingSpot || !parkingText);
+  }
+  if (deliveryContainer) {
+    deliveryContainer.classList.toggle('ring-2', !selectedDeliverySpot || !spotText);
+    deliveryContainer.classList.toggle('ring-red-500', !selectedDeliverySpot || !spotText);
+    deliveryContainer.classList.toggle('rounded-xl', !selectedDeliverySpot || !spotText);
+  }
+  if (plateEl) {
+    plateEl.classList.toggle('border-red-500', !plateVal);
+    plateEl.classList.toggle('bg-red-50', !plateVal);
+  }
+  if (colorEl) {
+    colorEl.classList.toggle('border-red-500', !colorVal);
+    colorEl.classList.toggle('bg-red-50', !colorVal);
+  }
+
+  if (missingFields.length > 0) {
+    if (alertBox) {
+      alertBox.textContent = '⚠️ يرجى إكمال الحقول المطلوبة قبل تأكيد الطلب: ' + missingFields.join('، ');
+      alertBox.classList.remove('hidden');
+      alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    if (typeof showToast === 'function') showToast('يرجى تحديد الموقف، مكان التسليم، وبيانات السيارة');
+    return;
+  }
+
+  if (alertBox) {
+    alertBox.classList.add('hidden');
+    alertBox.textContent = '';
+  }
       if (cart.length === 0 && !rxVal) {
         showToast(L.emptyBag);
         speakText(L.emptyBag);
