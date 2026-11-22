@@ -2617,29 +2617,36 @@ function hasActiveSmartLaneOrder() {
       syncSmartLaneAvailability();
       if (!hasActiveSmartLaneOrder()) return;
       const L = i18n[currentLang];
-      const activeCodeEl = document.getElementById('laneActiveOrderCode');
-      const fallbackOrderId = (ordersHistory[0] && ordersHistory[0].id) || 'ORD-1041';
-      const displayId = (latestCreatedInvoice && latestCreatedInvoice.id) || fallbackOrderId;
-      const targetOrder =
-        ordersHistory.find(o => o.id === displayId) ||
-        ordersHistory.find(o => o.id === selectedStaffOrderId) ||
-        ordersHistory.find(o => o.status === 'preparing' && o.staffAccepted) ||
-        ordersHistory[0];
-      if (targetOrder && typeof targetOrder.stagePct === 'number') {
-        laneProgressPct = targetOrder.stagePct;
-        if (!Array.isArray(targetOrder.laneMessages)) {
-          targetOrder.laneMessages = laneMessages;
-        }
-      }
-      const activeOrd = ordersHistory.find(o => o.id === displayId);
-      if (activeOrd) {
-        if (typeof activeOrd.stagePct === 'number' && activeOrd.stagePct > laneProgressPct) {
-          laneProgressPct = activeOrd.stagePct;
-        }
-        if (activeOrd.staffAccepted && laneProgressPct < 25) {
-          laneProgressPct = 25;
-        }
-      }
+      const activeOrdersList = ordersHistory.filter(o => o && o.status !== 'cancelled' && o.status !== 'deleted');
+  const fallbackOrderId = (activeOrdersList[0] && activeOrdersList[0].id) || (ordersHistory[0] && ordersHistory[0].id) || 'ORD-1041';
+  const candidateId = (latestCreatedInvoice && latestCreatedInvoice.id) || fallbackOrderId;
+  const candidateOrder = ordersHistory.find(o => o.id === candidateId);
+  const displayId = (candidateOrder && candidateOrder.status !== 'cancelled' && candidateOrder.status !== 'deleted')
+    ? candidateId
+    : fallbackOrderId;
+  const targetOrder =
+    ordersHistory.find(o => o.id === displayId && o.status !== 'cancelled' && o.status !== 'deleted') ||
+    ordersHistory.find(o => o.id === selectedStaffOrderId && o.status !== 'cancelled' && o.status !== 'deleted') ||
+    ordersHistory.find(o => o.status === 'preparing' && o.staffAccepted) ||
+    activeOrdersList[0] ||
+    ordersHistory[0];
+  if (targetOrder && typeof targetOrder.stagePct === 'number') {
+    laneProgressPct = targetOrder.status === 'cancelled' ? 0 : targetOrder.stagePct;
+    if (!Array.isArray(targetOrder.laneMessages)) {
+      targetOrder.laneMessages = laneMessages;
+    }
+  }
+  const activeOrd = ordersHistory.find(o => o.id === displayId && o.status !== 'cancelled' && o.status !== 'deleted');
+  if (activeOrd) {
+    if (typeof activeOrd.stagePct === 'number' && activeOrd.stagePct > laneProgressPct) {
+      laneProgressPct = activeOrd.stagePct;
+    }
+    if (activeOrd.staffAccepted && laneProgressPct < 25) {
+      laneProgressPct = 25;
+    }
+  } else {
+    laneProgressPct = 0;
+  }
       if (
         activeOrd &&
         activeOrd.status === 'preparing' &&
