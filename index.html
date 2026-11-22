@@ -3210,7 +3210,7 @@ let editingPreparingOrderId = null;
               onclick="selectStaffOrder('${ord.id}')"
               class="px-3.5 py-2 rounded-2xl border-2 text-xs font-black transition cursor-pointer flex items-center gap-2 ${
                 isSelected
-                ? 'queue-chip-active-sweep border-cyan-300 text-white shadow-md'
+                ? 'queue-chip-active-sweep border-cyan-300 text-blue-700 shadow-md'
                 : 'bg-slate-900 border-slate-700 hover:border-cyan-400 text-slate-200'
               }"
             >
@@ -3456,8 +3456,8 @@ let editingPreparingOrderId = null;
       renderStaffView();
       renderSmartLaneView();
       syncSmartLaneAvailability();
-    }
-    if (yusrAnimateOrderId === selectedStaffOrderId) {
+
+      requestAnimationFrame(() => {
         const panel = document.getElementById('staffOrderDetailPanel');
         const chatBox = document.getElementById('staffMessagesLog');
         [panel, chatBox].forEach(el => {
@@ -3467,7 +3467,8 @@ let editingPreparingOrderId = null;
           el.classList.add('yusr-smooth-slide-in');
         });
         yusrAnimateOrderId = null;
-      }
+      });
+    }
 renderStaffOrderBuckets();
     function setStaffPrepMinutes(orderId, mins) {
       const ord = ordersHistory.find(o => o.id === orderId);
