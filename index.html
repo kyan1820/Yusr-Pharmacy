@@ -203,6 +203,24 @@ body.light-mode #laneMessagesLog .yusr-sender-badge {
   border-color: #2563eb !important;
   background-color: rgba(37, 99, 235, 0.1) !important;
 }
+      .yusr-pharmacist-badge {
+  display: inline-block;
+  color: #fbbf24;
+  border: 1.5px solid #f59e0b;
+  background-color: rgba(245, 158, 11, 0.14);
+  border-radius: 8px;
+  padding: 1px 7px;
+  margin-inline-end: 4px;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
+html:not(.dark) #laneMessagesLog .yusr-pharmacist-badge,
+body.light-mode #laneMessagesLog .yusr-pharmacist-badge {
+  color: #b45309 !important;
+  border-color: #d97706 !important;
+  background-color: rgba(245, 158, 11, 0.14) !important;
+}
     }
       opacity: 0;
       max-height: 0;
@@ -3871,7 +3889,7 @@ function confirmAndCompleteStaffOrder(orderId) {
       const val = inp.value.trim();
       if (!val) return;
       inp.value = '';
-      appendLaneMessage(`🧑‍⚕️ إفادة الصيدلي: ${val}`, 'staff');
+      appendLaneMessage(`👨‍⚕️ <span class="yusr-pharmacist-badge">إفادة الصيدلي:</span> ${val}`, 'staff');
       showToast('تم إرسال الرسالة إلى شاشة العميل.');
     }
 
