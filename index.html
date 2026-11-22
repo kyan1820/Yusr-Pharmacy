@@ -4920,7 +4920,7 @@ function formatGregorianDateTime(dateInput) {
       lanePrepTotalSec = 0;
       laneExpectedDeliveryTimeStr = '';
       const L = i18n[currentLang];
-      const rxVal = document.getElementById('rxInput').value.trim();
+      const rxVal = (document.getElementById('rxInput')?.value || '').trim();
       const plateVal = (document.getElementById('carPlateInput')?.value || '').trim();
       const colorVal = (document.getElementById('carColorInput')?.value || '').trim();
       const serviceModeText = getSelectedAssistModeText();
