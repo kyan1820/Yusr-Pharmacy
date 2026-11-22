@@ -322,6 +322,14 @@ body.light-mode #staffView .bg-slate-900,
     body.light-mode #staffView .text-slate-400 {
       color: #334155 !important;
     }
+    body.light-mode #completeOrderConfirmModal .clinical-card {
+  background-color: #ffffff;
+  color: #0f172a;
+  border-color: rgba(14, 165, 233, 0.35);
+}
+body.light-mode #completeOrderConfirmModal p {
+  color: #334155;
+}
     /* وضع التباين العالي */
     body.high-contrast-mode {
       background-color: #020617 !important;
@@ -3707,13 +3715,22 @@ const targetOrder = ordersHistory.find(o => o.status === 'preparing' && o.id ===
       ord.laneMessages = [...laneMessages];
       saveOrdersToStorage();
     }
-function confirmAndCompleteStaffOrder(orderId) {
+let pendingCompleteOrderId = null;
+
+function closeCompleteOrderConfirmModal() {
+  pendingCompleteOrderId = null;
+  const modal = document.getElementById('completeOrderConfirmModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+function executeCompleteStaffOrder(orderId) {
   const ord = ordersHistory.find(o => o.id === orderId);
   if (!ord) {
     if (typeof showToast === 'function') {
       showToast('تعذر العثور على الطلب المحدد.');
-    } else {
-      alert('تعذر العثور على الطلب المحدد.');
     }
     return;
   }
@@ -3721,16 +3738,9 @@ function confirmAndCompleteStaffOrder(orderId) {
   if (ord.status === 'completed') {
     if (typeof showToast === 'function') {
       showToast(`الطلب #${ord.id} مكتمل مسبقاً.`);
-    } else {
-      alert(`الطلب #${ord.id} مكتمل مسبقاً.`);
     }
     return;
   }
-
-  const confirmed = confirm(
-    `تأكيد إتمام الطلب #${ord.id}؟\nسيتم تغيير حالة الطلب إلى (مكتمل) وإرسال رسالة تأكيد للعميل.`
-  );
-  if (!confirmed) return;
 
   ord.staffAccepted = true;
   ord.status = 'completed';
@@ -3768,6 +3778,51 @@ function confirmAndCompleteStaffOrder(orderId) {
   }
   if (typeof showToast === 'function') {
     showToast(`تم إتمام الطلب #${ord.id} بنجاح وإرسال رسالة التأكيد للعميل.`);
+  }
+}
+
+function confirmAndCompleteStaffOrder(orderId) {
+  const ord = ordersHistory.find(o => o.id === orderId);
+  if (!ord) {
+    if (typeof showToast === 'function') {
+      showToast('تعذر العثور على الطلب المحدد.');
+    }
+    return;
+  }
+
+  if (ord.status === 'completed') {
+    if (typeof showToast === 'function') {
+      showToast(`الطلب #${ord.id} مكتمل مسبقاً.`);
+    }
+    return;
+  }
+
+  pendingCompleteOrderId = orderId;
+
+  const modal = document.getElementById('completeOrderConfirmModal');
+  const orderIdEl = document.getElementById('completeOrderModalOrderId');
+  const descEl = document.getElementById('completeOrderModalDesc');
+  const confirmBtn = document.getElementById('confirmCompleteOrderActionBtn');
+
+  if (orderIdEl) orderIdEl.textContent = `#${ord.id}`;
+  if (descEl) {
+    descEl.textContent = `هل تريد تأكيد إتمام الطلب #${ord.id}؟ سيتم تغيير حالته إلى (مكتمل) وإرسال رسالة تأكيد للعميل مباشرة.`;
+  }
+  if (confirmBtn) {
+    confirmBtn.onclick = function () {
+      const targetId = pendingCompleteOrderId;
+      closeCompleteOrderConfirmModal();
+      if (targetId) {
+        executeCompleteStaffOrder(targetId);
+      }
+    };
+  }
+
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  } else {
+    executeCompleteStaffOrder(orderId);
   }
 }
     function sendStaffQuickReply(idx) {
