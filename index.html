@@ -530,6 +530,69 @@ body.light-mode .yusr-sender-badge {
       color: #334155 !important;
       border-color: #cbd5e1 !important;
     }
+    /* ===== الوضع النهاري وشعارات طرق الدفع ===== */
+.yusr-pay-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  flex-shrink: 0;
+}
+
+.yusr-pay-badge svg {
+  height: 14px;
+  width: auto;
+  display: block;
+}
+
+html:not(.dark) .yusr-payment-box,
+body:not(.dark) .yusr-payment-box {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html:not(.dark) .yusr-pay-option,
+body:not(.dark) .yusr-pay-option {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html:not(.dark) .yusr-pay-option[data-selected="true"],
+html:not(.dark) .yusr-pay-option.active,
+html:not(.dark) .yusr-pay-option.selected,
+body:not(.dark) .yusr-pay-option[data-selected="true"],
+body:not(.dark) .yusr-pay-option.active,
+body:not(.dark) .yusr-pay-option.selected {
+  background-color: #ecfeff !important;
+  border-color: #0891b2 !important;
+  color: #0e7490 !important;
+  box-shadow: 0 0 0 2px rgba(8, 145, 178, 0.18) !important;
+}
+
+html:not(.dark) .yusr-pay-option *,
+body:not(.dark) .yusr-pay-option * {
+  color: inherit !important;
+}
+
+html:not(.dark) .yusr-edit-cart-btn,
+body:not(.dark) .yusr-edit-cart-btn {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+html:not(.dark) .yusr-confirm-order-btn,
+body:not(.dark) .yusr-confirm-order-btn {
+  background: linear-gradient(90deg, #06b6d4, #14b8a6) !important;
+  color: #ffffff !important;
+}تم
   </style>
 </head>
 <body class="light-mode bg-slate-950 text-slate-100 min-h-screen pb-16 selection:bg-cyan-500 selection:text-slate-950">
@@ -5514,5 +5577,93 @@ const alertBox = document.getElementById('orderValidationAlert');
       </div>
     </div>
   </div>
+  <script>
+  (function () {
+    const YUSR_PAYMENT_LOGOS = {
+      mada: `<span class="yusr-pay-badge" aria-hidden="true"><svg viewBox="0 0 64 20" fill="none"><rect width="64" height="20" rx="4" fill="#004C97"/><text x="32" y="14" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="900" font-size="11">mada</text></svg></span>`,
+      applepay: `<span class="yusr-pay-badge" aria-hidden="true"><svg viewBox="0 0 68 20" fill="none"><rect width="68" height="20" rx="4" fill="#111827"/><text x="34" y="14" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="700" font-size="10.5"> Pay</text></svg></span>`,
+      visa: `<span class="yusr-pay-badge" aria-hidden="true"><svg viewBox="0 0 64 20" fill="none"><rect width="64" height="20" rx="4" fill="#1A1F71"/><text x="32" y="14.5" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-style="italic" font-weight="900" font-size="12">VISA</text></svg></span>`,
+      cash: `<span class="yusr-pay-badge" aria-hidden="true"><svg viewBox="0 0 64 20" fill="none"><rect width="64" height="20" rx="4" fill="#047857"/><circle cx="32" cy="10" r="5.5" stroke="#A7F3D0" stroke-width="1.6"/><text x="32" y="13" text-anchor="middle" fill="#ECFDF5" font-family="Arial, sans-serif" font-weight="800" font-size="8.5">﷼</text></svg></span>`
+    };
+
+    function detectPaymentKey(text) {
+      const t = (text || '').toLowerCase();
+      if (t.includes('مدى') || t.includes('mada')) return 'mada';
+      if (t.includes('أبل') || t.includes('ابل') || t.includes('apple')) return 'applepay';
+      if (t.includes('فيزا') || t.includes('visa')) return 'visa';
+      if (t.includes('نقد') || t.includes('كاش') || t.includes('cash')) return 'cash';
+      return null;
+    }
+
+    function applyYusrPaymentDayThemeAndLogos() {
+      document.querySelectorAll('div, section, form').forEach(box => {
+        const txt = (box.textContent || '');
+        if (
+          txt.includes('اختر طريقة الدفع') &&
+          (txt.includes('مدى') || txt.includes('فيزا') || txt.includes('أبل باي') || txt.includes('نقدي')) &&
+          box.children.length >= 2 &&
+          box.children.length <= 5
+        ) {
+          box.classList.add('yusr-payment-box');
+        }
+      });
+
+      document.querySelectorAll('button, label, div').forEach(el => {
+        if (el.closest('button') && el.tagName !== 'BUTTON') return;
+        const txt = (el.textContent || '').trim();
+        const key = detectPaymentKey(txt);
+        const hasRadioOrCheck = !!el.querySelector('input[type="radio"], input[type="checkbox"], svg');
+        const isShortOption = txt.length > 0 && txt.length <= 36;
+
+        if (key && isShortOption && (el.tagName === 'BUTTON' || el.tagName === 'LABEL' || hasRadioOrCheck)) {
+          el.classList.add('yusr-pay-option');
+
+          const isSelected =
+            el.getAttribute('aria-checked') === 'true' ||
+            el.getAttribute('data-selected') === 'true' ||
+            el.classList.contains('active') ||
+            el.classList.contains('selected') ||
+            !!el.querySelector('input:checked');
+
+          el.setAttribute('data-selected', isSelected ? 'true' : 'false');
+
+          if (!el.querySelector('.yusr-pay-badge')) {
+            el.insertAdjacentHTML('beforeend', YUSR_PAYMENT_LOGOS[key]);
+          }
+        }
+      });
+
+      document.querySelectorAll('button').forEach(btn => {
+        const t = (btn.textContent || '').trim();
+        if (t.includes('تعديل السلة')) {
+          btn.classList.add('yusr-edit-cart-btn');
+        } else if (t.includes('اعتماد الطلب')) {
+          btn.classList.add('yusr-confirm-order-btn');
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      applyYusrPaymentDayThemeAndLogos();
+      const obs = new MutationObserver(applyYusrPaymentDayThemeAndLogos);
+      obs.observe(document.body, { childList: true, subtree: true, attributes: true });
+    });
+
+    window.addEventListener('click', function () {
+      setTimeout(applyYusrPaymentDayThemeAndLogos, 0);
+    });
+  })();
+</script>
+  <script>
+  (function () {
+    document.addEventListener('click', function (e) {
+      const opt = e.target.closest('.yusr-pay-option');
+      if (!opt) return;
+      document.querySelectorAll('.yusr-pay-option').forEach(item => {
+        item.setAttribute('data-selected', item === opt ? 'true' : 'false');
+      });
+    }, true);
+  })();
+</script>
 </body>
 </html>
