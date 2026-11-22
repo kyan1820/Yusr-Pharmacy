@@ -1038,28 +1038,28 @@ body.light-mode #staffView .bg-slate-900,
 
           <div id="availableCouponsBox" class="hidden space-y-1.5 pt-1">
             <button
-              type="button"
-              onclick="selectCouponCode('ADEL')"
-              class="w-full text-start px-3 py-2 rounded-xl bg-slate-900 hover:bg-cyan-500/15 border border-slate-700 hover:border-cyan-400 transition flex items-center justify-between gap-2 cursor-pointer"
-            >
-              <div>
-                <div class="text-xs font-black text-cyan-400" dir="ltr">ADEL</div>
-                <div id="descCouponAdel" class="text-[11px] text-slate-300 font-bold">خصم 50% على المجموع الفرعي</div>
-              </div>
-              <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-black px-2.5 py-0.5 rounded-full shrink-0">50%</span>
-            </button>
+           type="button"
+           onclick="selectCouponCode('ADEL')"
+           class="w-full text-start px-3.5 py-2.5 rounded-xl bg-white hover:bg-blue-50/70 border border-slate-300 hover:border-blue-600 transition flex items-center justify-between gap-2.5 cursor-pointer shadow-xs"
+         >
+           <div class="space-y-0.5">
+             <div class="text-xs font-black text-blue-700" dir="ltr">ADEL</div>
+             <div id="descCouponAdel" class="text-[11px] text-slate-700 font-bold leading-snug">خصم 50% على المجموع الفرعي للطلبات التي تتجاوز 150 ريال سعودي</div>
+           </div>
+           <span class="bg-emerald-50 text-emerald-700 border border-emerald-300 text-[11px] font-black px-2.5 py-0.5 rounded-full shrink-0">50%</span>
+         </button>
 
             <button
-              type="button"
-              onclick="selectCouponCode('KAYAN')"
-              class="w-full text-start px-3 py-2 rounded-xl bg-slate-900 hover:bg-cyan-500/15 border border-slate-700 hover:border-cyan-400 transition flex items-center justify-between gap-2 cursor-pointer"
-            >
-              <div>
-                <div class="text-xs font-black text-cyan-400" dir="ltr">KAYAN</div>
-                <div id="descCouponKayan" class="text-[11px] text-slate-300 font-bold">خصم 25% على المجموع الفرعي</div>
-              </div>
-              <span class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-black px-2.5 py-0.5 rounded-full shrink-0">25%</span>
-            </button>
+           type="button"
+           onclick="selectCouponCode('KAYAN')"
+           class="w-full text-start px-3.5 py-2.5 rounded-xl bg-white hover:bg-blue-50/70 border border-slate-300 hover:border-blue-600 transition flex items-center justify-between gap-2.5 cursor-pointer shadow-xs"
+         >
+           <div class="space-y-0.5">
+             <div class="text-xs font-black text-blue-700" dir="ltr">KAYAN</div>
+             <div id="descCouponKayan" class="text-[11px] text-slate-700 font-bold leading-snug">خصم 25% على المجموع الفرعي للطلبات التي تزيد عن 100 ريال سعودي</div>
+           </div>
+           <span class="bg-blue-50 text-blue-700 border border-blue-300 text-[11px] font-black px-2.5 py-0.5 rounded-full shrink-0">25%</span>
+         </button>
           </div>
         </div>
 
@@ -1714,8 +1714,8 @@ const YUSR_CLEARED_FLAG_KEY = 'yusr_pharmacy_orders_cleared_v1';
         lblPromoTitle: 'كود الخصم (حروف إنجليزية كابيتل فقط):',
         btnApplyPromo: 'تطبيق',
         lblAvailableCouponsBtn: 'عرض الكوبونات والعروض المتاحة',
-        descCouponAdel: 'خصم 50% على المجموع الفرعي',
-        descCouponKayan: 'خصم 25% على المجموع الفرعي',
+        descCouponAdel: 'خصم 50% على المجموع الفرعي للطلبات التي تتجاوز 100 ريال سعودي',
+        descCouponKayan: 'خصم 25% على المجموع الفرعي للطلبات التي تزيد عن 100 ريال سعودي',
         promoAppliedMsg: 'تم تطبيق الكود بنجاح',
         promoInvalidMsg: 'كود غير صحيح (الأكواد المتاحة: ADEL، KAYAN)',
         lblSubtotal: 'المجموع الفرعي ( غير شامل الضريبه):',
@@ -3869,7 +3869,13 @@ let lanePrepIntervalId = null;
         renderCart();
         return;
       }
-      if (promoDiscountsMap[cleanedUpper] !== undefined) {
+
+      const rawSubtotal = cart.reduce((sum, item) => {
+        const med = getBagItemData(item);
+        return sum + (med ? med.price * item.qty : 0);
+      }, 0);
+
+      if (promoDiscountsMap[cleanedUpper] !== undefined && rawSubtotal > 100) {
         appliedPromoCode = cleanedUpper;
         const pct = Math.round(promoDiscountsMap[cleanedUpper] * 100);
         setPromoMessage(`${i18n[currentLang].promoAppliedMsg} (${cleanedUpper} - ${pct}%)`, 'success');
@@ -3881,24 +3887,38 @@ let lanePrepIntervalId = null;
     }
 
     function applyPromoCode() {
-      const inputEl = document.getElementById('promoCodeInput');
-      const code = (inputEl ? inputEl.value : '').toUpperCase().replace(/[^A-Z]/g, '');
-      if (inputEl) inputEl.value = code;
+   const inputEl = document.getElementById('promoCodeInput');
+   const code = (inputEl ? inputEl.value : '').toUpperCase().replace(/[^A-Z]/g, '');
+   if (inputEl) inputEl.value = code;
 
-      if (!code || promoDiscountsMap[code] === undefined) {
-        appliedPromoCode = '';
-        setPromoMessage(i18n[currentLang].promoInvalidMsg, 'error');
-        renderCart();
-        return;
-      }
+   if (!code || promoDiscountsMap[code] === undefined) {
+     appliedPromoCode = '';
+     setPromoMessage(i18n[currentLang].promoInvalidMsg, 'error');
+     renderCart();
+     return;
+   }
 
-      appliedPromoCode = code;
-      const pct = Math.round(promoDiscountsMap[code] * 100);
-      const msg = `${i18n[currentLang].promoAppliedMsg} (${code} - ${pct}%)`;
-      setPromoMessage(msg, 'success');
-      renderCart();
-      speakText(msg);
-    }
+   const rawSubtotal = cart.reduce((sum, item) => {
+     const med = getBagItemData(item);
+     return sum + (med ? med.price * item.qty : 0);
+   }, 0);
+
+   if (rawSubtotal <= 100) {
+     appliedPromoCode = '';
+     const minOrderMsg = 'عذراً، يُطبق هذا الكود للطلبات التي يتجاوز مجموعها الفرعي 100 ريال سعودي';
+     setPromoMessage(minOrderMsg, 'error');
+     renderCart();
+     speakText(minOrderMsg);
+     return;
+   }
+
+   appliedPromoCode = code;
+   const pct = Math.round(promoDiscountsMap[code] * 100);
+   const msg = `${i18n[currentLang].promoAppliedMsg} (${code} - ${pct}%)`;
+   setPromoMessage(msg, 'success');
+   renderCart();
+   speakText(msg);
+ }
 
     function toggleCouponsList() {
       isCouponsBoxOpen = !isCouponsBoxOpen;
@@ -4853,7 +4873,12 @@ function updateMedCardAction(medId) {
         const med = getBagItemData(item);
         return sum + (med ? med.price * item.qty : 0);
       }, 0);
-      const rate = appliedPromoCode && promoDiscountsMap[appliedPromoCode] !== undefined
+
+      if (appliedPromoCode && subtotal <= 100) {
+        appliedPromoCode = '';
+      }
+
+      const rate = appliedPromoCode && subtotal > 100 && promoDiscountsMap[appliedPromoCode] !== undefined
         ? promoDiscountsMap[appliedPromoCode]
         : 0;
       const discounts = subtotal * rate;
