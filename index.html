@@ -20,11 +20,13 @@
     /* فتح وإغلاق درج السلة بسلاسة */
     #cartDrawerBackdrop {
       opacity: 0;
+      display: none;
       pointer-events: none;
       transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1);
     }
     #cartDrawerBackdrop.drawer-open {
       opacity: 1;
+      display: flex;
       pointer-events: auto;
     }
     #cartDrawerPanel {
@@ -963,7 +965,7 @@ body.light-mode #staffView .bg-slate-900,
   </section>
 
   <!-- 5. نافذة / درج السلة والفاتورة -->
-  <div id="cartDrawerBackdrop" onclick="closeCartDrawer()" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex justify-end">
+  <div id="cartDrawerBackdrop" onclick="closeCartDrawer()" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex justify-end">
     <aside id="cartDrawerPanel" onclick="event.stopPropagation()" class="clinical-card bg-slate-900 border-s border-cyan-500/40 w-full max-w-md h-full p-5 sm:p-6 shadow-2xl flex flex-col justify-between gap-4 overflow-y-auto">
       <div class="space-y-4">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -999,7 +1001,6 @@ body.light-mode #staffView .bg-slate-900,
           </div>
         </div>
         <div id="orderValidationAlert" class="hidden rounded-xl bg-red-50 border-2 border-red-500 text-red-700 px-3.5 py-2.5 text-xs font-black"></div>
-        </div>
 
         <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
           <label for="promoCodeInput" id="lblPromoTitle" class="block text-xs font-black text-cyan-300">كود الخصم (حروف إنجليزية كابيتل فقط):</label>
