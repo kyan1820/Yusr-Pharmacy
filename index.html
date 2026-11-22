@@ -636,16 +636,17 @@ body:not(.dark) #btnApproveInvoiceOrder {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 2px 6px;
+  height: 24px;
+  padding: 2px 7px;
   border-radius: 6px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #cbd5e1;
   margin-inline-start: auto;
   flex-shrink: 0;
 }
 
 .yusr-method-logo svg {
-  height: 15px;
+  height: 16px;
   width: auto;
   display: block;
 }
@@ -5757,10 +5758,10 @@ const alertBox = document.getElementById('orderValidationAlert');
   <script>
   (function () {
     const PAY_SVGS = {
-      mada: `<span class="yusr-method-logo" aria-hidden="true"><svg viewBox="0 0 64 20" fill="none"><rect width="64" height="20" rx="4" fill="#004C97"/><text x="32" y="14" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="900" font-size="11">mada</text></svg></span>`,
-      apple: `<span class="yusr-method-logo" aria-hidden="true"><svg viewBox="0 0 68 20" fill="none"><rect width="68" height="20" rx="4" fill="#111827"/><text x="34" y="14" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="700" font-size="10.5"> Pay</text></svg></span>`,
-      visa: `<span class="yusr-method-logo" aria-hidden="true"><svg viewBox="0 0 64 20" fill="none"><rect width="64" height="20" rx="4" fill="#1A1F71"/><text x="32" y="14.5" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-style="italic" font-weight="900" font-size="12">VISA</text></svg></span>`,
-      cash: `<span class="yusr-method-logo" aria-hidden="true"><svg viewBox="0 0 64 20" fill="none"><rect width="64" height="20" rx="4" fill="#047857"/><circle cx="32" cy="10" r="5.5" stroke="#A7F3D0" stroke-width="1.6"/><text x="32" y="13" text-anchor="middle" fill="#ECFDF5" font-family="Arial, sans-serif" font-weight="800" font-size="8.5">﷼</text></svg></span>`
+      mada: `<span class="yusr-method-logo" aria-hidden="true"><svg viewBox="0 0 88 26" fill="none"><rect x="2" y="4" width="22" height="7.5" rx="1" fill="#1D9BF0"/><rect x="2" y="14.5" width="22" height="7.5" rx="1" fill="#78BE20"/><text x="56" y="12" text-anchor="middle" fill="#1E293B" font-family="Tahoma, Arial, sans-serif" font-weight="900" font-size="10">مدى</text><text x="56" y="22" text-anchor="middle" fill="#1E293B" font-family="Arial, sans-serif" font-weight="900" font-size="10.5">mada</text></svg></span>`,
+      apple: `<span class="yusr-method-logo" aria-hidden="true"><svg viewBox="0 0 74 26" fill="none"><path d="M18.2 13.7c0-2.5 2-3.7 2.1-3.8-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1.9-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.4 0 1.8.8 3.1.8 1.3 0 2.1-1.2 2.9-2.3.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.3-.9-2.3-3.9zM15.8 6.4c.7-.8 1.1-1.9 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.5 2.9-1.3z" fill="#0F172A"/><text x="48" y="19" text-anchor="middle" fill="#0F172A" font-family="Arial, sans-serif" font-weight="700" font-size="14.5">Pay</text></svg></span>`,
+      visa: `<span class="yusr-method-logo" aria-hidden="true"><svg viewBox="0 0 74 26" fill="none"><text x="37" y="19.5" text-anchor="middle" fill="#1434CB" font-family="Arial, sans-serif" font-style="italic" font-weight="900" font-size="17" letter-spacing="0.5">VISA</text></svg></span>`,
+      cash: `<span class="yusr-method-logo" aria-hidden="true"><svg viewBox="0 0 64 26" fill="none"><rect x="4" y="4" width="56" height="18" rx="4" fill="#047857"/><circle cx="32" cy="13" r="5.5" stroke="#A7F3D0" stroke-width="1.5"/><text x="32" y="16" text-anchor="middle" fill="#ECFDF5" font-family="Arial, sans-serif" font-weight="800" font-size="9">﷼</text></svg></span>`
     };
 
     function pickLogo(rawText) {
@@ -5772,11 +5773,25 @@ const alertBox = document.getElementById('orderValidationAlert');
       return '';
     }
 
+    function stripPayEmojis(root) {
+      const emojiRegex = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{E000}-\u{F8FF}\uFE0F]/gu;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.parentElement && node.parentElement.closest('.yusr-method-logo')) continue;
+        if (emojiRegex.test(node.nodeValue)) {
+          node.nodeValue = node.nodeValue.replace(emojiRegex, '').replace(/\s{2,}/g, ' ').trim();
+        }
+      }
+    }
+
     function renderInvPaymentLogos() {
       const container = document.getElementById('invPaymentOptions');
       if (!container) return;
       Array.from(container.children).forEach(item => {
-        if (item.querySelector('.yusr-method-logo')) return;
+        stripPayEmojis(item);
+        const oldLogo = item.querySelector('.yusr-method-logo');
+        if (oldLogo) oldLogo.remove();
         const logoHtml = pickLogo(item.textContent || '');
         if (logoHtml) {
           item.insertAdjacentHTML('beforeend', logoHtml);
