@@ -1714,7 +1714,7 @@ const YUSR_CLEARED_FLAG_KEY = 'yusr_pharmacy_orders_cleared_v1';
         lblPromoTitle: 'كود الخصم (حروف إنجليزية كابيتل فقط):',
         btnApplyPromo: 'تطبيق',
         lblAvailableCouponsBtn: 'عرض الكوبونات والعروض المتاحة',
-        descCouponAdel: 'خصم 50% على المجموع الفرعي للطلبات التي تتجاوز 100 ريال سعودي',
+        descCouponAdel: 'خصم 50% على المجموع الفرعي للطلبات التي تتجاوز 150 ريال سعودي',
         descCouponKayan: 'خصم 25% على المجموع الفرعي للطلبات التي تزيد عن 100 ريال سعودي',
         promoAppliedMsg: 'تم تطبيق الكود بنجاح',
         promoInvalidMsg: 'كود غير صحيح (الأكواد المتاحة: ADEL، KAYAN)',
@@ -3875,7 +3875,9 @@ let lanePrepIntervalId = null;
         return sum + (med ? med.price * item.qty : 0);
       }, 0);
 
-      if (promoDiscountsMap[cleanedUpper] !== undefined && rawSubtotal > 100) {
+      const minRequired = cleanedUpper === 'ADEL' ? 150 : 100;
+
+      if (promoDiscountsMap[cleanedUpper] !== undefined && rawSubtotal > minRequired) {
         appliedPromoCode = cleanedUpper;
         const pct = Math.round(promoDiscountsMap[cleanedUpper] * 100);
         setPromoMessage(`${i18n[currentLang].promoAppliedMsg} (${cleanedUpper} - ${pct}%)`, 'success');
@@ -3886,39 +3888,63 @@ let lanePrepIntervalId = null;
       renderCart();
     }
 
+    function computeCartTotals() {
+      const subtotal = cart.reduce((sum, item) => {
+        const med = getBagItemData(item);
+        return sum + (med ? med.price * item.qty : 0);
+      }, 0);
+
+      const minRequired = appliedPromoCode === 'ADEL' ? 150 : 100;
+
+      if (appliedPromoCode && subtotal <= minRequired) {
+        appliedPromoCode = '';
+      }
+
+      const rate = appliedPromoCode && subtotal > minRequired && promoDiscountsMap[appliedPromoCode] !== undefined
+        ? promoDiscountsMap[appliedPromoCode]
+        : 0;
+      const discounts = subtotal * rate;
+      const discountedSubtotal = Math.max(0, subtotal - discounts);
+      const vat = discountedSubtotal * 0.15;
+      const total = discountedSubtotal + vat;
+      return { subtotal, discounts, vat, total };
+    }
+
     function applyPromoCode() {
-   const inputEl = document.getElementById('promoCodeInput');
-   const code = (inputEl ? inputEl.value : '').toUpperCase().replace(/[^A-Z]/g, '');
-   if (inputEl) inputEl.value = code;
+      const inputEl = document.getElementById('promoCodeInput');
+      const code = (inputEl ? inputEl.value : '').toUpperCase().replace(/[^A-Z]/g, '');
+      if (inputEl) inputEl.value = code;
 
-   if (!code || promoDiscountsMap[code] === undefined) {
-     appliedPromoCode = '';
-     setPromoMessage(i18n[currentLang].promoInvalidMsg, 'error');
-     renderCart();
-     return;
-   }
+      if (!code || promoDiscountsMap[code] === undefined) {
+        appliedPromoCode = '';
+        setPromoMessage(i18n[currentLang].promoInvalidMsg, 'error');
+        renderCart();
+        return;
+      }
 
-   const rawSubtotal = cart.reduce((sum, item) => {
-     const med = getBagItemData(item);
-     return sum + (med ? med.price * item.qty : 0);
-   }, 0);
+      const rawSubtotal = cart.reduce((sum, item) => {
+        const med = getBagItemData(item);
+        return sum + (med ? med.price * item.qty : 0);
+      }, 0);
 
-   if (rawSubtotal <= 100) {
-     appliedPromoCode = '';
-     const minOrderMsg = 'عذراً، يُطبق هذا الكود للطلبات التي يتجاوز مجموعها الفرعي 100 ريال سعودي';
-     setPromoMessage(minOrderMsg, 'error');
-     renderCart();
-     speakText(minOrderMsg);
-     return;
-   }
+      const minRequired = code === 'ADEL' ? 150 : 100;
 
-   appliedPromoCode = code;
-   const pct = Math.round(promoDiscountsMap[code] * 100);
-   const msg = `${i18n[currentLang].promoAppliedMsg} (${code} - ${pct}%)`;
-   setPromoMessage(msg, 'success');
-   renderCart();
-   speakText(msg);
- }
+      if (rawSubtotal <= minRequired) {
+        appliedPromoCode = '';
+        const minOrderMsg = `عذراً، يُطبق هذا الكود للطلبات التي يتجاوز مجموعها الفرعي ${minRequired} ريال سعودي`;
+        setPromoMessage(minOrderMsg, 'error');
+        renderCart();
+        speakText(minOrderMsg);
+        return;
+      }
+
+      appliedPromoCode = code;
+      const pct = Math.round(promoDiscountsMap[code] * 100);
+      const msg = `${i18n[currentLang].promoAppliedMsg} (${code} - ${pct}%)`;
+      setPromoMessage(msg, 'success');
+      renderCart();
+      speakText(msg);
+    }
 
     function toggleCouponsList() {
       isCouponsBoxOpen = !isCouponsBoxOpen;
