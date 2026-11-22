@@ -3448,6 +3448,16 @@ let editingPreparingOrderId = null;
           </div>
           </div>
         </div>
+        <div class="pt-2.5 border-t border-slate-800 flex items-center justify-end">
+              <button
+                type="button"
+                onclick="confirmAndCompleteStaffOrder('${currentOrder.id}')"
+                class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2 rounded-xl transition cursor-pointer shadow-sm inline-flex items-center gap-1.5"
+              >
+                <span>✅</span>
+                <span>اكتمال الطلب</span>
+              </button>
+            </div>
       `;
     }
 
@@ -3690,7 +3700,69 @@ let lanePrepIntervalId = null;
       ord.laneMessages = [...laneMessages];
       saveOrdersToStorage();
     }
+function confirmAndCompleteStaffOrder(orderId) {
+  const ord = ordersHistory.find(o => o.id === orderId);
+  if (!ord) {
+    if (typeof showToast === 'function') {
+      showToast('تعذر العثور على الطلب المحدد.');
+    } else {
+      alert('تعذر العثور على الطلب المحدد.');
+    }
+    return;
+  }
 
+  if (ord.status === 'completed') {
+    if (typeof showToast === 'function') {
+      showToast(`الطلب #${ord.id} مكتمل مسبقاً.`);
+    } else {
+      alert(`الطلب #${ord.id} مكتمل مسبقاً.`);
+    }
+    return;
+  }
+
+  const confirmed = confirm(
+    `تأكيد إتمام الطلب #${ord.id}؟\nسيتم تغيير حالة الطلب إلى (مكتمل) وإرسال رسالة تأكيد للعميل.`
+  );
+  if (!confirmed) return;
+
+  ord.staffAccepted = true;
+  ord.status = 'completed';
+  ord.stagePct = 100;
+  laneProgressPct = 100;
+
+  const msg = `✅ تم اكتمال طلبك (#${ord.id}) وتسليمه بنجاح. شكرًا لاستخدامك صيدلية يُسر ونتمنى لك دوام الصحة والعافية.`;
+
+  if (typeof appendLaneMessage === 'function') {
+    appendLaneMessage(msg, 'staff');
+  }
+  if (!Array.isArray(ord.laneMessages)) {
+    ord.laneMessages = [];
+  }
+  ord.laneMessages.push({
+    sender: 'staff',
+    text: msg,
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  });
+
+  if (typeof speakText === 'function') {
+    speakText(msg);
+  }
+  if (typeof renderSmartLaneView === 'function') {
+    renderSmartLaneView();
+  }
+  if (typeof renderStaffView === 'function') {
+    renderStaffView();
+  }
+  if (typeof renderOrdersView === 'function') {
+    renderOrdersView();
+  }
+  if (typeof saveOrdersToStorage === 'function') {
+    saveOrdersToStorage();
+  }
+  if (typeof showToast === 'function') {
+    showToast(`تم إتمام الطلب #${ord.id} بنجاح وإرسال رسالة التأكيد للعميل.`);
+  }
+}
     function sendStaffQuickReply(idx) {
       const hasActive = ordersHistory.some(o => o.status === 'preparing' && o.id === selectedStaffOrderId);
       if (!hasActive) {
