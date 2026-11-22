@@ -2686,7 +2686,8 @@ function hasActiveSmartLaneOrder() {
           }
         }
       }
-      if (activeCodeEl) activeCodeEl.textContent = `#${displayId}`;
+      const activeCodeEl = document.getElementById('laneActiveOrderCode');
+  if (activeCodeEl) activeCodeEl.textContent = `#${displayId}`;
 
       const pctEl = document.getElementById('laneProgressPercent');
       const barEl = document.getElementById('laneProgressBar');
