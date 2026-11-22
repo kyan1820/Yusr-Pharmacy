@@ -4717,10 +4717,10 @@ let lanePrepIntervalId = null;
               return `<button onclick="addToCart('${m.id}')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition-all duration-200 shadow-md">${L.addBtn}</button>`;
             }
             return `
-              <div class="inline-flex items-center gap-3 bg-white border-2 border-blue-600 text-blue-600 font-black text-xs px-3 py-1.5 rounded-xl shadow-md select-none">
-                <button onclick="changeQty('${m.id}', -1)" class="w-6 h-6 flex items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50 active:scale-90 transition">-</button>
-                <span class="min-w-[1.25rem] text-center text-sm text-blue-600">${cartItem.qty}</span>
-                <button onclick="changeQty('${m.id}', 1)" class="w-6 h-6 flex items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50 active:scale-90 transition">+</button>
+              <div class="inline-flex items-center justify-between gap-2 bg-white border-2 border-blue-600 text-blue-600 font-black text-xs px-4 py-2 rounded-xl shadow-md select-none min-w-[115px]">
+                <button onclick="changeQty('${m.id}', -1)" class="w-5 h-5 flex items-center justify-center rounded-md text-blue-600 hover:bg-blue-50 active:scale-90 transition">-</button>
+                <span class="min-w-[1rem] text-center text-xs text-blue-600">${cartItem.qty}</span>
+                <button onclick="changeQty('${m.id}', 1)" class="w-5 h-5 flex items-center justify-center rounded-md text-blue-600 hover:bg-blue-50 active:scale-90 transition">+</button>
               </div>
             `;
           })()}
@@ -4798,10 +4798,10 @@ function updateMedCardAction(medId) {
   const nextHtml = (!cartItem || cartItem.qty <= 0)
     ? `<button onclick="addToCart('${medId}')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition-all duration-200 shadow-md">${L.addBtn}</button>`
     : `
-      <div class="inline-flex items-center gap-3 bg-white border-2 border-blue-600 text-blue-600 font-black text-xs px-3 py-1.5 rounded-xl shadow-md select-none">
-          <button onclick="changeQty('${medId}', -1)" class="w-6 h-6 flex items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50 active:scale-90 transition">-</button>
-          <span class="min-w-[1.25rem] text-center text-sm text-blue-600">${cartItem.qty}</span>
-          <button onclick="changeQty('${medId}', 1)" class="w-6 h-6 flex items-center justify-center rounded-lg text-blue-600 hover:bg-blue-50 active:scale-90 transition">+</button>
+      <div class="inline-flex items-center justify-between gap-2 bg-white border-2 border-blue-600 text-blue-600 font-black text-xs px-4 py-2 rounded-xl shadow-md select-none min-w-[115px]">
+          <button onclick="changeQty('${medId}', -1)" class="w-5 h-5 flex items-center justify-center rounded-md text-blue-600 hover:bg-blue-50 active:scale-90 transition">-</button>
+          <span class="min-w-[1rem] text-center text-xs text-blue-600">${cartItem.qty}</span>
+          <button onclick="changeQty('${medId}', 1)" class="w-5 h-5 flex items-center justify-center rounded-md text-blue-600 hover:bg-blue-50 active:scale-90 transition">+</button>
         </div>
     `;
 
