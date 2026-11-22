@@ -2865,7 +2865,7 @@ function hasActiveSmartLaneOrder() {
       const val = inputEl.value.trim();
       if (!val) return;
       inputEl.value = '';
-      <span class="yusr-sender-badge">إفادة العميل:</span>
+      appendLaneMessage(`<span class="yusr-sender-badge">إفادة العميل:</span> ${val}`, 'customer');
     }
 
     /* ================= منطق شاشة الصيدلي / الموظف المستقلة ================= */
