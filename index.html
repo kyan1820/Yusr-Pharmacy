@@ -129,6 +129,19 @@
       }
     }
     .lane-panel-enter {
+      @keyframes yusrSmoothSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .yusr-smooth-slide-in {
+      animation: yusrSmoothSlideIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
       @keyframes queueChipSweepRtl {
       0% {
         background-position: 100% 50%;
@@ -3469,11 +3482,11 @@ const detailPanelEl = document.getElementById('staffOrderDetailPanel');
       `;
     }
 
-    let lastAnimatedStaffOrderId = null;
+    let yusrAnimateOrderId = null;
 
     function selectStaffOrder(orderId) {
       selectedStaffOrderId = orderId;
-      lastAnimatedStaffOrderId = orderId;
+      yusrAnimateOrderId = orderId;
       const ord = ordersHistory.find(o => o.id === orderId);
       if (ord) {
         if (!Array.isArray(ord.laneMessages)) ord.laneMessages = [];
@@ -3484,6 +3497,17 @@ const detailPanelEl = document.getElementById('staffOrderDetailPanel');
       renderSmartLaneView();
       syncSmartLaneAvailability();
     }
+    if (yusrAnimateOrderId === selectedStaffOrderId) {
+        const panel = document.getElementById('staffOrderDetailPanel');
+        const chatBox = document.getElementById('staffMessagesLog');
+        [panel, chatBox].forEach(el => {
+          if (!el) return;
+          el.classList.remove('yusr-smooth-slide-in');
+          void el.offsetWidth;
+          el.classList.add('yusr-smooth-slide-in');
+        });
+        yusrAnimateOrderId = null;
+      }
 renderStaffOrderBuckets();
     function setStaffPrepMinutes(orderId, mins) {
       const ord = ordersHistory.find(o => o.id === orderId);
