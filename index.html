@@ -175,7 +175,7 @@
       border-color: #cbd5e1 !important;
     }
 
-    /* فقاعة رسالة العميل في الوضع النهاري */
+    /* فقاعة إفادة العميل في الوضع النهاري */
     html:not(.dark) #laneMessagesLog .bg-cyan-950\/60,
     html:not(.dark) #laneMessagesLog .bg-cyan-900\/50,
     html:not(.dark) #laneMessagesLog .bg-slate-900.border-cyan-500\/30,
@@ -197,6 +197,12 @@
 
     html:not(.dark) #laneMessagesLog * {
       color: #0f172a;
+      html:not(.dark) #laneMessagesLog .yusr-sender-badge,
+body.light-mode #laneMessagesLog .yusr-sender-badge {
+  color: #1d4ed8 !important;
+  border-color: #2563eb !important;
+  background-color: rgba(37, 99, 235, 0.1) !important;
+}
     }
       opacity: 0;
       max-height: 0;
@@ -329,6 +335,23 @@ body.light-mode #staffView .bg-slate-900,
 }
 body.light-mode #completeOrderConfirmModal p {
   color: #334155;
+}
+    .yusr-sender-badge {
+  display: inline-block;
+  color: #2563eb;
+  border: 1.5px solid #3b82f6;
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+  padding: 1px 7px;
+  margin-inline-end: 4px;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
+body.light-mode .yusr-sender-badge {
+  color: #1d4ed8;
+  border-color: #2563eb;
+  background-color: rgba(37, 99, 235, 0.08);
 }
     /* وضع التباين العالي */
     body.high-contrast-mode {
@@ -1491,10 +1514,10 @@ let selectedDeliverySpot = '';
     ];
 
     const staffQuickRepliesData = [
-      'رد الصيدلي: أهلاً بك، تم رصد وصول مركبتك للمسار',
-      'رد الصيدلي: خُذ وقتك بالكامل دون أي استعجال',
-      'رد الصيدلي: سنتواصل معك كتابياً وبإشارة اليد فقط',
-      'رد الصيدلي: الصيدلي قادم إليك بجهاز الدفع والحقيبة الآن'
+      'إفادة الصيدلي: أهلاً بك، تم رصد وصول مركبتك للمسار',
+      'إفادة الصيدلي: خُذ وقتك بالكامل دون أي استعجال',
+      'إفادة الصيدلي: سنتواصل معك كتابياً وبإشارة اليد فقط',
+      'إفادة الصيدلي: الصيدلي قادم إليك بجهاز الدفع والحقيبة الآن'
     ];
 
     const promoDiscountsMap = {
@@ -2778,7 +2801,7 @@ function hasActiveSmartLaneOrder() {
             return;
           }
           const txt = div.textContent || '';
-          if (txt.includes('رسالة العميل') || txt.includes('إشارة المركبة')) {
+          if (txt.includes('إفادة العميل') || txt.includes('إشارة المركبة')) {
             div.style.setProperty('background-color', '#e0f7fa', 'important');
             div.style.setProperty('border-color', '#67e8f9', 'important');
             div.style.setProperty('color', '#0f172a', 'important');
@@ -2842,7 +2865,7 @@ function hasActiveSmartLaneOrder() {
       const val = inputEl.value.trim();
       if (!val) return;
       inputEl.value = '';
-      appendLaneMessage(`🚗 رسالة العميل: ${val}`, 'customer');
+      <span class="yusr-sender-badge">إفادة العميل:</span>
     }
 
     /* ================= منطق شاشة الصيدلي / الموظف المستقلة ================= */
@@ -3848,7 +3871,7 @@ function confirmAndCompleteStaffOrder(orderId) {
       const val = inp.value.trim();
       if (!val) return;
       inp.value = '';
-      appendLaneMessage(`🧑‍⚕️ رد الصيدلي: ${val}`, 'staff');
+      appendLaneMessage(`🧑‍⚕️ إفادة الصيدلي: ${val}`, 'staff');
       showToast('تم إرسال الرسالة إلى شاشة العميل.');
     }
 
