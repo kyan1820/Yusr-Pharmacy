@@ -2637,8 +2637,8 @@ function hasActiveSmartLaneOrder() {
     }
   }
   const activeOrd = ordersHistory.find(o => o.id === displayId && o.status !== 'cancelled' && o.status !== 'deleted');
-  if (activeOrd) {
-    if (typeof activeOrd.stagePct === 'number' && activeOrd.stagePct > laneProgressPct) {
+ if (activeOrd) {
+    if (typeof activeOrd.stagePct === 'number') {
       laneProgressPct = activeOrd.stagePct;
     }
     if (activeOrd.staffAccepted && laneProgressPct < 25) {
@@ -2690,11 +2690,9 @@ function hasActiveSmartLaneOrder() {
   if (activeCodeEl) activeCodeEl.textContent = `#${displayId}`;
 
       const pctEl = document.getElementById('laneProgressPercent');
-      const barEl = document.getElementById('laneProgressBar');
-      if (lanePrepRemainingSec <= 0) {
-      if (pctEl) pctEl.textContent = `${laneProgressPct}%`;
-      if (barEl) barEl.style.width = `${laneProgressPct}%`;
-    }
+  const barEl = document.getElementById('laneProgressBar');
+  if (pctEl) pctEl.textContent = `${laneProgressPct}%`;
+  if (barEl) barEl.style.width = `${laneProgressPct}%`;
 
       const bannerEl = document.getElementById('laneStatusBannerText');
       if (bannerEl) {
