@@ -844,7 +844,7 @@ body.light-mode #staffView .bg-slate-900,
         </div>
       </div>
 
-      <!-- شريط طابور الطلبات النشطة حالياً -->
+      <!-- شريط قائمة الطلبات النشطة حالياً (يرجى اختيار رقم الطلب للإدارة والتحكم): -->
       <div class="clinical-subcard bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-2.5">
         <div id="staffQueueHeader" class="text-xs font-black text-cyan-400">
           طابور الطلبات النشطة حالياً (اضغط على رقم الطلب للتبديل والتحكم به):
@@ -3226,7 +3226,7 @@ let editingPreparingOrderId = null;
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
             <div class="clinical-subcard bg-slate-900/90 border border-emerald-500/35 rounded-2xl p-3 space-y-2">
               <div class="flex items-center justify-between text-xs font-black text-emerald-400">
-                <span>⚙️ طابور الطلبات قيد التجهيز (للتبديل والدردشة)</span>
+                <span>⚙️ الطلبات قيد التجهيز (إدارة الطلب والتواصل المباشر)</span>
                 <span class="bg-emerald-500/20 border border-emerald-400/40 px-2.5 py-0.5 rounded-full">${acceptedPrepOrders.length}</span>
               </div>
               <div class="flex flex-wrap items-center gap-2">
@@ -3240,7 +3240,7 @@ let editingPreparingOrderId = null;
 
             <div class="clinical-subcard bg-slate-900/90 border border-amber-400/35 rounded-2xl p-3 space-y-2">
               <div class="flex items-center justify-between text-xs font-black text-amber-300">
-                <span>⏳ طابور الطلبات بانتظار القبول</span>
+                <span>⏳ الطلبات بانتظار الاعتماد والقبول</span>
                 <span class="bg-amber-400/20 border border-amber-400/40 px-2.5 py-0.5 rounded-full">${pendingAcceptOrders.length}</span>
               </div>
               <div class="flex flex-wrap items-center gap-2">
